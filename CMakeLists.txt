@@ -58,7 +58,9 @@ if(NOT DEFINED ${META_PROJECT_ID}_IS_MASTER_PROJECT)
   endif()
 endif()
 
-message("=> Project : ${META_NAME_VERSION}")
+message(
+  "=> Project : ${META_NAME_VERSION} (IS_MASTER: ${${META_PROJECT_ID}_IS_MASTER_PROJECT})"
+)
 
 # ------------------------------------------------------------------------------
 # Project configuration options
@@ -87,12 +89,15 @@ set(IDE_FOLDER "${META_PROJECT_NAME}")
 project(
   ${META_PROJECT_NAME}
   VERSION ${META_VERSION}
+  DESCRIPTION ${META_PROJECT_DESCRIPTION}
+  HOMEPAGE_URL ${META_GITHUB_REPO}
   LANGUAGES C CXX)
 
 # Set output directories
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
 set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
 set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib)
+
 # ------------------------------------------------------------------------------
 # Additional CMake modules
 # ------------------------------------------------------------------------------
@@ -235,10 +240,10 @@ if(${META_PROJECT_ID}_IS_MASTER_PROJECT)
   include(ClangTidy)
 
   # Enable this target when the project has header or source files (.h or .cpp)
-  asap_setup_clang_format()
+  # asap_setup_clang_format()
 
   # Enable this target when the project has source files (.cpp)
-  asap_create_clang_tidy_targets()
+  # asap_create_clang_tidy_targets()
 endif()
 
 # ==============================================================================
