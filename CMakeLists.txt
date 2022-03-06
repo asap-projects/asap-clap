@@ -32,15 +32,15 @@ endif()
 
 # Meta information about the project
 # cmake-format: off
-set(META_PROJECT_NAME        "asap")
-set(META_PROJECT_DESCRIPTION "Instantly start with a fully loaded CMake project")
+set(META_PROJECT_NAME        "asap-clap")
+set(META_PROJECT_DESCRIPTION "C++ command line argument parsing library")
 set(META_AUTHOR_ORGANIZATION "The Authors")
-set(META_GITHUB_REPO         "https://github.com/abdes/asap")
-set(META_AUTHOR_DOMAIN       "https://github.com/abdes/asap")
+set(META_GITHUB_REPO         "https://github.com/asap-projects/asap-clap")
+set(META_AUTHOR_DOMAIN       "https://github.com/asap-projects")
 set(META_AUTHOR_MAINTAINER   "Abdessattar Sassi")
-set(META_VERSION_MAJOR       "4")
-set(META_VERSION_MINOR       "1")
-set(META_VERSION_PATCH       "1")
+set(META_VERSION_MAJOR       "1")
+set(META_VERSION_MINOR       "0")
+set(META_VERSION_PATCH       "0")
 set(META_VERSION_REVISION    "${GIT_REV}")
 set(META_VERSION             "${META_VERSION_MAJOR}.${META_VERSION_MINOR}.${META_VERSION_PATCH}")
 set(META_NAME_VERSION        "${META_PROJECT_NAME} v${META_VERSION} (${META_VERSION_REVISION})")
@@ -49,6 +49,14 @@ set(META_CMAKE_INIT_SHA      "${GIT_REV}")
 
 string(MAKE_C_IDENTIFIER ${META_PROJECT_NAME} META_PROJECT_ID)
 string(TOUPPER ${META_PROJECT_ID} META_PROJECT_ID)
+
+# Determine if this is built as a subproject  or if it is the master project.
+if(NOT DEFINED ${META_PROJECT_ID}_IS_MASTER_PROJECT)
+  set(${META_PROJECT_ID}_IS_MASTER_PROJECT OFF)
+  if(CMAKE_CURRENT_SOURCE_DIR STREQUAL CMAKE_SOURCE_DIR)
+    set(${META_PROJECT_ID}_IS_MASTER_PROJECT ON)
+  endif()
+endif()
 
 message("=> Project : ${META_NAME_VERSION}")
 
@@ -82,13 +90,9 @@ project(
   LANGUAGES C CXX)
 
 # Set output directories
-set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${PROJECT_BINARY_DIR}/bin)
-set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${PROJECT_BINARY_DIR}/bin)
-set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${PROJECT_BINARY_DIR}/lib)
-
-# Create version file
-file(WRITE "${PROJECT_BINARY_DIR}/VERSION" "${META_NAME_VERSION}")
-
+set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
+set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
+set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib)
 # ------------------------------------------------------------------------------
 # Additional CMake modules
 # ------------------------------------------------------------------------------
@@ -98,11 +102,12 @@ include(AsapTargets)
 include(BuildHelpers)
 include(GenerateExportHeader)
 include(CompileOptions)
-include(GoogleSanitizers)
-include(CodeCoverage)
-include(Valgrind)
-include(ClangFormat)
-include(ClangTidy)
+
+# Override the ${META_PROJECT_ID}_INSTALL option to ON/OFF to respectively force
+# install/no-install behavior for this project. This is particularly useful when
+# this project is used as a sub-project and the user publicly depends on it and
+# wants to have a self-contained install.
+include(AsapInstall)
 
 # The default build type provided by CMake is to include no compiler flags for
 # optimization. For some projects you may want to set a default build type so
@@ -139,58 +144,30 @@ message(
   "-- Building for ${CMAKE_BUILD_TYPE} with OPTION_CONTRACT_MODE : ${OPTION_CONTRACT_MODE}"
 )
 
+include(FetchContent)
+# We make sure that we have 'third_party' in the name so that the targets get
+# excluded from the generated target lists for the various tools.
+set(FETCHCONTENT_BASE_DIR ${CMAKE_BINARY_DIR}/third_party_deps)
+
 # ------------------------------------------------------------------------------
-# Deployment/installation setup
+# Testing
 # ------------------------------------------------------------------------------
 
-# Get project name
-set(project ${META_PROJECT_NAME})
-
-# Check for system dir install
-set(SYSTEM_DIR_INSTALL FALSE)
-if("${CMAKE_INSTALL_PREFIX}" STREQUAL "/usr" OR "${CMAKE_INSTALL_PREFIX}"
-                                                STREQUAL "/usr/local")
-  set(SYSTEM_DIR_INSTALL TRUE)
-  set(ASAP_INSTALL_PREFIX_FULL_PATH ${CMAKE_INSTALL_PREFIX})
-else()
-  set(ASAP_INSTALL_PREFIX_FULL_PATH ${CMAKE_BINARY_DIR}/${CMAKE_INSTALL_PREFIX})
+if(ASAP_BUILD_TESTS)
+  include(GoogleSanitizers)
+  include(CodeCoverage)
+  # Enable this target when the project has test cases
+  asap_add_code_coverage_all_targets(EXCLUDE */test/* *googlemock* *googletest*
+                                     /usr/*)
+  include(Valgrind)
+  include(FetchGoogleTest)
+  include(GoogleTest)
+  include(CTest)
 endif()
 
-# Installation paths
-include(GNUInstallDirs)
-# cmake-format: off
-if(UNIX AND SYSTEM_DIR_INSTALL)
-  # Install into the system (/usr/bin or /usr/local/bin)
-  set(ASAP_INSTALL_ROOT      "${CMAKE_INSTALL_DATAROOTDIR}/${project}")       # /usr/[local]/share/<project>
-  set(ASAP_INSTALL_LIB       "${CMAKE_INSTALL_LIBDIR}")                       # /usr/[local]/lib
-  set(ASAP_INSTALL_SHARED    "${ASAP_INSTALL_LIB}")                           # /usr/[local]/lib
-  set(ASAP_INSTALL_CMAKE     "${CMAKE_INSTALL_DATAROOTDIR}/cmake/${project}") # /usr/[local]/share/cmake/<project>
-  set(ASAP_INSTALL_PKGCONFIG "${CMAKE_INSTALL_DATAROOTDIR}/pkgconfig")        # /usr/[local]/share/pkgconfig
-  set(ASAP_INSTALL_EXAMPLES  "${ASAP_INSTALL_ROOT}")                          # /usr/[local]/share/<project>
-  set(ASAP_INSTALL_DATA      "${ASAP_INSTALL_ROOT}")                          # /usr/[local]/share/<project>/data
-  set(ASAP_INSTALL_BIN       "${CMAKE_INSTALL_BINDIR}")                       # /usr/[local]/bin
-  set(ASAP_INSTALL_INCLUDE   "${CMAKE_INSTALL_INCLUDEDIR}")                   # /usr/[local]/include
-  set(ASAP_INSTALL_DOC       "${CMAKE_INSTALL_DOCDIR}")                       # /usr/[local]/share/doc/<project>
-  set(ASAP_INSTALL_SHORTCUTS "${CMAKE_INSTALL_DATAROOTDIR}/applications")     # /usr/[local]/share/applications
-  set(ASAP_INSTALL_ICONS     "${CMAKE_INSTALL_DATAROOTDIR}/pixmaps")          # /usr/[local]/share/pixmaps
-  set(ASAP_INSTALL_INIT      "/etc/init")                                     # /etc/init (upstart init scripts)
-else()
-  # Install into local directory
-  set(ASAP_INSTALL_ROOT      ".")                                           # ./
-  set(ASAP_INSTALL_LIB       "lib")                                         # ./lib
-  set(ASAP_INSTALL_SHARED    "${ASAP_INSTALL_LIB}")                         # ./lib
-  set(ASAP_INSTALL_CMAKE     "${ASAP_INSTALL_ROOT}/share/cmake/${project}") # ./share/cmake/<project>
-  set(ASAP_INSTALL_PKGCONFIG "${ASAP_INSTALL_ROOT}/share/pkgconfig")        # ./share/pkgconfig
-  set(ASAP_INSTALL_EXAMPLES  "${ASAP_INSTALL_ROOT}")                        # ./
-  set(ASAP_INSTALL_DATA      "${ASAP_INSTALL_ROOT}")                        # ./data
-  set(ASAP_INSTALL_BIN       "bin")                                         # ./bin
-  set(ASAP_INSTALL_INCLUDE   "include")                                     # ./include
-  set(ASAP_INSTALL_DOC       "doc")                                         # ./doc
-  set(ASAP_INSTALL_SHORTCUTS "misc")                                        # ./misc
-  set(ASAP_INSTALL_ICONS     "misc")                                        # ./misc
-  set(ASAP_INSTALL_INIT      "misc")                                        # ./misc
-endif()
-# cmake-format: on
+# ------------------------------------------------------------------------------
+# RPATH setup
+# ------------------------------------------------------------------------------
 
 # Set runtime path
 set(CMAKE_SKIP_BUILD_RPATH FALSE) # Add absolute path to all dependencies for
@@ -205,24 +182,6 @@ if(NOT SYSTEM_DIR_INSTALL)
   else()
     set(CMAKE_INSTALL_RPATH "$ORIGIN/${ASAP_INSTALL_LIB}")
   endif()
-endif()
-
-# ------------------------------------------------------------------------------
-# Third party modules
-# ------------------------------------------------------------------------------
-
-add_subdirectory(third_party)
-
-# ------------------------------------------------------------------------------
-# Clean compiler settings and options
-# ------------------------------------------------------------------------------
-
-if("${CMAKE_CXX_COMPILER_ID}" MATCHES "MSVC")
-  # remove default warning level from CMAKE_CXX_FLAGS_INIT CMake adds compiler
-  # warning levels by default and for MSVC, it uses /W3 which we want to
-  # override with /W4. The override does make MSVC complain though, so we just
-  # strip any argument already added by cmake before we set ours.
-  string(REGEX REPLACE "/W[0-4]" "" CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS}")
 endif()
 
 # ------------------------------------------------------------------------------
@@ -241,37 +200,8 @@ configure_file(templates/version.h.in
 configure_file(.clangd.in ${CMAKE_SOURCE_DIR}/.clangd @ONLY)
 
 # ------------------------------------------------------------------------------
-# Test targets
-# ------------------------------------------------------------------------------
-
-# enable CTest.  This will set BUILD_TESTING to ON unless otherwise specified on
-# the command line
-include(CTest)
-enable_testing()
-asap_add_code_coverage_all_targets(EXCLUDE */test/* *googlemock* *googletest*
-                                   /usr/*)
-
-include(FetchContent)
-# We make sure that we have 'third_party' in the name so that the targets get
-# excluded from the generated target lists for the various tools.
-set(FETCHCONTENT_BASE_DIR ${CMAKE_BINARY_DIR}/third_party_deps)
-FetchContent_Declare(
-  googletest
-  GIT_REPOSITORY https://github.com/google/googletest.git
-  GIT_TAG # GoogleTest now follows the Abseil Live at Head philosophy. We
-          # recommend using the latest commit in the main branch in your
-          # projects.
-          origin/main)
-# For Windows: Prevent overriding the parent project's compiler/linker settings
-set(gtest_force_shared_crt
-    ON
-    CACHE BOOL "" FORCE)
-FetchContent_MakeAvailable(googletest)
-include(GoogleTest)
-
-# ==============================================================================
 # Documentation - doxygen, sphinx/breathe/exhale
-# ==============================================================================
+# ------------------------------------------------------------------------------
 
 # Doxygen
 set(DOXYGEN_BUILD_DIR "${CMAKE_BINARY_DIR}/dox")
@@ -281,84 +211,38 @@ include(DoxGeneration)
 set(SPHINX_BUILD_DIR "${CMAKE_BINARY_DIR}/sphinx")
 include(SphinxGeneration)
 
-# Setup sphinx doc master target and add other submodules as dependencies
-if(SPHINX_FOUND)
-  asap_with_sphinx(master)
+# ==============================================================================
+# Third party modules
+# ==============================================================================
 
-  # Add a target for copying the index.html from the doc dir to the sphinx build
-  # dir. A dependency on this target will be added to the master sphinx target.
-  add_custom_command(
-    OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/sphinx/index.html
-    COMMAND ${CMAKE_COMMAND} -E copy ${CMAKE_CURRENT_SOURCE_DIR}/doc/index.html
-            ${CMAKE_CURRENT_BINARY_DIR}/sphinx/index.html
-    DEPENDS ${CMAKE_CURRENT_SOURCE_DIR}/doc/index.html)
-  add_custom_target(copy_doc_index ALL
-                    DEPENDS ${CMAKE_CURRENT_BINARY_DIR}/sphinx/index.html)
-
-  add_dependencies(
-    master_sphinx
-    copy_doc_index
-    # Hardcode `asap` in the module name as we do not want this prefix to change
-    # with the forked project name.
-    asap_common_sphinx
-    asap_contract_sphinx
-    # Add more submodule documentation targets after this, using variables in
-    # the target names consistently with the module's CMakeLists.txt.
-  )
-
-endif()
+add_subdirectory(third_party)
 
 # ==============================================================================
 # Project modules
 # ==============================================================================
 
-add_subdirectory(common)
-add_subdirectory(contract)
+add_subdirectory(clap)
 
 # ==============================================================================
 # Code analyzers: clang-tidy, cppcheck, valgrind, sanitizers, etc...
+#
+# Call after sub-modules have been added so that source code files can be
+# properly collected for analysis.
 # ==============================================================================
 
-asap_setup_clang_format()
-asap_create_clang_tidy_targets()
+if(${META_PROJECT_ID}_IS_MASTER_PROJECT)
+  include(ClangFormat)
+  include(ClangTidy)
+
+  # Enable this target when the project has header or source files (.h or .cpp)
+  asap_setup_clang_format()
+
+  # Enable this target when the project has source files (.cpp)
+  asap_create_clang_tidy_targets()
+endif()
 
 # ==============================================================================
 # Deployment (global project files)
 # ==============================================================================
-set(runtime "${META_PROJECT_NAME}_runtime")
-set(dev "${META_PROJECT_NAME}_dev")
-set(meta "${META_PROJECT_NAME}_meta")
-set(data "${META_PROJECT_NAME}_date")
 
-# Install version file
-install(
-  FILES "${PROJECT_BINARY_DIR}/VERSION"
-  DESTINATION ${ASAP_INSTALL_ROOT}
-  COMPONENT ${runtime})
-
-# Deploy generated top level headers (always in `asap` directory even when
-# forked)
-install(
-  DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/include/asap
-  DESTINATION ${ASAP_INSTALL_INCLUDE}
-  COMPONENT ${dev})
-
-# Install the project meta files
-install(
-  FILES AUTHORS
-  DESTINATION ${ASAP_INSTALL_ROOT}
-  COMPONENT meta)
-install(
-  FILES LICENSE
-  DESTINATION ${ASAP_INSTALL_ROOT}
-  COMPONENT meta)
-install(
-  FILES README.md
-  DESTINATION ${ASAP_INSTALL_ROOT}
-  COMPONENT meta)
-
-# Install data
-install(
-  DIRECTORY ${PROJECT_SOURCE_DIR}/data
-  DESTINATION ${ASAP_INSTALL_DATA}
-  COMPONENT ${data})
+asap_top_level_install()
