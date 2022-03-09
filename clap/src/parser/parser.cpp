@@ -15,6 +15,7 @@
 #include "states.h"
 #include "tokenizer.h"
 
+#include <contract/contract.h>
 #include <fsm/fsm.h>
 
 using asap::fsm::Continue;
@@ -131,7 +132,7 @@ auto asap::clap::parser::CmdLineParser::Parse() -> bool {
         // requested",
         //     token_type, token_value);
       } else {
-        // ASAP_ASSERT(token.first != TokenType::EndOfInput);
+        ASAP_ASSERT(token.first != TokenType::EndOfInput);
         token = tokenizer_.NextToken();
       }
     }

@@ -264,7 +264,7 @@ struct IdentifyCommandState {
     }
     if (default_command_) {
       context_->active_command = default_command_;
-      // ASAP_ASSERT(context_->positional_tokens.empty());
+      ASAP_ASSERT(context_->positional_tokens.empty());
       std::copy(std::begin(path_segments_), std::end(path_segments_),
           std::back_inserter(context_->positional_tokens));
       return TransitionTo<ParseOptionsState>(context_);
@@ -299,7 +299,7 @@ struct IdentifyCommandState {
           return ReportError(UnrecognizedCommand(path_segments_));
         }
         context_->active_command = default_command_;
-        // ASAP_ASSERT(context_->positional_tokens.empty());
+        ASAP_ASSERT(context_->positional_tokens.empty());
         // Remove the last pushed token in the path segments as it will be
         // transmitted to the ParseOptionsState as the next event.
         path_segments_.pop_back();
@@ -528,9 +528,9 @@ struct ParseShortOptionState
 
   auto Handle(const TokenEvent<TokenType::Value> &event)
       -> OneOf<DoNothing, ReportError, TransitionTo<ParseOptionsState>> {
-    // ASAP_ASSERT(context_->active_option);
+    ASAP_ASSERT(context_->active_option);
     auto semantics = context_->active_option->value_semantic();
-    // ASAP_ASSERT(semantics);
+    ASAP_ASSERT(semantics);
 
     // If we already accepted a value, we're done
     // TODO(Abdessattar): possibly support multi-token values
@@ -538,9 +538,9 @@ struct ParseShortOptionState
       return TransitionTo<ParseOptionsState>{};
     }
     if (semantics->TakesNoValue()) {
-      // auto res = TryImplicitValueOrFail(context_);
-      // ASAP_ASSERT(res && "an option that `TakesNoValue` must have an "
-      //                    "`ImplicitValue` defined");
+      auto res = TryImplicitValueOrFail(context_);
+      ASAP_ASSERT(res && "an option that `TakesNoValue` must have an "
+                         "`ImplicitValue` defined");
       value_ = "_implicit_";
       return TransitionTo<ParseOptionsState>{};
     }
@@ -646,9 +646,9 @@ struct ParseLongOptionState : Will<ByDefault<TransitionTo<ParseOptionsState>>> {
 
   auto Handle(const TokenEvent<TokenType::EqualSign> & /*event*/)
       -> OneOf<DoNothing, ReportError> {
-    // ASAP_ASSERT(context_->active_option);
+    ASAP_ASSERT(context_->active_option);
     auto semantics = context_->active_option->value_semantic();
-    // ASAP_ASSERT(semantics);
+    ASAP_ASSERT(semantics);
     if (semantics->TakesNoValue()) {
       return ReportError(OptionSyntaxError(
           context_, "'=' used after options name while option takes no value"));
@@ -659,18 +659,18 @@ struct ParseLongOptionState : Will<ByDefault<TransitionTo<ParseOptionsState>>> {
 
   auto Handle(const TokenEvent<TokenType::Value> &event)
       -> OneOf<DoNothing, TransitionTo<ParseOptionsState>, ReportError> {
-    // ASAP_ASSERT(context_->active_option);
+    ASAP_ASSERT(context_->active_option);
     auto semantics = context_->active_option->value_semantic();
-    // ASAP_ASSERT(semantics);
+    ASAP_ASSERT(semantics);
 
     if (value_) {
       return TransitionTo<ParseOptionsState>{};
     }
     if (!after_equal_sign) {
       if (semantics->TakesNoValue()) {
-        // auto res = TryImplicitValueOrFail(context_);
-        // ASAP_ASSERT(res && "an option that `TakesNoValue` must have an "
-        //                    "`ImplicitValue` defined");
+        auto res = TryImplicitValueOrFail(context_);
+        ASAP_ASSERT(res && "an option that `TakesNoValue` must have an "
+                           "`ImplicitValue` defined");
         value_ = "_implicit_";
         return TransitionTo<ParseOptionsState>{};
       }
@@ -680,7 +680,7 @@ struct ParseLongOptionState : Will<ByDefault<TransitionTo<ParseOptionsState>>> {
             "takes a value and does not have an implicit one"));
       }
     }
-    // ASAP_ASSERT(!semantics->TakesNoValue());
+    ASAP_ASSERT(!semantics->TakesNoValue());
 
     // Try the value and if it fails parsing, try the implicit value, if
     // none is available, then fail
@@ -796,7 +796,7 @@ private:
   }
   void StorePositional(const OptionPtr &option, std::string token) {
     auto semantics = option->value_semantic();
-    // ASAP_ASSERT(semantics);
+    ASAP_ASSERT(semantics);
     std::any value;
     if (semantics->Parse(value, token)) {
       context_->ovm_.StoreValue(option->Key(), {value, std::move(token), true});
