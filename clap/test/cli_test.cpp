@@ -278,7 +278,6 @@ TEST(CommandLineTest, Test) {
     EXPECT_THAT(v_rest.size(), Eq(1));
     EXPECT_THAT(v_rest.at(0).GetAs<std::string>(), Eq("file.txt"));
   }
-#if 0
   {
     constexpr size_t argc = 2;
     std::array<const char *, argc> argv{
@@ -315,7 +314,6 @@ TEST(CommandLineTest, Test) {
     EXPECT_THAT(
         values.at(1).GetAs<PaintCli::Color>(), Eq(PaintCli::Color::green));
   }
-#endif
 }
 
 } // namespace
