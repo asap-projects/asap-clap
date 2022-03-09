@@ -1,0 +1,379 @@
+// ===----------------------------------------------------------------------===/
+//  Distributed under the 3-Clause BSD License. See accompanying file LICENSE or
+//  copy at https://opensource.org/licenses/BSD-3-Clause).
+//  SPDX-License-Identifier: BSD-3-Clause
+// ===----------------------------------------------------------------------===/
+
+#include "parser/errors.h"
+#include "parser/events.h"
+#include "parser/states.h"
+
+#include <common/compilers.h>
+
+#include <gmock/gmock.h>
+#include <gtest/gtest.h>
+
+#include <type_traits>
+#include <utility>
+
+// Disable compiler and linter warnings originating from the unit test framework
+// and for which we cannot do anything. Additionally, every TEST or TEST_X macro
+// usage must be preceded by a '// NOLINTNEXTLINE'.
+ASAP_DIAGNOSTIC_PUSH
+#if defined(__clang__) && ASAP_HAS_WARNING("-Wused-but-marked-unused")
+#pragma clang diagnostic ignored "-Wused-but-marked-unused"
+#endif
+// NOLINTBEGIN(used-but-marked-unused)
+
+namespace asap::clap::parser::detail {
+
+struct FinalStateTransitionTestData;
+struct ParseOptionsTransitionTestData;
+struct ParseShortOptionTransitionTestData;
+struct ParseLongOptionTransitionTestData;
+struct DashDashTransitionTestData;
+struct IdentifyCommandTransitionTestData;
+struct ReportErrorTransitionTestData;
+struct DoNothingTransitionTestData;
+
+using ExpectedTransitionData =
+    std::variant<FinalStateTransitionTestData, ParseOptionsTransitionTestData,
+        ParseShortOptionTransitionTestData, ParseLongOptionTransitionTestData,
+        DashDashTransitionTestData, IdentifyCommandTransitionTestData,
+        DoNothingTransitionTestData, ReportErrorTransitionTestData>;
+
+struct InitialStateTestData;
+struct FinalStateTestData;
+struct ParseOptionsStateTestData;
+struct ParseShortOptionStateTestData;
+struct ParseLongOptionStateTestData;
+struct DashDashStateTestData;
+struct IdentifyCommandStateTestData;
+
+using ExpectedStateData = std::variant<InitialStateTestData, FinalStateTestData,
+    ParseOptionsStateTestData, ParseShortOptionStateTestData,
+    ParseLongOptionStateTestData, DashDashStateTestData,
+    IdentifyCommandStateTestData>;
+
+using TestValueType = std::tuple<
+    // command paths
+    std::vector<std::string>,
+    // arguments to pass to tokenizer
+    std::vector<std::string>,
+    // transition check data
+    ExpectedTransitionData,
+    // state check data
+    ExpectedStateData>;
+
+class StateTest : public ::testing::Test {
+public:
+  static auto predefined_commands() -> std::map<std::string, CommandPtr> & {
+    ASAP_DIAGNOSTIC_PUSH
+#if defined(ASAP_CLANG_VERSION)
+    ASAP_PRAGMA(clang diagnostic ignored "-Wexit-time-destructors")
+#endif
+    static std::map<std::string, CommandPtr> predefined_commands_{
+        {"default", std::make_shared<Command>(Command::DEFAULT)},
+        {"just", std::make_shared<Command>("just")},
+        {"just do", std::make_shared<Command>("just", "do")},
+        {"do it", std::make_shared<Command>("do", "it")},
+        {"just it", std::make_shared<Command>("just", "it")},
+        {"just do it", std::make_shared<Command>("just", "do", "it")},
+        {"just do nothing", std::make_shared<Command>("just", "do", "nothing")},
+        {"justice", std::make_shared<Command>("justice")},
+        {"partial", std::make_shared<Command>("partial")}};
+    ASAP_DIAGNOSTIC_POP
+    return predefined_commands_;
+  }
+
+protected:
+  void SetUp() override;
+
+  static auto BuildCommands(const std::vector<std::string> &command_paths)
+      -> CommandsList {
+    CommandsList commands;
+    for (const auto &command_path : command_paths) {
+      commands.push_back(predefined_commands().at(command_path));
+    }
+    return commands;
+  }
+
+  virtual void LeaveState() const {
+  }
+
+  template <typename State>
+  [[nodiscard]] auto ProcessToken(const Token &token, State &state,
+      const ExpectedTransitionData &action_data,
+      const ExpectedStateData &state_data) const -> bool {
+    const auto &[token_type, token_value] = token;
+    switch (token_type) {
+    case TokenType::ShortOption: {
+      auto action =
+          state->Handle(TokenEvent<TokenType::ShortOption>{token_value});
+      bool continue_after_check_action{true};
+      bool continue_after_check_state{true};
+      continue_after_check_action =
+          CheckAction(action, token_type, action_data);
+      if (!continue_after_check_action) {
+        LeaveState();
+        continue_after_check_state = CheckState(state, state_data);
+      }
+      return continue_after_check_action && continue_after_check_state;
+    } break;
+    case TokenType::LongOption: {
+      auto action =
+          state->Handle(TokenEvent<TokenType::LongOption>{token_value});
+      bool continue_after_check_action{true};
+      bool continue_after_check_state{true};
+      continue_after_check_action =
+          CheckAction(action, token_type, action_data);
+      if (!continue_after_check_action) {
+        LeaveState();
+        continue_after_check_state = CheckState(state, state_data);
+      }
+      return continue_after_check_action && continue_after_check_state;
+    } break;
+    case TokenType::LoneDash: {
+      auto action = state->Handle(TokenEvent<TokenType::LoneDash>{token_value});
+      bool continue_after_check_action{true};
+      bool continue_after_check_state{true};
+      continue_after_check_action =
+          CheckAction(action, token_type, action_data);
+      if (!continue_after_check_action) {
+        LeaveState();
+        continue_after_check_state = CheckState(state, state_data);
+      }
+      return continue_after_check_action && continue_after_check_state;
+    } break;
+    case TokenType::EqualSign: {
+      auto action =
+          state->Handle(TokenEvent<TokenType::EqualSign>{token_value});
+      bool continue_after_check_action{true};
+      bool continue_after_check_state{true};
+      continue_after_check_action =
+          CheckAction(action, token_type, action_data);
+      if (!continue_after_check_action) {
+        LeaveState();
+        continue_after_check_state = CheckState(state, state_data);
+      }
+      return continue_after_check_action && continue_after_check_state;
+    } break;
+    case TokenType::DashDash: {
+      auto action = state->Handle(TokenEvent<TokenType::DashDash>{token_value});
+      bool continue_after_check_action{true};
+      bool continue_after_check_state{true};
+      continue_after_check_action =
+          CheckAction(action, token_type, action_data);
+      if (!continue_after_check_action) {
+        LeaveState();
+        continue_after_check_state = CheckState(state, state_data);
+      }
+      return continue_after_check_action && continue_after_check_state;
+    } break;
+    case TokenType::Value: {
+      auto action = state->Handle(TokenEvent<TokenType::Value>{token_value});
+      bool continue_after_check_action{true};
+      bool continue_after_check_state{true};
+      continue_after_check_action =
+          CheckAction(action, token_type, action_data);
+      if (!continue_after_check_action) {
+        this->LeaveState();
+        continue_after_check_state = CheckState(state, state_data);
+      }
+      return continue_after_check_action && continue_after_check_state;
+    } break;
+    case TokenType::EndOfInput: {
+      auto action =
+          state->Handle(TokenEvent<TokenType::EndOfInput>{token_value});
+      bool continue_after_check_action{true};
+      bool continue_after_check_state{true};
+      continue_after_check_action =
+          CheckAction(action, token_type, action_data);
+      if (!continue_after_check_action) {
+        LeaveState();
+        continue_after_check_state = CheckState(state, state_data);
+      }
+      return continue_after_check_action && continue_after_check_state;
+    } break;
+    }
+    ASAP_UNREACHABLE();
+  }
+
+  template <typename ActionType>
+  [[nodiscard]] auto CheckAction(const ActionType &action, TokenType token_type,
+      const ExpectedTransitionData &data) const -> bool {
+    if (!action.template IsA<DoNothing>() ||
+        token_type == TokenType::EndOfInput) {
+      std::visit([&action](auto &test_data) { test_data.Check(action); }, data);
+      return false; // do not continue processing tokens
+    }
+    return true; // continue processing tokens
+  }
+
+  template <typename State>
+  [[nodiscard]] auto CheckState(
+      const State &state, const ExpectedStateData &data) const -> bool {
+    std::visit([&state](auto &test_data) { test_data.Check(state); }, data);
+    return true; // continue processing
+  }
+};
+
+struct FinalStateTransitionTestData {
+  template <typename ActionType> void Check(const ActionType &action) const {
+    EXPECT_THAT(action.template IsA<fsm::TransitionTo<FinalState>>(),
+        ::testing::IsTrue());
+    const auto &action_data = std::any_cast<ParserContextPtr>(action.data());
+    EXPECT_THAT(action_data->active_command,
+        ::testing::Eq(StateTest::predefined_commands().at(command_path)));
+  }
+  std::string command_path;
+};
+
+struct ParseOptionsTransitionTestData {
+  template <typename ActionType> void Check(const ActionType &action) const {
+    EXPECT_THAT(action.template IsA<fsm::TransitionTo<ParseOptionsState>>(),
+        ::testing::IsTrue());
+    if (action.data().has_value()) {
+      const auto &action_data = std::any_cast<ParserContextPtr>(action.data());
+      EXPECT_THAT(action_data->active_command,
+          ::testing::Eq(StateTest::predefined_commands().at(command_path)));
+      EXPECT_THAT(
+          action_data->positional_tokens, ::testing::Eq(positional_tokens));
+    }
+  }
+  std::string command_path;
+  std::vector<std::string> positional_tokens;
+};
+
+struct ParseShortOptionTransitionTestData {
+  template <typename ActionType> void Check(const ActionType &action) const {
+    EXPECT_THAT(action.template IsA<fsm::TransitionTo<ParseShortOptionState>>(),
+        ::testing::IsTrue());
+    const auto &action_data = std::any_cast<ParserContextPtr>(action.data());
+    EXPECT_THAT(action_data->active_command,
+        ::testing::Eq(StateTest::predefined_commands().at(command_path)));
+  }
+  std::string command_path;
+};
+
+struct ParseLongOptionTransitionTestData {
+  template <typename ActionType> void Check(const ActionType &action) const {
+    EXPECT_THAT(action.template IsA<fsm::TransitionTo<ParseLongOptionState>>(),
+        ::testing::IsTrue());
+    const auto &action_data = std::any_cast<ParserContextPtr>(action.data());
+    EXPECT_THAT(action_data->active_command,
+        ::testing::Eq(StateTest::predefined_commands().at(command_path)));
+  }
+  std::string command_path;
+};
+
+struct DashDashTransitionTestData {
+  template <typename ActionType> void Check(const ActionType &action) const {
+    EXPECT_THAT(action.template IsA<fsm::TransitionTo<DashDashState>>(),
+        ::testing::IsTrue());
+    const auto &action_data = std::any_cast<ParserContextPtr>(action.data());
+    EXPECT_THAT(action_data->active_command,
+        ::testing::Eq(StateTest::predefined_commands().at(command_path)));
+  }
+  std::string command_path;
+};
+
+struct IdentifyCommandTransitionTestData {
+  template <typename ActionType> void Check(const ActionType &action) const {
+    EXPECT_THAT(action.template IsA<fsm::TransitionTo<IdentifyCommandState>>(),
+        ::testing::IsTrue());
+    const auto &action_data = std::any_cast<ParserContextPtr>(action.data());
+    EXPECT_THAT(action_data->commands, ::testing::Eq(commands));
+  }
+  CommandsList commands;
+};
+
+struct ReportErrorTransitionTestData {
+  template <typename ActionType> void Check(const ActionType &action) const {
+    EXPECT_THAT(action.template IsA<fsm::ReportError>(), ::testing::IsTrue());
+    const auto &action_data =
+        std::any_cast<asap::fsm::StateMachineError>(action.data());
+    EXPECT_THAT(action_data.What(), ::testing::HasSubstr(error));
+  }
+  std::string error;
+};
+
+struct DoNothingTransitionTestData {
+  template <typename ActionType>
+  void Check(const ActionType & /*action*/) const {
+    // Do nothing
+  }
+};
+
+struct InitialStateTestData {
+  template <typename State> void Check(const State & /*state*/) const {
+  }
+  CommandsList commands;
+};
+
+template <>
+inline void asap::clap::parser::detail::InitialStateTestData::Check(
+    const std::unique_ptr<InitialState> &state) const {
+  EXPECT_THAT(state->context()->commands, ::testing::Eq(commands));
+}
+
+struct FinalStateTestData {
+  template <typename State> void Check(const State & /*state*/) const {
+  }
+};
+struct ParseOptionsStateTestData {
+  template <typename State> void Check(const State & /*state*/) const {
+  }
+
+  const std::vector<std::string> value_tokens;
+};
+
+template <>
+inline void asap::clap::parser::detail::ParseOptionsStateTestData::Check(
+    const std::unique_ptr<ParseOptionsState> &state) const {
+  EXPECT_THAT(state->context_->positional_tokens, ::testing::Eq(value_tokens));
+}
+
+struct ParseShortOptionStateTestData {
+  template <typename State> void Check(const State & /*state*/) const {
+  }
+
+  const std::string active_option;
+  const std::string active_option_flag;
+  const size_t values_size{0};
+  const std::optional<const std::string> value;
+};
+
+template <>
+inline void asap::clap::parser::detail::ParseShortOptionStateTestData::Check(
+    const std::unique_ptr<ParseShortOptionState> &state) const {
+  const auto &option_name = state->context_->active_option->Key();
+  EXPECT_THAT(option_name, ::testing::Eq(active_option));
+  EXPECT_THAT(
+      state->context_->active_option_flag, ::testing::Eq(active_option_flag));
+  EXPECT_THAT(state->context_->ovm_.OccurrencesOf(option_name),
+      ::testing::Eq(values_size));
+  if (value.has_value() && values_size > 0) {
+    const auto &last_value =
+        state->context_->ovm_.ValuesOf(option_name).back().OriginalToken();
+    EXPECT_THAT(last_value, ::testing::Eq(value));
+  }
+}
+
+struct ParseLongOptionStateTestData {
+  template <typename State> void Check(const State & /*state*/) const {
+  }
+};
+
+struct DashDashStateTestData {
+  template <typename State> void Check(const State & /*state*/) const {
+  }
+};
+struct IdentifyCommandStateTestData {
+  template <typename State> void Check(const State & /*state*/) const {
+  }
+};
+
+} // namespace asap::clap::parser::detail
+
+ASAP_DIAGNOSTIC_POP
