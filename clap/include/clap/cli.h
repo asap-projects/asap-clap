@@ -74,7 +74,7 @@ public:
     return *this;
   }
 
-  [[nodiscard]] auto ProgramName() const -> const std::string {
+  [[nodiscard]] auto ProgramName() const -> std::string {
     return program_name_.value_or("");
   }
 
