@@ -7,7 +7,7 @@
 #include "./test_helpers.h"
 
 #include <common/compilers.h>
-#if !defined(NDEBUG)
+#if defined(ASAP_IS_DEBUG_BUILD)
 #include <contract/ut/gtest.h>
 #endif
 
@@ -174,7 +174,7 @@ TEST_P(ParseOptionsStateTransitionsTest, CheckStateAfterLastToken) {
 }
 
 // Contracts are not enforced in release builds
-#if !defined(NDEBUG)
+#if defined(ASAP_IS_DEBUG_BUILD)
 // NOLINTNEXTLINE
 TEST(ParseOptionsStateContractTests, EnteringWithEndOfInputBreaksContract) {
   auto state = std::make_unique<ParseOptionsState>();
@@ -212,7 +212,7 @@ TEST(ParseOptionsStateContractTests,
   auto event = TokenEvent<TokenType::Value>("xxx");
   CHECK_VIOLATES_CONTRACT(state->OnEnter(event));
 }
-#endif // NDEBUG
+#endif // ASAP_IS_DEBUG_BUILD
 
 } // namespace
 

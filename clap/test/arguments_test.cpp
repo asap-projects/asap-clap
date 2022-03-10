@@ -7,7 +7,9 @@
 #include "clap/cli.h"
 
 #include <common/compilers.h>
+#if defined(ASAP_IS_DEBUG_BUILD)
 #include <contract/ut/gtest.h>
+#endif
 
 #include <gsl/gsl>
 
@@ -59,7 +61,7 @@ TEST(ConstructArguments, WithManyArgs) {
   }
 }
 
-#if !defined(NDEBUG)
+#if defined(ASAP_IS_DEBUG_BUILD)
 // NOLINTNEXTLINE
 TEST(ConstructArguments, WithNoArgs) {
   constexpr auto argc = 0;
@@ -73,7 +75,7 @@ TEST(ConstructArguments, WithEmptyProgramName) {
   std::array<const char *, 1> argv{""};
   CHECK_VIOLATES_CONTRACT(auto args = Arguments(argc, argv.data()));
 }
-#endif // NDEBUG
+#endif // ASAP_IS_DEBUG_BUILD
 
 } // namespace
 
