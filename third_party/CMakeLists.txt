@@ -10,82 +10,98 @@ message("=> [third-party modules]")
 # your projects.
 
 # ------------------------------------------------------------------------------
-# magic_enum
+# GSL
 # ------------------------------------------------------------------------------
 
-FetchContent_Declare(
-  gsl
-  GIT_REPOSITORY https://github.com/microsoft/GSL.git
-  GIT_TAG origin/main)
-FetchContent_MakeAvailable(gsl)
+cpmaddpackage(NAME gsl GIT_TAG main GITHUB_REPOSITORY microsoft/GSL)
 
 # ------------------------------------------------------------------------------
 # magic_enum
 # ------------------------------------------------------------------------------
 
-set(MAGIC_ENUM_OPT_INSTALL ON)
-FetchContent_Declare(
+cpmaddpackage(
+  NAME
   magic_enum
-  GIT_REPOSITORY https://github.com/Neargye/magic_enum.git
-  GIT_TAG origin/master)
-FetchContent_MakeAvailable(magic_enum)
+  GIT_TAG
+  master
+  GITHUB_REPOSITORY
+  Neargye/magic_enum
+  OPTIONS
+  "MAGIC_ENUM_OPT_INSTALL ON")
 
 # ------------------------------------------------------------------------------
 # fmt::fmt-header-only
 # ------------------------------------------------------------------------------
-set(FMT_INSTALL ON)
-FetchContent_Declare(
+
+cpmaddpackage(
+  NAME
   fmtlib
-  GIT_REPOSITORY https://github.com/fmtlib/fmt.git
-  GIT_TAG origin/master)
-FetchContent_MakeAvailable(fmtlib)
+  GIT_TAG
+  master
+  GITHUB_REPOSITORY
+  fmtlib/fmt
+  OPTIONS
+  "FMT_INSTALL ON")
 
 # ------------------------------------------------------------------------------
 # asap::common
 # ------------------------------------------------------------------------------
 
-FetchContent_Declare(
-  asap_common
-  GIT_REPOSITORY https://github.com/asap-projects/asap-common.git
-  GIT_TAG origin/master)
-FetchContent_MakeAvailable(asap_common)
+cpmaddpackage(NAME asap_common GIT_TAG v2.0.4 GITHUB_REPOSITORY
+              asap-projects/asap-common)
 
 # ------------------------------------------------------------------------------
 # asap::fsm
 # ------------------------------------------------------------------------------
-set(ASAP_FSM_INSTALL ON)
-FetchContent_Declare(
+
+cpmaddpackage(
+  NAME
   asap_fsm
-  GIT_REPOSITORY https://github.com/asap-projects/asap-fsm.git
-  GIT_TAG origin/master)
-FetchContent_MakeAvailable(asap_fsm)
+  GIT_TAG
+  v1.0.7
+  GITHUB_REPOSITORY
+  asap-projects/asap-fsm
+  OPTIONS
+  "ASAP_FSM_INSTALL ON")
 
 # ------------------------------------------------------------------------------
 # asap::textwrap
 # ------------------------------------------------------------------------------
-set(ASAP_TEXTWRAP_INSTALL ON)
-FetchContent_Declare(
+
+cpmaddpackage(
+  NAME
   asap_textwrap
-  GIT_REPOSITORY https://github.com/asap-projects/asap-textwrap.git
-  GIT_TAG origin/master)
-FetchContent_MakeAvailable(asap_textwrap)
+  GIT_TAG
+  v1.0.4
+  GITHUB_REPOSITORY
+  asap-projects/asap-textwrap
+  OPTIONS
+  "ASAP_TEXTWRAP_INSTALL ON")
 
 # ------------------------------------------------------------------------------
 # asap::mixin
 # ------------------------------------------------------------------------------
-set(ASAP_MIXIN_INSTALL ON)
-FetchContent_Declare(
+
+cpmaddpackage(
+  NAME
   asap_mixin
-  GIT_REPOSITORY https://github.com/asap-projects/asap-mixin.git
-  GIT_TAG origin/master)
-FetchContent_MakeAvailable(asap_mixin)
+  GIT_TAG
+  v1.0.5
+  GITHUB_REPOSITORY
+  asap-projects/asap-mixin
+  OPTIONS
+  "ASAP_MIXIN_INSTALL ON")
 
 # ------------------------------------------------------------------------------
 # asap::contract
 # ------------------------------------------------------------------------------
-set(ASAP_CONTRACT_INSTALL ON)
-FetchContent_Declare(
+
+cpmaddpackage(
+  NAME
   asap_contract
-  GIT_REPOSITORY https://github.com/asap-projects/asap-contract.git
-  GIT_TAG origin/master)
-FetchContent_MakeAvailable(asap_contract)
+  GIT_TAG
+  v1.0.1
+  GITHUB_REPOSITORY
+  asap-projects/asap-contract
+  OPTIONS
+  "ASAP_CONTRACT_INSTALL ON")
