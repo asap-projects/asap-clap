@@ -30,7 +30,7 @@ namespace asap::clap {
 /*!
  * \brief A command.
  */
-class ASAP_CLAP_API Command {
+class Command {
 public:
   using Ptr = std::shared_ptr<Command>;
 
@@ -123,7 +123,7 @@ public:
    * \brief Returns a string containing a space separated list of this command's
    * path segments in the order they need to appear on the command line.
    */
-  [[nodiscard]] auto PathAsString() const -> std::string;
+  [[nodiscard]] ASAP_CLAP_API auto PathAsString() const -> std::string;
 
   [[nodiscard]] auto About() const -> const std::string & {
     return about_;
@@ -185,9 +185,9 @@ public:
 
   /** Outputs 'desc' to the specified stream, calling 'f' to output each
       option_description element. */
-  void Print(std::ostream &out, unsigned width = 0) const;
+  ASAP_CLAP_API void Print(std::ostream &out, unsigned width = 0) const;
 
-  void PrintOptionsSummary(std::ostream &out) const;
+  ASAP_CLAP_API void PrintOptionsSummary(std::ostream &out) const;
 
   [[nodiscard]] auto Options() const -> const std::vector<Option::Ptr> & {
     return options_;

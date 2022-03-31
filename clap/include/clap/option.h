@@ -342,47 +342,48 @@ template <typename Builder,
 class Positional;
 using PositionalOptionBuilder = Positional<OptionBuilder>;
 
-class ASAP_CLAP_API Option {
+class Option {
 public:
   constexpr static const char *key_rest = "_REST_";
 
   using Ptr = std::shared_ptr<Option>;
 
   template <typename T>
-  Option(std::string key, std::unique_ptr<ValueDescriptor<T>> value_semantic)
+  ASAP_CLAP_TEMPLATE_API Option(
+      std::string key, std::unique_ptr<ValueDescriptor<T>> value_semantic)
       : key_(std::move(key)), value_semantic_(std::move(value_semantic)) {
   }
 
-  [[nodiscard]] auto Short() const -> const std::string & {
+  [[nodiscard]] ASAP_CLAP_API auto Short() const -> const std::string & {
     return short_name_;
   }
-  void Short(std::string short_name) {
+  ASAP_CLAP_API void Short(std::string short_name) {
     short_name_ = std::move(short_name);
   }
 
-  [[nodiscard]] auto Long() const -> const std::string & {
+  [[nodiscard]] ASAP_CLAP_API auto Long() const -> const std::string & {
     return long_name_;
   }
-  void Long(std::string long_name) {
+  ASAP_CLAP_API void Long(std::string long_name) {
     long_name_ = std::move(long_name);
   }
 
-  [[nodiscard]] auto About() const -> const std::string & {
+  [[nodiscard]] ASAP_CLAP_API auto About() const -> const std::string & {
     return about_;
   }
-  void About(std::string about) {
+  ASAP_CLAP_API void About(std::string about) {
     about_ = std::move(about);
   }
 
-  [[nodiscard]] auto Key() const -> const std::string & {
+  [[nodiscard]] ASAP_CLAP_API auto Key() const -> const std::string & {
     return key_;
   }
 
-  [[nodiscard]] auto IsPositional() const -> bool {
+  [[nodiscard]] ASAP_CLAP_API auto IsPositional() const -> bool {
     return long_name_.empty() && short_name_.empty();
   }
 
-  [[nodiscard]] auto IsPositionalRest() const -> bool {
+  [[nodiscard]] ASAP_CLAP_API auto IsPositionalRest() const -> bool {
     return IsPositional() && key_ == key_rest;
   }
 
@@ -394,14 +395,15 @@ public:
 
   /** Outputs 'desc' to the specified stream, calling 'f' to output each
       option_description element. */
-  void Print(std::ostream &out, unsigned width = 0) const;
+  ASAP_CLAP_API void Print(std::ostream &out, unsigned width = 0) const;
 
-  static auto WithName(std::string key) -> OptionBuilder;
-  static auto Positional(std::string key) -> PositionalOptionBuilder;
-  static auto Rest() -> PositionalOptionBuilder;
+  static ASAP_CLAP_API auto WithName(std::string key) -> OptionBuilder;
+  static ASAP_CLAP_API auto Positional(std::string key)
+      -> PositionalOptionBuilder;
+  static ASAP_CLAP_API auto Rest() -> PositionalOptionBuilder;
 
   /// Semantic of option's value
-  [[nodiscard]] auto value_semantic() const
+  [[nodiscard]] ASAP_CLAP_API auto value_semantic() const
       -> std::shared_ptr<const ValueSemantics> {
     return value_semantic_;
   }

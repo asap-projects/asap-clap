@@ -28,7 +28,7 @@ namespace asap::clap {
  * This class encapsulates information about the values, how they were obtained,
  * and allows type-safe access to it.
  */
-class ASAP_CLAP_API OptionValue {
+class OptionValue {
 public:
   /*!
    * \brief Creates a new OptionValue.
@@ -38,25 +38,27 @@ public:
    * \param defaulted when \b true, indicates that the provided values have not
    * been explicitly specified but come from a default value.
    */
-  OptionValue(std::any value, std::string original_token, bool defaulted)
+  ASAP_CLAP_API OptionValue(
+      std::any value, std::string original_token, bool defaulted)
       : value_{std::move(value)},
         original_token_(std::move(original_token)), defaulted_{defaulted} {
   }
 
-  OptionValue(const OptionValue &) = default;
-  OptionValue(OptionValue &&) = default;
+  ASAP_CLAP_API OptionValue(const OptionValue &) = default;
+  ASAP_CLAP_API OptionValue(OptionValue &&) = default;
 
   auto operator=(const OptionValue &) -> OptionValue & = delete;
   auto operator=(OptionValue &&) -> OptionValue & = delete;
 
-  virtual ~OptionValue();
+  ASAP_CLAP_API virtual ~OptionValue();
 
   /*!
    * \brief If the stored value has type T, returns that value; otherwise
    throws
    * std::bad_any_cast.
    */
-  template <typename T> [[nodiscard]] auto GetAs() const -> const T & {
+  template <typename T>
+  [[nodiscard]] ASAP_CLAP_TEMPLATE_API auto GetAs() const -> const T & {
     return std::any_cast<const T &>(value_);
   }
 
@@ -65,14 +67,15 @@ public:
    throws
    * std::bad_any_cast.
    */
-  template <typename T> [[nodiscard]] auto GetAs() -> T & {
+  template <typename T>
+  [[nodiscard]] ASAP_CLAP_TEMPLATE_API auto GetAs() -> T & {
     return std::any_cast<T &>(value_);
   }
 
   /*!
    * \brief Return true if no value is stored.
    */
-  [[nodiscard]] auto IsEmpty() const -> bool {
+  [[nodiscard]] ASAP_CLAP_API auto IsEmpty() const -> bool {
     return !value_.has_value();
   }
 
@@ -80,28 +83,29 @@ public:
    * \brief Return true if the stored values have not been explicitly specified
    * on the command line but come from a default value.
    */
-  [[nodiscard]] auto IsDefaulted() const -> bool {
+  [[nodiscard]] ASAP_CLAP_API auto IsDefaulted() const -> bool {
     return defaulted_;
   }
 
   /*!
    * \brief Returns the original token from which this option value was parsed.
    */
-  [[nodiscard]] auto OriginalToken() const -> const std::string & {
+  [[nodiscard]] ASAP_CLAP_API auto OriginalToken() const
+      -> const std::string & {
     return original_token_;
   }
 
   /*!
    * \brief Return the stored values.
    */
-  [[nodiscard]] auto Value() const -> const std::any & {
+  [[nodiscard]] ASAP_CLAP_API auto Value() const -> const std::any & {
     return value_;
   }
 
   /*!
    * \brief Return the stored values.
    */
-  [[nodiscard]] auto Value() -> std::any & {
+  [[nodiscard]] ASAP_CLAP_API auto Value() -> std::any & {
     return value_;
   }
 

@@ -50,7 +50,7 @@ public:
   std::vector<std::string> args{};
 };
 
-class ASAP_CLAP_API Cli {
+class Cli {
 public:
   auto Version(std::string version) -> Cli & {
     version_ = std::move(version);
@@ -83,7 +83,8 @@ public:
     return *this;
   }
 
-  auto Parse(int argc, const char **argv) -> const OptionValuesMap &;
+  ASAP_CLAP_API auto Parse(int argc, const char **argv)
+      -> const OptionValuesMap &;
 
   /** Produces a human readable output of 'desc', listing options,
       their descriptions and allowed parameters. Other options_description
@@ -93,7 +94,7 @@ public:
 
   /** Outputs 'desc' to the specified stream, calling 'f' to output each
       option_description element. */
-  void Print(std::ostream &out, unsigned width = 0) const;
+  ASAP_CLAP_API void Print(std::ostream &out, unsigned width = 0) const;
 
 private:
   [[nodiscard]] auto HasHelpOption() const -> bool;

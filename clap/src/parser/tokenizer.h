@@ -62,7 +62,7 @@ using Token = std::pair<TokenType, std::string>;
  *
  * \snippet tokenizer_test.cpp Tokenizer example
  */
-class ASAP_CLAP_API Tokenizer {
+class Tokenizer {
 public:
   /*!
    * \brief Make a tokenizer with the given command line arguments.
@@ -71,11 +71,11 @@ public:
    * name (argv[0]) from the command line arguments before passing the remaining
    * arguments to the tokenizer.
    */
-  explicit Tokenizer(std::vector<std::string> args)
+  explicit ASAP_CLAP_API Tokenizer(std::vector<std::string> args)
       : args_{std::move(args)}, cursor_{args_.begin()} {
   }
 
-  auto NextToken() const -> Token {
+  ASAP_CLAP_API auto NextToken() const -> Token {
     if (!tokens_.empty()) {
       auto token = tokens_.front();
       tokens_.pop_front();
@@ -93,7 +93,7 @@ public:
     return Token{TokenType::EndOfInput, ""};
   }
 
-  auto HasMoreTokens() -> bool {
+  ASAP_CLAP_API auto HasMoreTokens() -> bool {
     return !tokens_.empty() || cursor_ != args_.end();
   }
 

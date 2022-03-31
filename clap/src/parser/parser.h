@@ -24,7 +24,7 @@
 
 namespace asap::clap::parser {
 
-class ASAP_CLAP_API CmdLineParser {
+class CmdLineParser {
 public:
   using CommandsList = const std::vector<Command::Ptr>;
   explicit CmdLineParser(const CommandLineContext &context,
@@ -33,7 +33,7 @@ public:
                                    context, commands)} {
   }
 
-  auto Parse() -> bool;
+  ASAP_CLAP_API auto Parse() -> bool;
 
 private:
   const Tokenizer &tokenizer_;
