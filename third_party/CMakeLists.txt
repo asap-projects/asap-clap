@@ -47,7 +47,7 @@ cpmaddpackage(
 # asap::common
 # ------------------------------------------------------------------------------
 
-cpmaddpackage(NAME asap_common GIT_TAG v2.0.4 GITHUB_REPOSITORY
+cpmaddpackage(NAME asap_common GIT_TAG master GITHUB_REPOSITORY
               asap-projects/asap-common)
 
 # ------------------------------------------------------------------------------
@@ -58,7 +58,7 @@ cpmaddpackage(
   NAME
   asap_fsm
   GIT_TAG
-  v1.0.7
+  master
   GITHUB_REPOSITORY
   asap-projects/asap-fsm
   OPTIONS
@@ -72,7 +72,7 @@ cpmaddpackage(
   NAME
   asap_textwrap
   GIT_TAG
-  v1.0.4
+  master
   GITHUB_REPOSITORY
   asap-projects/asap-textwrap
   OPTIONS
@@ -86,7 +86,7 @@ cpmaddpackage(
   NAME
   asap_mixin
   GIT_TAG
-  v1.0.5
+  master
   GITHUB_REPOSITORY
   asap-projects/asap-mixin
   OPTIONS
@@ -100,7 +100,7 @@ cpmaddpackage(
   NAME
   asap_contract
   GIT_TAG
-  v1.0.1
+  master
   GITHUB_REPOSITORY
   asap-projects/asap-contract
   OPTIONS
