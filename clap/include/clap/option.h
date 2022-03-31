@@ -276,45 +276,45 @@ public:
   }
 
   auto DefaultValue(const T &value) -> ValueDescriptorBuilder & {
-    ASAP_ASSERT(option_value_ && "builder used afet Build() was called");
+    ASAP_ASSERT(option_value_ && "builder used after Build() was called");
     option_value_->DefaultValue(value);
     return *this;
   }
 
   auto DefaultValue(const T &value, const std::string &textual)
       -> ValueDescriptorBuilder & {
-    ASAP_ASSERT(option_value_ && "builder used afet Build() was called");
+    ASAP_ASSERT(option_value_ && "builder used after Build() was called");
     option_value_->DefaultValue(value, textual);
     return *this;
   }
 
   auto ImplicitValue(const T &value) -> ValueDescriptorBuilder & {
-    ASAP_ASSERT(option_value_ && "builder used afet Build() was called");
+    ASAP_ASSERT(option_value_ && "builder used after Build() was called");
     option_value_->ImplicitValue(value);
     return *this;
   }
 
   auto ImplicitValue(const T &value, const std::string &textual)
       -> ValueDescriptorBuilder & {
-    ASAP_ASSERT(option_value_ && "builder used afet Build() was called");
+    ASAP_ASSERT(option_value_ && "builder used after Build() was called");
     option_value_->ImplicitValue(value, textual);
     return *this;
   }
 
   auto Required() -> ValueDescriptorBuilder & {
-    ASAP_ASSERT(option_value_ && "builder used afet Build() was called");
+    ASAP_ASSERT(option_value_ && "builder used after Build() was called");
     option_value_->Required();
     return *this;
   }
 
   auto Repeatable() -> ValueDescriptorBuilder & {
-    ASAP_ASSERT(option_value_ && "builder used afet Build() was called");
+    ASAP_ASSERT(option_value_ && "builder used after Build() was called");
     option_value_->Repeatable();
     return *this;
   }
 
   auto TakesNoValue() -> ValueDescriptorBuilder & {
-    ASAP_ASSERT(option_value_ && "builder used afet Build() was called");
+    ASAP_ASSERT(option_value_ && "builder used after Build() was called");
     option_value_->TakesNoValue();
     return *this;
   }
@@ -429,19 +429,19 @@ public:
   }
 
   auto Short(std::string short_name) -> OptionBuilder & {
-    ASAP_ASSERT(option_ && "builder used afet Build() was called");
+    ASAP_ASSERT(option_ && "builder used after Build() was called");
     option_->Short(std::move(short_name));
     return *this;
   }
 
   auto Long(std::string long_name) -> OptionBuilder & {
-    ASAP_ASSERT(option_ && "builder used afet Build() was called");
+    ASAP_ASSERT(option_ && "builder used after Build() was called");
     option_->Long(std::move(long_name));
     return *this;
   }
 
   auto About(std::string about) -> OptionBuilder & {
-    ASAP_ASSERT(option_ && "builder used afet Build() was called");
+    ASAP_ASSERT(option_ && "builder used after Build() was called");
     option_->About(std::move(about));
     return *this;
   }
@@ -449,7 +449,7 @@ public:
   template <typename T>
   auto WithValue(ValueDescriptorBuilder<T> &option_value_builder)
       -> OptionBuilder & {
-    ASAP_ASSERT(option_ && "builder used afet Build() was called");
+    ASAP_ASSERT(option_ && "builder used after Build() was called");
     option_->value_semantic_ = std::move(option_value_builder.Build());
     return *this;
   }
@@ -457,7 +457,7 @@ public:
   template <typename T>
   auto WithValue(ValueDescriptorBuilder<T> &&option_value_builder)
       -> OptionBuilder & {
-    ASAP_ASSERT(option_ && "builder used afet Build() was called");
+    ASAP_ASSERT(option_ && "builder used after Build() was called");
     option_->value_semantic_ = std::move(option_value_builder.Build());
     return *this;
   }
