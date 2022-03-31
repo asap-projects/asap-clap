@@ -98,7 +98,7 @@ public:
   }
 
 private:
-  void Tokenize(const std::string &arg) const;
+  ASAP_CLAP_API void Tokenize(const std::string &arg) const;
 
   const std::vector<std::string> args_;
   mutable std::vector<std::string>::const_iterator cursor_;

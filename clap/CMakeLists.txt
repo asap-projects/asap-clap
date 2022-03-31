@@ -56,8 +56,6 @@ asap_add_library(
   "src/cli.cpp"
   "src/command.cpp"
   "src/option.cpp"
-  "src/option_value.cpp"
-  "src/option_values_map.cpp"
   "src/parser/context.h"
   "src/parser/errors.cpp"
   "src/parser/errors.h"
