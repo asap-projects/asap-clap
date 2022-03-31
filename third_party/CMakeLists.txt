@@ -25,7 +25,7 @@ cpmaddpackage(
   GIT_TAG
   master
   GITHUB_REPOSITORY
-  Neargye/magic_enum
+  abdes/magic_enum
   OPTIONS
   "MAGIC_ENUM_OPT_INSTALL ON")
 
@@ -39,7 +39,7 @@ cpmaddpackage(
   GIT_TAG
   master
   GITHUB_REPOSITORY
-  fmtlib/fmt
+  abdes/fmt
   OPTIONS
   "FMT_INSTALL ON")
 
