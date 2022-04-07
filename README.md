@@ -115,7 +115,7 @@ git config remote.upstream.tagopt --no-tags
   to get inspiration - credits in the source code or the documentation as
   appropriate
 
-[build-matrix]: https://github.com/asap-projects/asap-clap/actions/workflows/cmake-build.yml?branch=develop
+[build-matrix]: https://github.com/asap-projects/asap-clap/actions/workflows/cmake-build.yml?branch=master
 [build-status-develop-badge]: https://github.com/asap-projects/asap-clap/actions/workflows/cmake-build.yml/badge.svg?branch=develop
 [build-status-master-badge]: https://github.com/asap-projects/asap-clap/actions/workflows/cmake-build.yml/badge.svg?branch=master
 [cleanup-thumb]: https://asciinema.org/a/JOXq0l9CLZMolNcGhOnc84tNO.svg
