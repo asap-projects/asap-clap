@@ -224,8 +224,10 @@ private:
   std::optional<Cli> cli_;
 };
 
-class UtilsCli : public HeadCli {
+// NOLINTNEXTLINE(cppcoreguidelines-special-member-functions,hicpp-special-member-functions)
+class UtilsCli : public BaseCli {
 public:
+  virtual ~UtilsCli() = default;
   auto CommandLine() -> Cli & override {
     if (!cli_) {
       cli_.emplace();
