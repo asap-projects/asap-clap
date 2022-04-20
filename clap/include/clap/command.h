@@ -134,7 +134,7 @@ public:
 
   auto WithOptions(std::shared_ptr<Options> options, bool hidden = false)
       -> Command & {
-    for (const auto &option : options->options_) {
+    for (const auto &option : *options) {
       options_.push_back(option);
       options_in_groups_.push_back(true);
     }

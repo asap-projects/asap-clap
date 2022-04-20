@@ -500,16 +500,33 @@ public:
   using Builder::Build;
 };
 
-struct ASAP_CLAP_API Options {
+struct Options {
   using Ptr = std::shared_ptr<Options>;
+  using OptionsCollectionType = std::vector<std::shared_ptr<Option>>;
 
-  explicit Options(std::string label) : label_{std::move(label)} {
+  ASAP_CLAP_API explicit Options(std::string label) : label_{std::move(label)} {
   }
 
   /** Adds new variable description. Throws duplicate_variable_error if
       either short or long name matches that of already present one.
   */
-  void Add(OptionBuilder &option_builder);
+  ASAP_CLAP_API void Add(OptionBuilder &option_builder);
+
+  ASAP_CLAP_API auto begin() -> OptionsCollectionType::iterator {
+    return options_.begin();
+  }
+  ASAP_CLAP_API auto end() -> OptionsCollectionType::iterator {
+    return options_.end();
+  }
+
+  [[nodiscard]] ASAP_CLAP_API auto cbegin() const noexcept
+      -> OptionsCollectionType::const_iterator {
+    return options_.cbegin();
+  }
+  [[nodiscard]] ASAP_CLAP_API auto cend() const noexcept
+      -> OptionsCollectionType::const_iterator {
+    return options_.cend();
+  }
 
   /** Produces a human readable output of 'desc', listing options,
       their descriptions and allowed parameters. Other options_description
@@ -519,10 +536,11 @@ struct ASAP_CLAP_API Options {
 
   /** Outputs 'desc' to the specified stream, calling 'f' to output each
       option_description element. */
-  void Print(std::ostream &out, unsigned width = 0) const;
+  ASAP_CLAP_API void Print(std::ostream &out, unsigned width = 0) const;
 
+private:
   const std::string label_;
-  std::vector<std::shared_ptr<Option>> options_;
+  OptionsCollectionType options_;
 };
 
 } // namespace asap::clap
