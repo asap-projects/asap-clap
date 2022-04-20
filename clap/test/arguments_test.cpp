@@ -43,8 +43,8 @@ TEST(ConstructArguments, WithNonEmptyProgramName) {
   constexpr auto argc = 1;
   std::array<const char *, 1> argv{"bin/test-program"};
   const Arguments cla{argc, argv.data()};
-  EXPECT_THAT(cla.program_name, Eq("bin/test-program"));
-  EXPECT_THAT(cla.args.size(), Eq(0));
+  EXPECT_THAT(cla.ProgramName(), Eq("bin/test-program"));
+  EXPECT_THAT(cla.Args().size(), Eq(0));
 }
 
 // NOLINTNEXTLINE
@@ -52,12 +52,12 @@ TEST(ConstructArguments, WithManyArgs) {
   constexpr auto argc = 4;
   std::array<const char *, 4> argv{"test", "-x", "--opt=value", "arg"};
   Arguments cla{argc, argv.data()};
-  EXPECT_THAT(cla.program_name, Eq("test"));
-  EXPECT_THAT(cla.args.size(), Eq(3));
+  EXPECT_THAT(cla.ProgramName(), Eq("test"));
+  EXPECT_THAT(cla.Args().size(), Eq(3));
   for (int index = 1; index < argc; index++) {
     EXPECT_THAT(
-        std::find(cla.args.begin(), cla.args.end(), gsl::at(argv, index)),
-        Ne(cla.args.end()));
+        std::find(cla.Args().begin(), cla.Args().end(), gsl::at(argv, index)),
+        Ne(cla.Args().end()));
   }
 }
 

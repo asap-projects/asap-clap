@@ -17,7 +17,7 @@
 #include <clap/option_values_map.h>
 
 #include <algorithm>
-
+#include <memory>
 #include <optional>
 #include <string>
 #include <utility>
@@ -28,7 +28,9 @@ namespace asap::clap {
 
 class CmdLineArgumentsError {};
 
-class ASAP_CLAP_API Arguments {
+class ArgumentsImpl;
+
+class Arguments {
 public:
   /*!
    * \brief Constructor to automatically covert from {argc, argv} to safer
@@ -44,10 +46,28 @@ public:
    * null pointer (or, equivalently, if `argc > 0`), it points to a string that
    * represents the name used to invoke the program, or to an empty string.
    */
-  Arguments(int argc, const char **argv);
+  ASAP_CLAP_API Arguments(int argc, const char **argv);
 
-  std::string program_name;
-  std::vector<std::string> args{};
+  /*!
+   * \brief The program name, originally provided as the first element of the
+   * `argv` array.
+   */
+  [[nodiscard]] ASAP_CLAP_API auto ProgramName() const -> const std::string &;
+
+  /*!
+   * \brief The program command line arguments, excluding the program name.
+   *
+   * \see ProgramName
+   */
+  [[nodiscard]] ASAP_CLAP_API auto Args() const
+      -> const std::vector<std::string> &;
+
+private:
+  // Stores the implementation and the implementation's deleter as well.
+  // Deleter is a pointer to a function with signature
+  // `void func(ArgumentsImpl *)`.
+  // https://oliora.github.io/2015/12/29/pimpl-and-rule-of-zero.html
+  std::unique_ptr<ArgumentsImpl, void (*)(ArgumentsImpl *)> impl_;
 };
 
 class Cli {
