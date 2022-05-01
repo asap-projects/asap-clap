@@ -16,9 +16,7 @@
 // cannot do anything.
 ASAP_DIAGNOSTIC_PUSH
 #if defined(__clang__)
-#pragma clang diagnostic ignored "-Wreserved-identifier"
 #pragma clang diagnostic ignored "-Wsigned-enum-bitfield"
-#pragma clang diagnostic ignored "-Wweak-vtables"
 #endif
 #include <fmt/core.h>
 ASAP_DIAGNOSTIC_POP
