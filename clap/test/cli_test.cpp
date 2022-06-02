@@ -258,9 +258,30 @@ private:
 // NOLINTNEXTLINE
 TEST(CommandLineTest, Test) {
   {
-    constexpr size_t argc = 5;
+    constexpr size_t argc = 6;
     std::array<const char *, argc> argv{
-        "/usr/bin/test-program.exe", "head", "--lines=+20", "-q", "file.txt"};
+        "/usr/bin/test-program.exe", "head", "-n", "+20", "-q", "file.txt"};
+
+    UtilsCli cli;
+    cli.CommandLine().Print(std::cout, 80);
+    const auto &matches = cli.CommandLine().Parse(argc, argv.data());
+
+    const auto &v_lines = matches.ValuesOf(("lines"));
+    EXPECT_THAT(v_lines.size(), Eq(1));
+    EXPECT_THAT(v_lines.at(0).GetAs<int>(), Eq(20));
+
+    const auto &v_quiet = matches.ValuesOf(("quiet"));
+    EXPECT_THAT(v_quiet.size(), Eq(1));
+    EXPECT_THAT(v_quiet.at(0).GetAs<bool>(), Eq(true));
+
+    const auto &v_rest = matches.ValuesOf(Option::key_rest);
+    EXPECT_THAT(v_rest.size(), Eq(1));
+    EXPECT_THAT(v_rest.at(0).GetAs<std::string>(), Eq("file.txt"));
+  }
+  {
+    constexpr size_t argc = 5;
+    std::array<const char *, argc> argv{"/usr/bin/test-program.exe", "head",
+        "--lines=+20", "--quiet", "file.txt"};
 
     UtilsCli cli;
     cli.CommandLine().Print(std::cout, 80);
