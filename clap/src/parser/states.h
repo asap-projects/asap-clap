@@ -523,6 +523,8 @@ struct ParseShortOptionState
         throw MissingValueForOption(context_);
       }
     }
+    Reset();
+
     return Continue{};
   }
 
@@ -537,13 +539,6 @@ struct ParseShortOptionState
     if (value_) {
       return TransitionTo<ParseOptionsState>{};
     }
-    if (semantics->TakesNoValue()) {
-      auto res = TryImplicitValueOrFail(context_);
-      ASAP_ASSERT(res && "an option that `TakesNoValue` must have an "
-                         "`ImplicitValue` defined");
-      value_ = "_implicit_";
-      return TransitionTo<ParseOptionsState>{};
-    }
 
     // Try the value and if it fails parsing, try the implicit value, if
     // none is available, then fail
@@ -556,12 +551,16 @@ struct ParseShortOptionState
     }
     if (TryImplicitValueOrFail(context_)) {
       value_ = "_implicit_";
-      return DoNothing{};
+      return TransitionTo<ParseOptionsState>{};
     }
     return ReportError(MissingValueForOption(context_));
   }
 
 private:
+  void Reset() {
+    value_.reset();
+  }
+
   ParserContextPtr context_;
   std::optional<std::string> value_;
 
@@ -649,10 +648,6 @@ struct ParseLongOptionState : Will<ByDefault<TransitionTo<ParseOptionsState>>> {
     ASAP_ASSERT(context_->active_option);
     auto semantics = context_->active_option->value_semantic();
     ASAP_ASSERT(semantics);
-    if (semantics->TakesNoValue()) {
-      return ReportError(OptionSyntaxError(
-          context_, "'=' used after options name while option takes no value"));
-    }
     after_equal_sign = true;
     return DoNothing{};
   }
@@ -667,20 +662,12 @@ struct ParseLongOptionState : Will<ByDefault<TransitionTo<ParseOptionsState>>> {
       return TransitionTo<ParseOptionsState>{};
     }
     if (!after_equal_sign) {
-      if (semantics->TakesNoValue()) {
-        auto res = TryImplicitValueOrFail(context_);
-        ASAP_ASSERT(res && "an option that `TakesNoValue` must have an "
-                           "`ImplicitValue` defined");
-        value_ = "_implicit_";
-        return TransitionTo<ParseOptionsState>{};
-      }
       if (!context_->allow_long_option_value_with_no_equal) {
         return ReportError(OptionSyntaxError(context_,
             "option name must be followed by '=' sign because this option "
             "takes a value and does not have an implicit one"));
       }
     }
-    ASAP_ASSERT(!semantics->TakesNoValue());
 
     // Try the value and if it fails parsing, try the implicit value, if
     // none is available, then fail
@@ -694,7 +681,7 @@ struct ParseLongOptionState : Will<ByDefault<TransitionTo<ParseOptionsState>>> {
     if (!after_equal_sign) {
       if (TryImplicitValueOrFail(context_)) {
         value_ = "_implicit_";
-        return DoNothing{};
+        return TransitionTo<ParseOptionsState>{};
       }
     }
     return ReportError(MissingValueForOption(context_));

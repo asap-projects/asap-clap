@@ -54,13 +54,6 @@ public:
 
   virtual ~ValueSemantics() noexcept;
 
-  /*!
-   * \brief Specifies that this option takes no value on the command line.
-   *
-   * This is typically the
-   */
-  [[nodiscard]] virtual auto TakesNoValue() const -> bool = 0;
-
   /** The maximum number of tokens for this option that
       should be present on the command line. */
   [[nodiscard]] virtual auto IsRepeatable() const -> bool = 0;
@@ -168,17 +161,6 @@ public:
     repeatable_ = true;
   }
 
-  /** Specifies that no tokens may be provided as the value of
-      this option, which means that only presence of the option
-      is significant. For such option to be useful, either the
-      'validate' function should be specialized, or the
-      'implicit_value' method should be also used. In most
-      cases, you can use the 'bool_switch' function instead of
-      using this method. */
-  void TakesNoValue() {
-    takes_no_value_ = true;
-  }
-
   /** Specifies that the value must occur. */
   void Required() {
     required_ = true;
@@ -192,10 +174,6 @@ public:
 
   [[nodiscard]] auto IsRepeatable() const -> bool override {
     return repeatable_;
-  }
-
-  [[nodiscard]] auto TakesNoValue() const -> bool override {
-    return takes_no_value_;
   }
 
   [[nodiscard]] auto IsRequired() const -> bool override {
@@ -265,7 +243,7 @@ private:
   std::string default_value_as_text_;
   std::any implicit_value_;
   std::string implicit_value_as_text_;
-  bool repeatable_{false}, takes_no_value_{false}, required_{false};
+  bool repeatable_{false}, required_{false};
   std::function<void(const T &)> notifier_;
 };
 
@@ -313,12 +291,6 @@ public:
     return *this;
   }
 
-  auto TakesNoValue() -> ValueDescriptorBuilder & {
-    ASAP_ASSERT(option_value_ && "builder used after Build() was called");
-    option_value_->TakesNoValue();
-    return *this;
-  }
-
   auto Build() -> std::unique_ptr<ValueDescriptor<T>> {
     return std::move(option_value_);
   }
@@ -332,7 +304,6 @@ inline ValueDescriptorBuilder<bool>::ValueDescriptorBuilder(bool *store_to)
     : option_value_(new ValueDescriptor<bool>(store_to)) {
   option_value_->DefaultValue(false, "false");
   option_value_->ImplicitValue(true, "true");
-  option_value_->TakesNoValue();
 }
 
 class OptionBuilder;

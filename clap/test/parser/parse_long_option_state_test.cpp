@@ -40,7 +40,6 @@ public:
                                .Short("n")
                                .Long("no-value")
                                .WithValue(ValueDescriptor<bool>::Create()
-                                              .TakesNoValue()
                                               .DefaultValue(false, "false")
                                               .ImplicitValue(true, "true")));
     my_command->WithOption(Option::WithName("first_opt")
