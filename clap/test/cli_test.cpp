@@ -274,6 +274,14 @@ TEST(CommandLineTest, Test) {
     EXPECT_THAT(v_quiet.size(), Eq(1));
     EXPECT_THAT(v_quiet.at(0).GetAs<bool>(), Eq(true));
 
+    const auto &v_verbose = matches.ValuesOf(("verbose"));
+    EXPECT_THAT(v_verbose.size(), Eq(1));
+    EXPECT_THAT(v_verbose.at(0).GetAs<bool>(), Eq(false));
+
+    const auto &v_zero_terminated = matches.ValuesOf(("zero-terminated"));
+    EXPECT_THAT(v_zero_terminated.size(), Eq(1));
+    EXPECT_THAT(v_zero_terminated.at(0).GetAs<bool>(), Eq(false));
+
     const auto &v_rest = matches.ValuesOf(Option::key_rest);
     EXPECT_THAT(v_rest.size(), Eq(1));
     EXPECT_THAT(v_rest.at(0).GetAs<std::string>(), Eq("file.txt"));
