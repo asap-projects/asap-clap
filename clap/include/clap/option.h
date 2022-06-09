@@ -231,12 +231,12 @@ public:
     }
   }
 
-  static auto Create(T *value_store = nullptr) -> ValueDescriptorBuilder<T> {
-    return ValueDescriptorBuilder<T>(value_store);
+  static auto Create(T *store_to = nullptr) -> ValueDescriptorBuilder<T> {
+    return ValueDescriptorBuilder<T>(store_to);
   }
 
 private:
-  T *store_to_;
+  T *const store_to_;
 
   std::any default_value_;
   std::string default_value_as_text_;
