@@ -38,14 +38,14 @@ TEST(ParserExample, ComplexCommandLine) {
 
   common_options->Add(
       Option::WithName("verbose").Short("v").Long("verbose").WithValue(
-          ValueDescriptor<bool>::Create().Required()));
+          ValueDescriptor<bool>::Create()));
 
   auto default_command = std::make_shared<Command>(Command::DEFAULT);
   default_command->WithOptions(common_options);
   default_command->WithOption(
       Option::WithName("INPUT")
           .About("The input file")
-          .WithValue(ValueDescriptor<std::string>::Create().Required()));
+          .WithValue(ValueDescriptor<std::string>::Create()));
 
   auto just_command = std::make_shared<Command>("just", "hello");
   just_command->WithOptions(common_options, /* hidden */ true);

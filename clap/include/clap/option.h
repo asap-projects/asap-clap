@@ -161,13 +161,12 @@ public:
     repeatable_ = true;
   }
 
-  /** Specifies that the value must occur. */
-  void Required() {
-    required_ = true;
-  }
-
-  /** Specifies a function to be called when the final value
-      is determined. */
+  /**
+   * \brief Specifies a function to be called when the final value
+   * is determined.
+   *
+   * \see Notify
+   */
   void Notifier(std::function<void(const T &)> callback) {
     notifier_ = callback;
   }
@@ -177,7 +176,7 @@ public:
   }
 
   [[nodiscard]] auto IsRequired() const -> bool override {
-    return required_;
+    return implicit_value_.has_value();
   }
 
   auto Parse(std::any &value_store, const std::string &token) const
@@ -243,7 +242,7 @@ private:
   std::string default_value_as_text_;
   std::any implicit_value_;
   std::string implicit_value_as_text_;
-  bool repeatable_{false}, required_{false};
+  bool repeatable_{false};
   std::function<void(const T &)> notifier_;
 };
 
@@ -276,12 +275,6 @@ public:
       -> ValueDescriptorBuilder & {
     ASAP_ASSERT(option_value_ && "builder used after Build() was called");
     option_value_->ImplicitValue(value, textual);
-    return *this;
-  }
-
-  auto Required() -> ValueDescriptorBuilder & {
-    ASAP_ASSERT(option_value_ && "builder used after Build() was called");
-    option_value_->Required();
     return *this;
   }
 

@@ -206,8 +206,7 @@ public:
                      "or `Blue`(3)")
               .Short("c")
               .Long("color")
-              .WithValue(
-                  ValueDescriptor<Color>::Create().Required().Repeatable()));
+              .WithValue(ValueDescriptor<Color>::Create().Repeatable()));
     }
     return command_;
   }
@@ -343,6 +342,7 @@ TEST(CommandLineTest, Test) {
     EXPECT_THAT(
         values.at(1).GetAs<PaintCli::Color>(), Eq(PaintCli::Color::green));
   }
+
 }
 
 } // namespace

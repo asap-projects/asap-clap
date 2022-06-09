@@ -49,13 +49,12 @@ public:
                                .WithValue(ValueDescriptor<std::string>::Create()
                                               .DefaultValue("1")
                                               .ImplicitValue("1")));
-    my_command->WithOption(Option::WithName("second_opt")
-                               .About("The second option")
-                               .Short("s")
-                               .Long("second-option")
-                               .WithValue(ValueDescriptor<std::string>::Create()
-                                              .Required()
-                                              .Repeatable()));
+    my_command->WithOption(
+        Option::WithName("second_opt")
+            .About("The second option")
+            .Short("s")
+            .Long("second-option")
+            .WithValue(ValueDescriptor<std::string>::Create().Repeatable()));
     predefined_commands()["with-options"] = my_command;
   }
 
