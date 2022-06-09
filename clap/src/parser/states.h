@@ -777,7 +777,7 @@ private:
           throw MissingRequiredOption(context_->active_command, option);
         }
         context_->ovm_.StoreValue(
-            context_->active_option->Key(), {value, value_as_text, false});
+            option->Key(), {value, value_as_text, false});
       }
     }
   }
