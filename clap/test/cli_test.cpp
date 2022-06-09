@@ -155,8 +155,8 @@ public:
                                .Short("v")
                                .Long("verbose")
                                .WithValue(ValueDescriptor<bool>::Create()));
-      command_->WithOption(Option::WithName("verbose")
-                               .About("line delimiter is NUL, not newline")
+      command_->WithOption(Option::WithName("zero-terminated")
+                               .About("line delimiter is NULL, not newline")
                                .Short("z")
                                .Long("zero-terminated")
                                .WithValue(ValueDescriptor<bool>::Create()));
