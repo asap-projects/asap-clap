@@ -4,10 +4,11 @@
 // SPDX-License-Identifier: BSD-3-Clause
 //===----------------------------------------------------------------------===//
 
-#include "clap/cli.h"
-#include "clap/command.h"
-#include "clap/option.h"
-#include "clap/with_usage.h"
+#include <clap/cli.h>
+#include <clap/command.h>
+#include <clap/fluent/dsl.h>
+#include <clap/option.h>
+#include <clap/with_usage.h>
 
 #include <common/compilers.h>
 #include <mixin/mixin.h>
@@ -56,13 +57,15 @@ public:
       common_options_->Add(Option::WithName("help")
                                .Long("help")
                                .About("show this message, then exit")
-                               .WithValue(ValueDescriptor<bool>::Create()));
+                               .WithValue<bool>()
+                               .Build());
       common_options_->Add(
           Option::WithName("version")
               .About(
                   fmt::format("show {} version info, then exit", ProgramName()))
               .Long("version")
-              .WithValue(ValueDescriptor<bool>::Create()));
+              .WithValue<bool>()
+              .Build());
     }
     return common_options_;
   }
@@ -126,42 +129,48 @@ public:
   [[nodiscard]] auto MakeCommand(std::string name) const -> Command::Ptr {
     if (!command_) {
       command_ = std::make_shared<HeadCli::MyCommand>(std::move(name));
-      command_->About("output the first part of files");
-      command_->WithOption(
-          Option::WithName("bytes")
-              .About("print the first NUM bytes of each file; with the leading "
-                     "'-', print all but the last NUM bytes of each file")
-              .Short("c")
-              .Long("bytes")
-              .WithValue(ValueDescriptor<int>::Create()));
-      command_->WithOption(
-          Option::WithName("lines")
-              .About("print the first NUM lines instead of the first 10; with "
-                     "the leading '-', print all but the last  NUM lines of "
-                     "each file")
-              .Short("n")
-              .Long("lines")
-              .WithValue(ValueDescriptor<int>::Create().DefaultValue(
-                  default_num_lines)));
-      command_->WithOption(Option::WithName("quiet")
-                               .About("never print headers giving file names")
-                               .Short("q")
-                               .Long("quiet")
-                               // TODO(Abdessattar): support multiple name
-                               // aliases .Long("silent")
-                               .WithValue(ValueDescriptor<bool>::Create()));
-      command_->WithOption(Option::WithName("verbose")
-                               .About("always print headers giving file names")
-                               .Short("v")
-                               .Long("verbose")
-                               .WithValue(ValueDescriptor<bool>::Create()));
-      command_->WithOption(Option::WithName("zero-terminated")
-                               .About("line delimiter is NULL, not newline")
-                               .Short("z")
-                               .Long("zero-terminated")
-                               .WithValue(ValueDescriptor<bool>::Create()));
-      command_->WithPositionals(
-          Option::Rest().WithValue(ValueDescriptor<std::string>::Create()));
+      command_->About("output the first part of files")
+          .WithOption(
+              Option::WithName("bytes")
+                  .About("print the first NUM bytes of each file; with the "
+                         "leading '-', print all but the last NUM bytes of "
+                         "each file")
+                  .Short("c")
+                  .Long("bytes")
+                  .WithValue<int>()
+                  .Build())
+          .WithOption(
+              Option::WithName("lines")
+                  .About(
+                      "print the first NUM lines instead of the first 10; with "
+                      "the leading '-', print all but the last  NUM lines of "
+                      "each file")
+                  .Short("n")
+                  .Long("lines")
+                  .WithValue<int>()
+                  .DefaultValue(default_num_lines)
+                  .Build())
+          .WithOption(Option::WithName("quiet")
+                          .About("never print headers giving file names")
+                          .Short("q")
+                          .Long("quiet")
+                          // TODO(Abdessattar): support multiple name
+                          // aliases .Long("silent")
+                          .WithValue<bool>()
+                          .Build())
+          .WithOption(Option::WithName("verbose")
+                          .About("always print headers giving file names")
+                          .Short("v")
+                          .Long("verbose")
+                          .WithValue<bool>()
+                          .Build())
+          .WithOption(Option::WithName("zero-terminated")
+                          .About("line delimiter is NULL, not newline")
+                          .Short("z")
+                          .Long("zero-terminated")
+                          .WithValue<bool>()
+                          .Build())
+          .WithPositionals(Option::Rest().WithValue<std::string>().Build());
     }
     return command_;
   }
@@ -206,7 +215,9 @@ public:
                      "or `Blue`(3)")
               .Short("c")
               .Long("color")
-              .WithValue(ValueDescriptor<Color>::Create().Repeatable()));
+              .WithValue<Color>()
+              .Repeatable()
+              .Build());
     }
     return command_;
   }
@@ -342,7 +353,6 @@ TEST(CommandLineTest, Test) {
     EXPECT_THAT(
         values.at(1).GetAs<PaintCli::Color>(), Eq(PaintCli::Color::green));
   }
-
 }
 
 } // namespace

@@ -12,7 +12,8 @@
 
 #include <utility>
 
-#include "clap/option.h"
+#include <clap/fluent/dsl.h>
+#include <clap/option.h>
 
 namespace asap::clap {
 
@@ -53,8 +54,8 @@ void Options::Print(std::ostream &out, unsigned int width) const {
   }
 }
 
-void Options::Add(OptionBuilder &option_builder) {
-  options_.push_back(option_builder.Build());
+void Options::Add(std::shared_ptr<Option> option) {
+  options_.emplace_back(option);
 }
 
 } // namespace asap::clap

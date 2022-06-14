@@ -7,6 +7,8 @@
 #include "parser/parser.h"
 #include "parser/tokenizer.h"
 
+#include <clap/fluent/dsl.h>
+
 #include <common/compilers.h>
 
 #include <gmock/gmock.h>
@@ -36,41 +38,45 @@ TEST(ParserExample, ComplexCommandLine) {
 
   auto common_options = std::make_shared<Options>("Common options");
 
-  common_options->Add(
-      Option::WithName("verbose").Short("v").Long("verbose").WithValue(
-          ValueDescriptor<bool>::Create()));
+  common_options->Add(Option::WithName("verbose")
+                          .Short("v")
+                          .Long("verbose")
+                          .WithValue<bool>()
+                          .Build());
 
   auto default_command = std::make_shared<Command>(Command::DEFAULT);
   default_command->WithOptions(common_options);
-  default_command->WithOption(
-      Option::WithName("INPUT")
-          .About("The input file")
-          .WithValue(ValueDescriptor<std::string>::Create()));
+  default_command->WithOption(Option::WithName("INPUT")
+                                  .About("The input file")
+                                  .WithValue<std::string>()
+                                  .Build());
 
   auto just_command = std::make_shared<Command>("just", "hello");
   just_command->WithOptions(common_options, /* hidden */ true);
-  just_command->WithOption(
-      Option::WithName("first_opt")
-          .About("The first option")
-          .Short("f")
-          .Long("first-option")
-          .WithValue(
-              ValueDescriptor<unsigned>::Create().DefaultValue(1).ImplicitValue(
-                  1)));
+  just_command->WithOption(Option::WithName("first_opt")
+                               .About("The first option")
+                               .Short("f")
+                               .Long("first-option")
+                               .WithValue<unsigned>()
+                               .DefaultValue(1)
+                               .ImplicitValue(1)
+                               .Build());
   just_command->WithOption(Option::WithName("second_opt")
                                .About("The second option")
                                .Short("s")
                                .Long("second-option")
-                               .WithValue(ValueDescriptor<std::string>::Create()
-                                              .DefaultValue("1")
-                                              .ImplicitValue("1")));
+                               .WithValue<std::string>()
+                               .DefaultValue("1")
+                               .ImplicitValue("1")
+                               .Build());
 
   auto doit_command = std::make_shared<Command>("just", "do", "it");
   doit_command->WithOption(Option::WithName("third_opt")
                                .About("The third option")
                                .Short("t")
                                .Long("third-option")
-                               .WithValue(ValueDescriptor<unsigned>::Create()));
+                               .WithValue<unsigned>()
+                               .Build());
 
   std::vector<std::shared_ptr<Command>> commands{
       default_command, just_command, doit_command};

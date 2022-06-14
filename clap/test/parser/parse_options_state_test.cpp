@@ -11,6 +11,8 @@
 #include <contract/ut/gtest.h>
 #endif
 
+#include <clap/fluent/dsl.h>
+
 #include <gmock/gmock.h>
 #include <gtest/gtest.h>
 
@@ -41,16 +43,18 @@ public:
                                .About("The first option")
                                .Short("f")
                                .Long("first-option")
-                               .WithValue(ValueDescriptor<std::string>::Create()
-                                              .DefaultValue("1")
-                                              .ImplicitValue("1")));
+                               .WithValue<std::string>()
+                               .DefaultValue("1")
+                               .ImplicitValue("1")
+                               .Build());
     my_command->WithOption(Option::WithName("second_opt")
                                .About("The second option")
                                .Short("s")
                                .Long("second-option")
-                               .WithValue(ValueDescriptor<unsigned>::Create()
-                                              .DefaultValue(2)
-                                              .ImplicitValue(2)));
+                               .WithValue<unsigned>()
+                               .DefaultValue(2)
+                               .ImplicitValue(2)
+                               .Build());
     predefined_commands()["with-options"] = my_command;
   }
 

@@ -4,9 +4,10 @@
 // SPDX-License-Identifier: BSD-3-Clause
 //===----------------------------------------------------------------------===//
 
-#include "clap/cli.h"
-#include "clap/command.h"
-#include "clap/option.h"
+#include <clap/cli.h>
+#include <clap/command.h>
+#include <clap/fluent/dsl.h>
+#include <clap/option.h>
 
 #include <common/compilers.h>
 
@@ -34,28 +35,32 @@ namespace asap::clap {
 
 namespace {
 
-inline auto MakeBefore_1() -> PositionalOptionBuilder {
-  return std::move(Option::Positional("BEFORE_1")
-                       .About("first positional before rest")
-                       .WithValue(ValueDescriptor<std::string>::Create()));
+inline auto MakeBefore_1() -> std::shared_ptr<Option> {
+  return Option::Positional("BEFORE_1")
+      .About("first positional before rest")
+      .WithValue<std::string>()
+      .Build();
 }
 
-inline auto MakeBefore_2() -> PositionalOptionBuilder {
-  return std::move(Option::Positional("BEFORE_2")
-                       .About("second positional before rest")
-                       .WithValue(ValueDescriptor<std::string>::Create()));
+inline auto MakeBefore_2() -> std::shared_ptr<Option> {
+  return Option::Positional("BEFORE_2")
+      .About("second positional before rest")
+      .WithValue<std::string>()
+      .Build();
 }
 
-inline auto MakeRest() -> PositionalOptionBuilder {
-  return std::move(Option::Rest()
-                       .About("remaining positional arguments")
-                       .WithValue(ValueDescriptor<std::string>::Create()));
+inline auto MakeRest() -> std::shared_ptr<Option> {
+  return Option::Rest()
+      .About("remaining positional arguments")
+      .WithValue<std::string>()
+      .Build();
 }
 
-inline auto MakeAfter_1() -> PositionalOptionBuilder {
-  return std::move(Option::Positional("AFTER_1")
-                       .About("first positional after rest")
-                       .WithValue(ValueDescriptor<std::string>::Create()));
+inline auto MakeAfter_1() -> std::shared_ptr<Option> {
+  return Option::Positional("AFTER_1")
+      .About("first positional after rest")
+      .WithValue<std::string>()
+      .Build();
 }
 
 // NOLINTNEXTLINE

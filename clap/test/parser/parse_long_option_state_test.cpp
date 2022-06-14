@@ -9,6 +9,8 @@
 #include <common/compilers.h>
 #include <contract/contract.h>
 
+#include <clap/fluent/dsl.h>
+
 #include <gmock/gmock.h>
 #include <gtest/gtest.h>
 
@@ -39,22 +41,25 @@ public:
                                .About("Option that takes no values")
                                .Short("n")
                                .Long("no-value")
-                               .WithValue(ValueDescriptor<bool>::Create()
-                                              .DefaultValue(false, "false")
-                                              .ImplicitValue(true, "true")));
+                               .WithValue<bool>()
+                               .DefaultValue(false, "false")
+                               .ImplicitValue(true, "true")
+                               .Build());
     my_command->WithOption(Option::WithName("first_opt")
                                .About("The first option")
                                .Short("f")
                                .Long("first-option")
-                               .WithValue(ValueDescriptor<std::string>::Create()
-                                              .DefaultValue("1")
-                                              .ImplicitValue("1")));
-    my_command->WithOption(
-        Option::WithName("second_opt")
-            .About("The second option")
-            .Short("s")
-            .Long("second-option")
-            .WithValue(ValueDescriptor<std::string>::Create().Repeatable()));
+                               .WithValue<std::string>()
+                               .DefaultValue("1")
+                               .ImplicitValue("1")
+                               .Build());
+    my_command->WithOption(Option::WithName("second_opt")
+                               .About("The second option")
+                               .Short("s")
+                               .Long("second-option")
+                               .WithValue<std::string>()
+                               .Repeatable()
+                               .Build());
     predefined_commands()["with-options"] = my_command;
   }
 

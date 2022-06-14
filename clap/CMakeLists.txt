@@ -42,19 +42,28 @@ asap_add_library(
   SHARED
   WARNING
   SOURCES
+
   # Headers
   "include/clap/cli.h"
   "include/clap/command.h"
   "include/clap/command_line_context.h"
   "include/clap/detail/parse_value.h"
   "include/clap/detail/string_utils.h"
+  "include/clap/detail/value_descriptor.h"
+  "include/clap/fluent/dsl.h"
+  "include/clap/fluent/option_builder.h"
+  "include/clap/fluent/option_value_builder.h"
+  "include/clap/fluent/positional_option_builder.h"
   "include/clap/option.h"
   "include/clap/option_value.h"
   "include/clap/option_values_map.h"
+  "include/clap/value_semantics.h"
   "include/clap/with_usage.h"
+
   # Sources
   "src/cli.cpp"
   "src/command.cpp"
+  "src/fluent/option_builder.cpp"
   "src/option.cpp"
   "src/parser/context.h"
   "src/parser/errors.cpp"
@@ -70,13 +79,13 @@ target_link_libraries(
   ${MODULE_TARGET_NAME}
   PRIVATE asap::common GSL
   PUBLIC magic_enum::magic_enum fmt::fmt asap::fsm asap::textwrap asap::mixin
-         asap::contract)
+  asap::contract)
 
 target_include_directories(
   ${MODULE_TARGET_NAME}
   PUBLIC $<INSTALL_INTERFACE:include>
-         $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
-         $<BUILD_INTERFACE:${CMAKE_CURRENT_BINARY_DIR}/include>
+  $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
+  $<BUILD_INTERFACE:${CMAKE_CURRENT_BINARY_DIR}/include>
   PRIVATE ${CMAKE_CURRENT_SOURCE_DIR})
 
 target_compile_features(${MODULE_TARGET_NAME} PUBLIC cxx_std_17)
@@ -91,7 +100,6 @@ asap_create_module_config_files()
 # ------------------------------------------------------------------------------
 # Tests
 # ------------------------------------------------------------------------------
-
 if(ASAP_BUILD_TESTS)
   asap_add_sanitizers(${MODULE_TARGET_NAME})
   add_subdirectory(test)
@@ -100,7 +108,6 @@ endif()
 # ------------------------------------------------------------------------------
 # API Documentation
 # ------------------------------------------------------------------------------
-
 asap_with_doxygen(
   MODULE_NAME
   ${MODULE_TARGET_NAME}
@@ -118,7 +125,6 @@ asap_with_sphinx(${MODULE_TARGET_NAME})
 # ==============================================================================
 # Deployment instructions
 # ==============================================================================
-
 if(${META_PROJECT_ID}_INSTALL)
   set(TARGETS_EXPORT_NAME "${MODULE_TARGET_NAME}Targets")
   set(runtime "${MODULE_TARGET_NAME}_runtime")
@@ -157,7 +163,7 @@ if(${META_PROJECT_ID}_INSTALL)
   # Package configuration files
   install(
     FILES ${CMAKE_CURRENT_BINARY_DIR}/${MODULE_TARGET_NAME}Config.cmake
-          ${CMAKE_CURRENT_BINARY_DIR}/${MODULE_TARGET_NAME}ConfigVersion.cmake
+    ${CMAKE_CURRENT_BINARY_DIR}/${MODULE_TARGET_NAME}ConfigVersion.cmake
     DESTINATION ${ASAP_INSTALL_CMAKE}/${META_MODULE_NAME})
 
   # Docs

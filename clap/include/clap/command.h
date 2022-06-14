@@ -128,8 +128,9 @@ public:
   [[nodiscard]] auto About() const -> const std::string & {
     return about_;
   }
-  void About(std::string about) {
+  auto About(std::string about) -> Command & {
     about_ = std::move(about);
+    return *this;
   }
 
   auto WithOptions(std::shared_ptr<Options> options, bool hidden = false)
@@ -142,18 +143,15 @@ public:
     return *this;
   }
 
-  auto WithOption(OptionBuilder &builder) -> Command & {
-    options_.emplace_back(builder.Build());
+  auto WithOption(std::shared_ptr<Option> option) -> Command & {
+    options_.emplace_back(option);
     options_in_groups_.push_back(false);
     return *this;
   }
 
-  template <typename... Args,
-      std::enable_if_t<std::conjunction_v<std::is_same<std::decay_t<Args>,
-                           Positional<OptionBuilder>>...>,
-          std::nullptr_t> = nullptr>
-  auto WithPositionals(Args &&...builders) -> Command & {
-    positionals_.insert(positionals_.end(), {builders.Build()...});
+  template <typename... Args>
+  auto WithPositionals(Args &&...options) -> Command & {
+    positionals_.insert(positionals_.end(), {std::forward<Args>(options)...});
     return *this;
   }
 
