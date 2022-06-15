@@ -165,7 +165,7 @@ public:
    * \see ImplicitValue
    */
   [[nodiscard]] auto IsRequired() const -> bool override {
-    return implicit_value_.has_value();
+    return !implicit_value_.has_value();
   }
 
   // TODO(Abdessattar) document currently available value type parsers
@@ -241,7 +241,7 @@ public:
 private:
   explicit ValueDescriptor() = default;
 
-  T *const store_to_ = nullptr;
+  T *store_to_ = nullptr;
 
   std::any default_value_;
   std::string default_value_as_text_;

@@ -430,7 +430,7 @@ private:
   friend struct ParseOptionsStateTestData;
 };
 
-inline auto TryImplicitValueOrFail(const ParserContextPtr &context) -> bool {
+inline auto TryImplicitValue(const ParserContextPtr &context) -> bool {
   auto semantics = context->active_option->value_semantic();
   std::any value;
   std::string value_as_text;
@@ -519,8 +519,11 @@ struct ParseShortOptionState
   template <TokenType token_type>
   auto OnLeave(const TokenEvent<token_type> & /*event*/) -> Status {
     if (!value_) {
-      if (!TryImplicitValueOrFail(context_)) {
-        throw MissingValueForOption(context_);
+      if (!TryImplicitValue(context_)) {
+        auto semantics = context_->active_option->value_semantic();
+        if (semantics->IsRequired()) {
+          throw MissingValueForOption(context_);
+        }
       }
     }
     Reset();
@@ -549,7 +552,7 @@ struct ParseShortOptionState
       value_ = event.token;
       return DoNothing{};
     }
-    if (TryImplicitValueOrFail(context_)) {
+    if (TryImplicitValue(context_)) {
       value_ = "_implicit_";
       return TransitionTo<ParseOptionsState>{};
     }
@@ -634,8 +637,11 @@ struct ParseLongOptionState : Will<ByDefault<TransitionTo<ParseOptionsState>>> {
   template <TokenType token_type>
   auto OnLeave(const TokenEvent<token_type> & /*event*/) -> Status {
     if (!value_) {
-      if (!TryImplicitValueOrFail(context_)) {
-        throw MissingValueForOption(context_);
+      if (!TryImplicitValue(context_)) {
+        auto semantics = context_->active_option->value_semantic();
+        if (semantics->IsRequired()) {
+          throw MissingValueForOption(context_);
+        }
       }
     }
     Reset();
@@ -679,7 +685,7 @@ struct ParseLongOptionState : Will<ByDefault<TransitionTo<ParseOptionsState>>> {
       return DoNothing{};
     }
     if (!after_equal_sign) {
-      if (TryImplicitValueOrFail(context_)) {
+      if (TryImplicitValue(context_)) {
         value_ = "_implicit_";
         return TransitionTo<ParseOptionsState>{};
       }
@@ -760,6 +766,8 @@ struct FinalState : Will<ByDefault<DoNothing>> {
     // Validate options
     CheckRequiredOptions();
 
+    // FIXME(Abdessattar) implement notifiers and store_to
+
     return Terminate{};
   }
 
@@ -770,14 +778,18 @@ private:
     // provided on the command line and use the defaults
     for (const auto &option : context_->active_command->Options()) {
       auto semantics = option->value_semantic();
-      if (semantics->IsRequired() && !context_->ovm_.HasOption(option->Key())) {
+      if (!context_->ovm_.HasOption(option->Key())) {
         std::any value;
         std::string value_as_text;
         if (!semantics->ApplyDefault(value, value_as_text)) {
-          throw MissingRequiredOption(context_->active_command, option);
+          // FIXME(Abdessattar) throw only if option is required
+          // if (option.IsRequired()) {
+          //  throw MissingRequiredOption(context_->active_command, option);
+          // }
+        } else {
+          context_->ovm_.StoreValue(
+              option->Key(), {value, value_as_text, false});
         }
-        context_->ovm_.StoreValue(
-            option->Key(), {value, value_as_text, false});
       }
     }
   }
