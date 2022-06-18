@@ -68,11 +68,11 @@ public:
    * name (argv[0]) from the command line arguments before passing the remaining
    * arguments to the tokenizer.
    */
-  explicit ASAP_CLAP_API Tokenizer(std::vector<std::string> args)
+  explicit Tokenizer(std::vector<std::string> args)
       : args_{std::move(args)}, cursor_{args_.begin()} {
   }
 
-  ASAP_CLAP_API auto NextToken() const -> Token {
+  auto NextToken() const -> Token {
     if (!tokens_.empty()) {
       auto token = tokens_.front();
       tokens_.pop_front();
@@ -90,7 +90,7 @@ public:
     return Token{TokenType::EndOfInput, ""};
   }
 
-  ASAP_CLAP_API auto HasMoreTokens() -> bool {
+  auto HasMoreTokens() -> bool {
     return !tokens_.empty() || cursor_ != args_.end();
   }
 
