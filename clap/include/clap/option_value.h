@@ -13,18 +13,16 @@
 #pragma once
 
 #include <any>
-#include <iterator>
 #include <string>
-#include <vector>
 
 /// Namespace for command line parsing related APIs.
 namespace asap::clap {
 
 /*!
- * \brief Represents values for a command line option.
+ * \brief Represents a value for a command line option.
  *
- * This class encapsulates information about the values, how they were obtained,
- * and allows type-safe access to it.
+ * This class encapsulates a command line option value of any type, information
+ * about its origin and allows type-safe access to it.
  */
 class OptionValue {
 public:
@@ -33,8 +31,8 @@ public:
    *
    * \param value the value that will be stored.
    * \param original_token the token from which this option value was parsed.
-   * \param defaulted when \b true, indicates that the provided values have not
-   * been explicitly specified but come from a default value.
+   * \param defaulted when \b true, indicates that the stored value comes from a
+   * default value rather than from an explicit value on the command line.
    */
   OptionValue(std::any value, std::string original_token, bool defaulted)
       : value_{std::move(value)},
@@ -50,17 +48,14 @@ public:
   ~OptionValue() = default;
 
   /*!
-   * \brief If the stored value has type T, returns that value; otherwise
-   throws
-   * std::bad_any_cast.
+   * \copydoc GetAs() -> T &
    */
   template <typename T> [[nodiscard]] auto GetAs() const -> const T & {
     return std::any_cast<const T &>(value_);
   }
 
   /*!
-   * \brief If the stored value has type T, returns that value; otherwise
-   throws
+   * \brief If the stored value has type T, returns that value; otherwise throws
    * std::bad_any_cast.
    */
   template <typename T> [[nodiscard]] auto GetAs() -> T & {
@@ -68,15 +63,8 @@ public:
   }
 
   /*!
-   * \brief Return true if no value is stored.
-   */
-  [[nodiscard]] auto IsEmpty() const -> bool {
-    return !value_.has_value();
-  }
-
-  /*!
-   * \brief Return true if the stored values have not been explicitly specified
-   * on the command line but come from a default value.
+   * \brief Checks whether the stored value came from the default value or was
+   * explicitly specified on the command line.
    */
   [[nodiscard]] auto IsDefaulted() const -> bool {
     return defaulted_;
@@ -90,14 +78,14 @@ public:
   }
 
   /*!
-   * \brief Return the stored values.
+   * \copydoc Value() -> std::any &
    */
   [[nodiscard]] auto Value() const -> const std::any & {
     return value_;
   }
 
   /*!
-   * \brief Return the stored values.
+   * \brief Returns the stored value.
    */
   [[nodiscard]] auto Value() -> std::any & {
     return value_;

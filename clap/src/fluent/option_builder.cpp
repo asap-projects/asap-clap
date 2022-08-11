@@ -36,8 +36,7 @@
 // }
 
 template <>
-auto asap::clap::OptionBuilder::WithValue<bool>()
-    -> OptionValueBuilder<bool> {
+auto asap::clap::OptionBuilder::WithValue<bool>() -> OptionValueBuilder<bool> {
   OptionValueBuilder<bool> value_builder(std::move(option_));
   value_builder.DefaultValue(false, "false");
   value_builder.ImplicitValue(true, "true");

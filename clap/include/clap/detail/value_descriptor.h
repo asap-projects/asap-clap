@@ -37,9 +37,10 @@ namespace asap::clap {
  *   null, this memory location will hold the value after parsing is complete;
  *
  * - via the notifier callback passed to Notifier(). If provided, this callback
- *   function will be called once the final value is determined. This method
- *   presents the additional advantage of getting the values as they are parsed
- *   without waiting for the parsing to be complete.
+ *   function will be called a value for the option is determined.
+ *
+ * \note the notifier callback may be called multiple times for the same option
+ * if that option is repeatable.
  *
  * \see ValueDescriptorBuilder for a more intuitive way of specifying value
  * semantics for an option.

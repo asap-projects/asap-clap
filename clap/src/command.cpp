@@ -28,8 +28,7 @@ ASAP_DIAGNOSTIC_POP
 
 using asap::clap::Command;
 
-void asap::clap::Command::PrintOptionsSummary(
-    std::ostream &out) const {
+void asap::clap::Command::PrintOptionsSummary(std::ostream &out) const {
   for (const auto &option : options_) {
     out << (option->value_semantic()->IsRequired() ? "" : "[");
     if (!option->Short().empty()) {

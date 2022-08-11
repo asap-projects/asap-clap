@@ -773,8 +773,7 @@ struct FinalState : Will<ByDefault<DoNothing>> {
 
 private:
   void CheckRequiredOptions() {
-    // Check if we have any required options with
-    // default values that were not
+    // Check if we have any required options with default values that were not
     // provided on the command line and use the defaults
     for (const auto &option : context_->active_command->Options()) {
       auto semantics = option->value_semantic();

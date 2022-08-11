@@ -49,24 +49,6 @@ TEST(OptionValuesTest, IsDefaultedWhenCreatedWithDefaultedTrue) {
 }
 
 // NOLINTNEXTLINE
-TEST(OptionValuesTest, IsNotEmptyWhenCreatedWithNonEmptyValue) {
-  const std::any stored_value{123};
-  OptionValue value(stored_value, "123", false);
-  EXPECT_THAT(value.IsEmpty(), IsFalse());
-  const OptionValue const_value(stored_value, "123", false);
-  EXPECT_THAT(const_value.IsEmpty(), IsFalse());
-}
-
-// NOLINTNEXTLINE
-TEST(OptionValuesTest, IsEmptyWhenCreatedWithEmptyValue) {
-  const std::any stored_value{};
-  OptionValue value(stored_value, "123", false);
-  EXPECT_THAT(value.IsEmpty(), IsTrue());
-  const OptionValue const_value(stored_value, "123", false);
-  EXPECT_THAT(const_value.IsEmpty(), IsTrue());
-}
-
-// NOLINTNEXTLINE
 TEST(OptionValuesTest, ReturnsOriginalToken) {
   const std::any stored_value{};
   OptionValue value(stored_value, "123", false);
@@ -114,7 +96,7 @@ TEST(OptionValuesTest, GetAsThrowsWithIncorrectType) {
       std::make_any<int>(stored_value), "123", false);
   // NOLINTNEXTLINE(hicpp-avoid-goto, cppcoreguidelines-avoid-goto)
   EXPECT_THROW([[maybe_unused]] const auto &const_value =
-                   const_opt_value.GetAs<std::string>(),
+      const_opt_value.GetAs<std::string>(),
       std::bad_any_cast);
 }
 

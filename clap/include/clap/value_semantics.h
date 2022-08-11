@@ -42,7 +42,7 @@ namespace asap::clap {
  * as comma separated values or other, to be parsed by a custom value parser. To
  * make it possible to do so without the need for a custom parser, the API also
  * supports repeating an option multiple times on the command line. Each
- * occurence provides one more value.
+ * occurrence provides one more value.
  *
  * ### Options that do not take values
  *
@@ -84,7 +84,7 @@ public:
    * \brief Indicates if this option requires a value to be specified.
    *
    * When this is \b true, the command line parser requires that:
-   * - each occurence of the option is accompanied with a value,
+   * - each occurrence of the option is accompanied with a value,
    * - or an implicit value is specified if the option is encountered with no
    *   value,
    * - or a default value is specified if the option is not encountered on the
@@ -143,7 +143,14 @@ public:
    * \brief Called when final value of an option is determined.
    */
   virtual void Notify(const std::any &value_store) const = 0;
-  // TODO(Abdessattar) implement notification after final value
+  // TODO(Abdessattar) refactor callback interface
+  //  - Allow to pass a callback function that gets called by the parser. The
+  //  callback is always invoked (when an option is specified, when an option
+  //  is not specified and when a default value is assigned to the option)
+  //  ==> add Notify(Callback) to ValueDescriptor class
+  //  - Allow for the callback to be setup to be called on every value instead
+  //  of when the final value(s) is(are) determined at the ned of parsing
+  //  ==> add NotifyOnEachValue(Callback) to ValueDescriptor class
 };
 
 } // namespace asap::clap
