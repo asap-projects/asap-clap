@@ -6,10 +6,10 @@
 
 #include "parser/tokenizer.h"
 
-#include "common/compilers.h"
+#include <gmock/gmock.h>
+#include <gtest/gtest.h>
 
-#include "gmock/gmock-more-matchers.h"
-#include "gtest/gtest.h"
+#include <common/compilers.h>
 
 // Disable compiler and linter warnings originating from the unit test framework
 // and for which we cannot do anything. Additionally, every TEST or TEST_X macro
@@ -23,8 +23,6 @@ ASAP_DIAGNOSTIC_PUSH
 // NOLINTBEGIN(used-but-marked-unused)
 
 using testing::Eq;
-using testing::IsFalse;
-using testing::IsTrue;
 using testing::Ne;
 
 namespace asap::clap::parser {
@@ -42,7 +40,7 @@ TEST_P(TokenizerTest, ProduceExpectedTokens) {
 
   std::for_each(tokens.cbegin(), tokens.cend(),
       [&tokenizer](const Token &expected_token) {
-        auto token = tokenizer.NextToken();
+        const auto token = tokenizer.NextToken();
         EXPECT_THAT(token.first, Eq(expected_token.first));
         EXPECT_THAT(token.second, Eq(expected_token.second));
       });
@@ -132,12 +130,12 @@ INSTANTIATE_TEST_SUITE_P(ValidArguments, TokenizerTest,
 // NOLINTNEXTLINE
 TEST_F(TokenizerTest, NextTokenWithNoToken) {
   {
-    Tokenizer tokenizer{{}};
+    const Tokenizer tokenizer{{}};
 
     ASSERT_THAT(tokenizer.NextToken().first, Eq(TokenType::EndOfInput));
   }
   {
-    Tokenizer tokenizer{{"hello"}};
+    const Tokenizer tokenizer{{"hello"}};
 
     ASSERT_THAT(tokenizer.NextToken().first, Ne(TokenType::EndOfInput));
     ASSERT_THAT(tokenizer.NextToken().first, Eq(TokenType::EndOfInput));
@@ -147,7 +145,7 @@ TEST_F(TokenizerTest, NextTokenWithNoToken) {
 // NOLINTNEXTLINE
 TEST(TokenizerExample, ComplexCommandLine) {
   //! [Tokenizer example]
-  Tokenizer tokenizer{{"doit", "-flv", "--host", "192.168.10.2:8080",
+  const Tokenizer tokenizer{{"doit", "-flv", "--host", "192.168.10.2:8080",
       "--allowed_ips=10.0.0.0/8,172.16.0.1/16", "--allowed_ids", "one,two",
       "now"}};
 
@@ -163,3 +161,5 @@ TEST(TokenizerExample, ComplexCommandLine) {
 } // namespace
 
 } // namespace asap::clap::parser
+ASAP_DIAGNOSTIC_POP
+// NOLINTEND(used-but-marked-unused)

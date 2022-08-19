@@ -12,6 +12,9 @@
 
 #include "errors.h"
 
+#include <numeric>
+#include <utility>
+
 #include <common/compilers.h>
 #include <contract/contract.h>
 
@@ -26,9 +29,6 @@ ASAP_DIAGNOSTIC_PUSH
 #include <fmt/core.h>
 #include <fmt/format.h>
 ASAP_DIAGNOSTIC_POP
-
-#include <numeric>
-#include <utility>
 
 namespace {
 void AppendOptionalMessage(std::string &description, const char *message) {

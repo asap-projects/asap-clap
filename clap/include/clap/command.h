@@ -13,16 +13,15 @@
 
 #pragma once
 
-#include <clap/asap_clap_api.h>
-#include <clap/option.h>
-
 #include <algorithm>
-#include <iostream>
 #include <memory>
 #include <optional>
 #include <string>
 #include <utility>
 #include <vector>
+
+#include "clap/asap_clap_api.h"
+#include "clap/option.h"
 
 /// Namespace for command line parsing related APIs.
 namespace asap::clap {
@@ -143,7 +142,7 @@ public:
     return *this;
   }
 
-  auto WithOption(std::shared_ptr<Option> option) -> Command & {
+  auto WithOption(const std::shared_ptr<Option> &option) -> Command & {
     options_.emplace_back(option);
     options_in_groups_.push_back(false);
     return *this;
@@ -157,7 +156,7 @@ public:
 
   [[nodiscard]] auto FindShortOption(const std::string &name) const
       -> std::optional<std::shared_ptr<Option>> {
-    auto result = std::find_if(options_.cbegin(), options_.cend(),
+    const auto result = std::find_if(options_.cbegin(), options_.cend(),
         [&name](const Option::Ptr &option) { return option->Short() == name; });
     if (result == options_.cend()) {
       return {};
@@ -167,7 +166,7 @@ public:
 
   [[nodiscard]] auto FindLongOption(const std::string &name) const
       -> std::optional<std::shared_ptr<Option>> {
-    auto result = std::find_if(options_.cbegin(), options_.cend(),
+    const auto result = std::find_if(options_.cbegin(), options_.cend(),
         [&name](const Option::Ptr &option) { return option->Long() == name; });
     if (result == options_.cend()) {
       return {};

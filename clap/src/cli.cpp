@@ -10,12 +10,12 @@
  * \brief Implementation details for the clap CommandLine.
  */
 
-#include "parser/parser.h"
-#include "parser/tokenizer.h"
+#include "clap/cli.h"
 
-#include <clap/cli.h>
-#include <contract/contract.h>
+#include <sstream>
 
+#include <common/compilers.h>
+#include <gsl/gsl>
 #include <textwrap/textwrap.h>
 
 // Disable compiler and linter warnings originating from 'fmt' and for which we
@@ -27,53 +27,25 @@ ASAP_DIAGNOSTIC_PUSH
 #include <fmt/core.h>
 ASAP_DIAGNOSTIC_POP
 
-#include <gsl/gsl>
+#include "clap/detail/args.h"
+#include "parser/parser.h"
+#include "parser/tokenizer.h"
+
+using asap::clap::detail::Arguments;
 
 namespace asap::clap {
 
-class ArgumentsImpl {
-public:
-  ArgumentsImpl(int argc, const char **argv) {
-    ASAP_EXPECT(argc > 0);
-    ASAP_EXPECT(argv != nullptr);
-
-    auto s_argv = gsl::span(argv, static_cast<size_t>(argc));
-    // Extract the program name from the first argument (should always be there)
-    // and keep the rest of the arguments for later parsing
-    program_name.assign(s_argv[0]);
-    if (argc > 1) {
-      args.assign(++s_argv.begin(), s_argv.end());
-    }
-
-    ASAP_ENSURE(!program_name.empty());
-  }
-
-  std::string program_name;
-  std::vector<std::string> args{};
-};
-
-Arguments::Arguments(int argc, const char **argv)
-    : impl_(new ArgumentsImpl(argc, argv),
-          // NOLINTNEXTLINE(cppcoreguidelines-owning-memory)
-          [](ArgumentsImpl *impl) { delete impl; }) {
-}
-
-auto Arguments::ProgramName() const -> const std::string & {
-  return impl_->program_name;
-}
-auto Arguments::Args() const -> const std::vector<std::string> & {
-  return impl_->args;
-}
+CmdLineArgumentsError::~CmdLineArgumentsError() = default;
 
 auto Cli::Parse(int argc, const char **argv) -> const OptionValuesMap & {
-  Arguments cla{argc, argv};
+  const Arguments cla{argc, argv};
 
   if (!program_name_) {
     program_name_ = cla.ProgramName();
   }
 
   const parser::Tokenizer tokenizer{cla.Args()};
-  CommandLineContext context(ProgramName(), ovm_);
+  const CommandLineContext context(ProgramName(), ovm_);
   parser::CmdLineParser parser(context, tokenizer, commands_);
   if (parser.Parse()) {
     return ovm_;
@@ -83,7 +55,10 @@ auto Cli::Parse(int argc, const char **argv) -> const OptionValuesMap & {
                         program_name_.value())
                  << std::endl;
   }
-  throw CmdLineArgumentsError();
+  throw CmdLineArgumentsError(
+      fmt::format("command line arguments parsing failed, try '{} --help' for "
+                  "more information.",
+          program_name_.value()));
 }
 auto operator<<(std::ostream &out, const Cli &cli) -> std::ostream & {
   cli.Print(out);

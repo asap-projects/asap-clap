@@ -4,14 +4,14 @@
 // SPDX-License-Identifier: BSD-3-Clause
 //===----------------------------------------------------------------------===//
 
-#include "clap/command.h"
 #include "clap/with_usage.h"
-
-#include <common/compilers.h>
 
 #include <gmock/gmock.h>
 #include <gtest/gtest.h>
-#include <type_traits>
+
+#include <common/compilers.h>
+
+#include "clap/command.h"
 
 // Disable compiler and linter warnings originating from the unit test framework
 // and for which we cannot do anything. Additionally, every TEST or TEST_X macro
@@ -25,7 +25,6 @@ ASAP_DIAGNOSTIC_PUSH
 // NOLINTBEGIN(used-but-marked-unused)
 
 using testing::Eq;
-using testing::IsTrue;
 
 namespace asap::clap {
 
@@ -38,11 +37,12 @@ TEST(WithUsage, AddUsageDetails) {
   public:
     MyCommand() : Command(DEFAULT), Mixin("Detailed usage help") {
     }
-    auto UsageDetails() -> const std::string & {
+
+    [[nodiscard]] auto UsageDetails() const -> const std::string & {
       return usage_details;
     }
   };
-  MyCommand cmd;
+  const MyCommand cmd;
   EXPECT_THAT(cmd.UsageDetails(), Eq("Detailed usage help"));
 }
 
@@ -53,11 +53,12 @@ TEST(WithUsage, AddUsageExamples) {
   public:
     MyCommand() : Command(DEFAULT), Mixin("Usage examples") {
     }
-    auto UsageExamples() -> const std::string & {
+
+    [[nodiscard]] auto UsageExamples() const -> const std::string & {
       return usage_examples;
     }
   };
-  MyCommand cmd;
+  const MyCommand cmd;
   EXPECT_THAT(cmd.UsageExamples(), Eq("Usage examples"));
 }
 

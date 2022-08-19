@@ -11,12 +11,14 @@
  */
 
 #include "parser.h"
-#include "events.h"
-#include "states.h"
-#include "tokenizer.h"
 
 #include <contract/contract.h>
 #include <fsm/fsm.h>
+#include <logging/logging.h>
+
+#include "events.h"
+#include "states.h"
+#include "tokenizer.h"
 
 using asap::fsm::Continue;
 using asap::fsm::ReissueEvent;
@@ -47,8 +49,7 @@ struct Overload : Ts... {
 template <class... Ts> Overload(Ts...) -> Overload<Ts...>;
 
 auto asap::clap::parser::CmdLineParser::Parse() -> bool {
-  // auto &logger =
-  // asap::logging::Registry::instance().GetLogger("CmdLineParser");
+  auto &logger = asap::logging::Registry::GetLogger("CmdLineParser");
 
   auto machine = Machine{InitialState{context_}, IdentifyCommandState{},
       ParseOptionsState{}, ParseShortOptionState{}, ParseLongOptionState{},
@@ -60,8 +61,8 @@ auto asap::clap::parser::CmdLineParser::Parse() -> bool {
   bool reissue = false;
   do {
     const auto &[token_type, token_value] = token;
-    // ASLOG_TO_LOGGER(
-    //     logger, debug, "next event: {}/{}", token.first, token.second);
+    ASLOG_TO_LOGGER(
+        logger, debug, "next event: {}/{}", token.first, token.second);
 
     Status execution_status;
 
@@ -105,10 +106,9 @@ auto asap::clap::parser::CmdLineParser::Parse() -> bool {
                      continue_running = false;
                    },
                    //  [this, &continue_running, &no_errors, &logger](
-                   [this, &continue_running, &no_errors](
+                   [this, &continue_running, &no_errors, &logger](
                        const TerminateWithError &status) {
-                     //  ASLOG_TO_LOGGER(logger, error, "{}",
-                     //  status.error_message);
+                     ASLOG_TO_LOGGER(logger, error, "{}", status.error_message);
                      context_->err_
                          << fmt::format("{}: {}", context_->program_name_,
                                 status.error_message)
@@ -128,9 +128,8 @@ auto asap::clap::parser::CmdLineParser::Parse() -> bool {
       if (reissue) {
         reissue = false;
         // reuse the same token again
-        // ASLOG_TO_LOGGER(logger, debug, "re-issuing event({}/{}) as
-        // requested",
-        //     token_type, token_value);
+        ASLOG_TO_LOGGER(logger, debug, "re-issuing event({}/{}) as requested ",
+            token_type, token_value);
       } else {
         ASAP_ASSERT(token.first != TokenType::EndOfInput);
         token = tokenizer_.NextToken();

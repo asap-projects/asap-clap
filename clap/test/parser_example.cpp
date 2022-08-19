@@ -4,15 +4,14 @@
 // SPDX-License-Identifier: BSD-3-Clause
 //===----------------------------------------------------------------------===//
 
-#include "parser/parser.h"
-#include "parser/tokenizer.h"
-
-#include <clap/fluent/dsl.h>
+#include <gmock/gmock.h>
+#include <gtest/gtest.h>
 
 #include <common/compilers.h>
 
-#include <gmock/gmock.h>
-#include <gtest/gtest.h>
+#include "clap/fluent/dsl.h"
+#include "parser/parser.h"
+#include "parser/tokenizer.h"
 
 // Disable compiler and linter warnings originating from the unit test framework
 // and for which we cannot do anything. Additionally, every TEST or TEST_X macro
@@ -25,8 +24,6 @@ ASAP_DIAGNOSTIC_PUSH
 #endif
 // NOLINTBEGIN(used-but-marked-unused)
 
-using testing::Eq;
-using testing::IsFalse;
 using testing::IsTrue;
 
 namespace asap::clap::parser {
@@ -36,7 +33,7 @@ namespace {
 // NOLINTNEXTLINE
 TEST(ParserExample, ComplexCommandLine) {
 
-  auto common_options = std::make_shared<Options>("Common options");
+  const auto common_options = std::make_shared<Options>("Common options");
 
   common_options->Add(Option::WithName("verbose")
                           .Short("v")
@@ -44,14 +41,14 @@ TEST(ParserExample, ComplexCommandLine) {
                           .WithValue<bool>()
                           .Build());
 
-  auto default_command = std::make_shared<Command>(Command::DEFAULT);
+  const auto default_command = std::make_shared<Command>(Command::DEFAULT);
   default_command->WithOptions(common_options);
   default_command->WithOption(Option::WithName("INPUT")
                                   .About("The input file")
                                   .WithValue<std::string>()
                                   .Build());
 
-  auto just_command = std::make_shared<Command>("just", "hello");
+  const auto just_command = std::make_shared<Command>("just", "hello");
   just_command->WithOptions(common_options, /* hidden */ true);
   just_command->WithOption(Option::WithName("first_opt")
                                .About("The first option")
@@ -70,7 +67,7 @@ TEST(ParserExample, ComplexCommandLine) {
                                .ImplicitValue("1")
                                .Build());
 
-  auto doit_command = std::make_shared<Command>("just", "do", "it");
+  const auto doit_command = std::make_shared<Command>("just", "do", "it");
   doit_command->WithOption(Option::WithName("third_opt")
                                .About("The third option")
                                .Short("t")
@@ -78,7 +75,7 @@ TEST(ParserExample, ComplexCommandLine) {
                                .WithValue<unsigned>()
                                .Build());
 
-  std::vector<std::shared_ptr<Command>> commands{
+  const std::vector<std::shared_ptr<Command>> commands{
       default_command, just_command, doit_command};
 
   // const Tokenizer tokenizer{{"just", "do", "it", "-t", "2222"}};
@@ -88,12 +85,14 @@ TEST(ParserExample, ComplexCommandLine) {
       //        "--allowed_ids", "one,two", "now"
   }};
   OptionValuesMap ovm;
-  CommandLineContext context("parser-test", ovm);
+  const CommandLineContext context("parser-test", ovm);
   CmdLineParser parser(context, tokenizer, commands);
-  auto success = parser.Parse();
+  const auto success = parser.Parse();
   ASSERT_THAT(success, IsTrue());
 }
 
 } // namespace
 
 } // namespace asap::clap::parser
+ASAP_DIAGNOSTIC_POP
+// NOLINTEND(used-but-marked-unused)

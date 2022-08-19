@@ -13,10 +13,10 @@
 
 #pragma once
 
+#include <memory>
+
 #include "clap/command.h"
 #include "clap/command_line_context.h"
-
-#include <memory>
 
 namespace asap::clap::parser::detail {
 

@@ -4,18 +4,18 @@
 // SPDX-License-Identifier: BSD-3-Clause
 //===----------------------------------------------------------------------===//
 
-#include <clap/cli.h>
-#include <clap/command.h>
-#include <clap/fluent/dsl.h>
-#include <clap/option.h>
-
-#include <common/compilers.h>
-
 #include <array>
 #include <memory>
 
-#include "gmock/gmock-more-matchers.h"
-#include "gtest/gtest.h"
+#include <gmock/gmock.h>
+#include <gtest/gtest.h>
+
+#include <common/compilers.h>
+
+#include "clap/cli.h"
+#include "clap/command.h"
+#include "clap/fluent/dsl.h"
+#include "clap/option.h"
 
 // Disable compiler and linter warnings originating from the unit test framework
 // and for which we cannot do anything. Additionally, every TEST or TEST_X macro
@@ -29,7 +29,6 @@ ASAP_DIAGNOSTIC_PUSH
 // NOLINTBEGIN(used-but-marked-unused)
 
 using ::testing::Eq;
-using ::testing::IsTrue;
 
 namespace asap::clap {
 
@@ -69,7 +68,7 @@ TEST(PositionalArgumentsTest, JustRest) {
   std::array<const char *, argc> argv{
       "/usr/bin/test-program.exe", "r_1", "r_2", "r_3", "r_4"};
 
-  auto default_command = std::make_shared<Command>(Command::DEFAULT);
+  const auto default_command = std::make_shared<Command>(Command::DEFAULT);
   default_command->WithPositionals(MakeRest());
 
   Cli cli;
@@ -117,7 +116,7 @@ TEST(PositionalArgumentsTest, AfterRest) {
   std::array<const char *, argc> argv{
       "/usr/bin/test-program.exe", "r_1", "r_2", "r_3", "a_1"};
 
-  auto default_command = std::make_shared<Command>(Command::DEFAULT);
+  const auto default_command = std::make_shared<Command>(Command::DEFAULT);
   default_command->WithPositionals(MakeRest(), MakeAfter_1());
 
   Cli cli;
@@ -167,7 +166,7 @@ TEST(PositionalArgumentsTest, UnexpectedPositionals) {
   constexpr auto argc = 2;
   std::array<const char *, argc> argv{"/usr/bin/test-program.exe", "pos"};
 
-  auto default_command = std::make_shared<Command>(Command::DEFAULT);
+  const auto default_command = std::make_shared<Command>(Command::DEFAULT);
 
   Cli cli;
   cli.ProgramName("positionals").WithCommand(default_command);

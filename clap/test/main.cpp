@@ -5,13 +5,12 @@
 //===----------------------------------------------------------------------===//
 
 #include <contract/ut/gtest.h>
-// #include <logging/logging.h>
+#include <logging/logging.h>
 
 #include <gmock/gmock.h>
 
 auto main(int argc, char *argv[]) -> int {
-  // asap::logging::Registry::instance().SetLogLevel(
-  //     asap::logging::Logger::Level::off);
+  asap::logging::Registry::SetLogLevel(spdlog::level::off);
 
   asap::contract::PrepareForTesting();
   testing::InitGoogleTest(&argc, argv);

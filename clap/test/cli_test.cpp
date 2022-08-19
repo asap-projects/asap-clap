@@ -4,11 +4,14 @@
 // SPDX-License-Identifier: BSD-3-Clause
 //===----------------------------------------------------------------------===//
 
-#include <clap/cli.h>
-#include <clap/command.h>
-#include <clap/fluent/dsl.h>
-#include <clap/option.h>
-#include <clap/with_usage.h>
+#include "clap/cli.h"
+
+#include <algorithm>
+#include <array>
+#include <memory>
+
+#include <gmock/gmock.h>
+#include <gtest/gtest.h>
 
 #include <common/compilers.h>
 #include <mixin/mixin.h>
@@ -22,12 +25,6 @@ ASAP_DIAGNOSTIC_PUSH
 #include <fmt/core.h>
 ASAP_DIAGNOSTIC_POP
 
-#include <array>
-#include <memory>
-
-#include <gmock/gmock-more-matchers.h>
-#include <gtest/gtest.h>
-
 // Disable compiler and linter warnings originating from the unit test framework
 // and for which we cannot do anything. Additionally, every TEST or TEST_X macro
 // usage must be preceded by a '// NOLINTNEXTLINE'.
@@ -38,6 +35,11 @@ ASAP_DIAGNOSTIC_PUSH
 #pragma clang diagnostic ignored "-Wunused-member-function"
 #endif
 // NOLINTBEGIN(used-but-marked-unused)
+
+#include "clap/command.h"
+#include "clap/fluent/dsl.h"
+#include "clap/option.h"
+#include "clap/with_usage.h"
 
 using ::testing::Eq;
 using ::testing::IsTrue;
@@ -115,7 +117,7 @@ public:
   auto CommandLine() -> Cli & override {
     if (!cli_) {
       cli_.emplace();
-      auto command = MakeCommand(Command::DEFAULT);
+      const auto command = MakeCommand(Command::DEFAULT);
       command->WithOptions(CommonOptions());
       cli_->ProgramName(ProgramName())
           .Version("1.1.0")
@@ -188,13 +190,13 @@ private:
 // NOLINTNEXTLINE(cppcoreguidelines-special-member-functions,hicpp-special-member-functions)
 class PaintCli : public BaseCli {
 public:
-  enum class Color { red = 1, blue = 2, green = 3 };
+  enum class Color { red = 1, green = 2, blue = 3 };
 
   virtual ~PaintCli() = default;
   auto CommandLine() -> Cli & override {
     if (!cli_) {
       cli_.emplace();
-      auto command = MakeCommand(Command::DEFAULT);
+      const auto command = MakeCommand(Command::DEFAULT);
       command->WithOptions(CommonOptions());
       cli_->ProgramName(ProgramName())
           .Version("1.0.0")
@@ -326,7 +328,7 @@ TEST(CommandLineTest, Test) {
     const auto &matches = cli.CommandLine().Parse(argc, argv.data());
     const auto &values = matches.ValuesOf(("version"));
     EXPECT_THAT(values.size(), Eq(1));
-    EXPECT_THAT(values.at(0).GetAs<bool>(), testing::IsTrue());
+    EXPECT_THAT(values.at(0).GetAs<bool>(), IsTrue());
   }
   {
     constexpr size_t argc = 2;
@@ -337,7 +339,7 @@ TEST(CommandLineTest, Test) {
     const auto &matches = cli.CommandLine().Parse(argc, argv.data());
     const auto &values = matches.ValuesOf(("version"));
     EXPECT_THAT(values.size(), Eq(1));
-    EXPECT_THAT(values.at(0).GetAs<bool>(), testing::IsTrue());
+    EXPECT_THAT(values.at(0).GetAs<bool>(), IsTrue());
   }
   {
     constexpr size_t argc = 8;
@@ -352,6 +354,8 @@ TEST(CommandLineTest, Test) {
         values.at(0).GetAs<PaintCli::Color>(), Eq(PaintCli::Color::red));
     EXPECT_THAT(
         values.at(1).GetAs<PaintCli::Color>(), Eq(PaintCli::Color::green));
+    EXPECT_THAT(
+        values.at(2).GetAs<PaintCli::Color>(), Eq(PaintCli::Color::blue));
   }
 }
 

@@ -7,7 +7,7 @@
 /*!
  * \file
  *
- * \brief OptionValue class interface.
+ * \brief OptionValue class, representing a value for a command line option.
  */
 
 #pragma once

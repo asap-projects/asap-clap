@@ -6,10 +6,10 @@
 
 #include "./test_helpers.h"
 
-#include <common/compilers.h>
-
 #include <gmock/gmock.h>
 #include <gtest/gtest.h>
+
+#include <common/compilers.h>
 
 // Disable compiler and linter warnings originating from the unit test framework
 // and for which we cannot do anything. Additionally, every TEST or TEST_X macro
@@ -21,10 +21,6 @@ ASAP_DIAGNOSTIC_PUSH
 #pragma clang diagnostic ignored "-Wunused-member-function"
 #endif
 // NOLINTBEGIN(used-but-marked-unused)
-
-using ::testing::Eq;
-using ::testing::IsTrue;
-using ::testing::StartsWith;
 
 namespace asap::clap::parser::detail {
 namespace {
@@ -42,10 +38,10 @@ protected:
   void DoCheckStateAfterLastToken(const TestValueType &test_value) {
     const auto &[command_paths, args, action_check, state_check] = test_value;
 
-    Tokenizer tokenizer(args);
+    const Tokenizer tokenizer(args);
     const auto commands = BuildCommands(command_paths);
     OptionValuesMap ovm;
-    CommandLineContext base_context("test", ovm);
+    const CommandLineContext base_context("test", ovm);
     auto context = ParserContext::New(base_context, commands);
     SetupInitialState(context);
     std::get<InitialStateTestData>(state_check).Check(state());
@@ -248,16 +244,18 @@ INSTANTIATE_TEST_SUITE_P(IllFormedScenarios, InitialStateErrorsTest,
 
 // NOLINTNEXTLINE
 TEST_P(InitialStateTransitionsTest, CheckStateAfterLastToken) {
-  auto test_value = GetParam();
+  const auto test_value = GetParam();
   DoCheckStateAfterLastToken(test_value);
 }
 
 // NOLINTNEXTLINE
 TEST_P(InitialStateErrorsTest, CheckStateAfterLastToken) {
-  auto test_value = GetParam();
+  const auto test_value = GetParam();
   DoCheckStateAfterLastToken(test_value);
 }
 
 } // namespace
 
 } // namespace asap::clap::parser::detail
+ASAP_DIAGNOSTIC_POP
+// NOLINTEND(used-but-marked-unused)

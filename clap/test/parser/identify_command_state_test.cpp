@@ -6,10 +6,10 @@
 
 #include "./test_helpers.h"
 
-#include <common/compilers.h>
-
 #include <gmock/gmock.h>
 #include <gtest/gtest.h>
+
+#include <common/compilers.h>
 
 // Disable compiler and linter warnings originating from the unit test framework
 // and for which we cannot do anything. Additionally, every TEST or TEST_X macro
@@ -23,8 +23,6 @@ ASAP_DIAGNOSTIC_PUSH
 // NOLINTBEGIN(used-but-marked-unused)
 
 using ::testing::Eq;
-using ::testing::IsTrue;
-using ::testing::StartsWith;
 
 namespace asap::clap::parser::detail {
 
@@ -37,15 +35,15 @@ protected:
     state_ = std::make_unique<IdentifyCommandState>();
   }
 
-  void EnterState(const Token &token, const ParserContextPtr &context) {
+  void EnterState(const Token &token, const ParserContextPtr &context) const {
     const auto &[token_type, token_value] = token;
     EXPECT_THAT(token_type, Eq(TokenType::Value));
-    auto first_event = TokenEvent<TokenType::Value>(token_value);
+    const auto first_event = TokenEvent<TokenType::Value>(token_value);
     state_->OnEnter(first_event, context);
   }
 
   void LeaveState() const override {
-    auto last_event = TokenEvent<TokenType::EndOfInput>("");
+    const auto last_event = TokenEvent<TokenType::EndOfInput>("");
     state_->OnLeave(last_event);
   }
 
@@ -57,11 +55,11 @@ protected:
   void DoCheckStateAfterLastToken(const TestValueType &test_value) {
     const auto &[command_paths, args, action_check, state_check] = test_value;
 
-    Tokenizer tokenizer(args);
+    const Tokenizer tokenizer(args);
     const auto commands = BuildCommands(command_paths);
     OptionValuesMap ovm;
-    CommandLineContext base_context("test", ovm);
-    auto context = ParserContext::New(base_context, commands);
+    const CommandLineContext base_context("test", ovm);
+    const auto context = ParserContext::New(base_context, commands);
     EnterState(tokenizer.NextToken(), context);
     while (true) {
       auto token = tokenizer.NextToken();
@@ -262,20 +260,20 @@ INSTANTIATE_TEST_SUITE_P(IllFormedScenarios, IdentifyCommandStateErrorsTest,
 
 // NOLINTNEXTLINE
 TEST_P(IdentifyCommandStateTransitionsTest, CheckStateAfterLastToken) {
-  auto test_value = GetParam();
+  const auto test_value = GetParam();
   DoCheckStateAfterLastToken(test_value);
 }
 
 // NOLINTNEXTLINE
 TEST_P(IdentifyCommandStateErrorsTest, CheckStateAfterLastToken) {
-  auto test_value = GetParam();
+  const auto test_value = GetParam();
   DoCheckStateAfterLastToken(test_value);
 }
 
 // NOLINTNEXTLINE
 TEST_F(IdentifyCommandStateTest, OnLeaveResetsTheState) {
-  auto test_value = TestValueType{{"default", "just do it"}, {"just", "do"},
-      ParseOptionsTransitionTestData{"default", {"just", "do"}},
+  const auto test_value = TestValueType{{"default", "just do it"},
+      {"just", "do"}, ParseOptionsTransitionTestData{"default", {"just", "do"}},
       IdentifyCommandStateTestData{}};
   DoCheckStateAfterLastToken(test_value);
   DoCheckStateAfterLastToken(test_value);
@@ -283,3 +281,5 @@ TEST_F(IdentifyCommandStateTest, OnLeaveResetsTheState) {
 } // namespace
 
 } // namespace asap::clap::parser::detail
+ASAP_DIAGNOSTIC_POP
+// NOLINTEND(used-but-marked-unused)

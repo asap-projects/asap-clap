@@ -7,15 +7,17 @@
 /*!
  * \file
  *
- * \brief Option value sematincs builder fluent API.
+ * \brief Option value semantics builder fluent API.
  */
 
 #pragma once
 
-#include "clap/detail/value_descriptor.h"
-#include <clap/fluent/option_builder.h>
-
 #include <memory>
+
+#include <contract/contract.h>
+
+#include "clap/detail/value_descriptor.h"
+#include "clap/fluent/option_builder.h"
 
 namespace asap::clap {
 

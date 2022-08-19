@@ -6,15 +6,15 @@
 
 #include "./test_helpers.h"
 
+#include <gmock/gmock.h>
+#include <gtest/gtest.h>
+
 #include <common/compilers.h>
 #if defined(ASAP_IS_DEBUG_BUILD)
 #include <contract/ut/gtest.h>
 #endif
 
-#include <clap/fluent/dsl.h>
-
-#include <gmock/gmock.h>
-#include <gtest/gtest.h>
+#include "clap/fluent/dsl.h"
 
 // Disable compiler and linter warnings originating from the unit test framework
 // and for which we cannot do anything. Additionally, every TEST or TEST_X macro
@@ -27,8 +27,6 @@ ASAP_DIAGNOSTIC_PUSH
 #endif
 // NOLINTBEGIN(used-but-marked-unused)
 
-using testing::Eq;
-using testing::IsFalse;
 using testing::IsTrue;
 
 namespace asap::clap::parser::detail {
@@ -38,7 +36,7 @@ namespace {
 class ParseOptionsStateTest : public StateTest {
 public:
   static void SetUpTestSuite() {
-    auto my_command = std::make_shared<Command>("with-options");
+    const auto my_command = std::make_shared<Command>("with-options");
     my_command->WithOption(Option::WithName("first_opt")
                                .About("The first option")
                                .Short("f")
@@ -64,36 +62,37 @@ protected:
     state_ = std::make_unique<ParseOptionsState>();
   }
 
-  auto EnterState(const Token &token, const ParserContextPtr &context)
-      -> Status {
+  [[nodiscard]] auto EnterState(
+      const Token &token, const ParserContextPtr &context) const -> Status {
     ASAP_EXPECT(context->active_command);
 
     const auto &[token_type, token_value] = token;
     switch (token_type) {
     case TokenType::ShortOption: {
-      auto first_event = TokenEvent<TokenType::ShortOption>(token_value);
+      const auto first_event = TokenEvent<TokenType::ShortOption>(token_value);
       return state_->OnEnter(first_event, context);
     }
     case TokenType::LongOption: {
-      auto first_event = TokenEvent<TokenType::LongOption>(token_value);
+      const auto first_event = TokenEvent<TokenType::LongOption>(token_value);
       return state_->OnEnter(first_event, context);
     }
     case TokenType::LoneDash: {
-      auto first_event = TokenEvent<TokenType::LoneDash>(token_value);
+      const auto first_event = TokenEvent<TokenType::LoneDash>(token_value);
       return state_->OnEnter(first_event, context);
     }
     case TokenType::DashDash: {
-      auto first_event = TokenEvent<TokenType::DashDash>(token_value);
+      const auto first_event = TokenEvent<TokenType::DashDash>(token_value);
       return state_->OnEnter(first_event, context);
     }
     case TokenType::Value: {
-      auto first_event = TokenEvent<TokenType::Value>(token_value);
+      const auto first_event = TokenEvent<TokenType::Value>(token_value);
       return state_->OnEnter(first_event, context);
     }
-    default:
-      return TerminateWithError{
-          "Illegal token used to enter ParseOptionsState"};
+      // The following token types are not allowed
+    case TokenType::EqualSign:
+    case TokenType::EndOfInput:;
     }
+    return TerminateWithError{"Illegal token used to enter ParseOptionsState"};
   }
 
   auto state() -> std::unique_ptr<ParseOptionsState> & {
@@ -181,10 +180,10 @@ TEST_P(ParseOptionsStateTransitionsTest, CheckStateAfterLastToken) {
 #if defined(ASAP_IS_DEBUG_BUILD)
 // NOLINTNEXTLINE
 TEST(ParseOptionsStateContractTests, EnteringWithEndOfInputBreaksContract) {
-  auto state = std::make_unique<ParseOptionsState>();
-  auto event = TokenEvent<TokenType::EndOfInput>("");
+  const auto state = std::make_unique<ParseOptionsState>();
+  const auto event = TokenEvent<TokenType::EndOfInput>("");
   OptionValuesMap ovm;
-  CommandLineContext base_context("test", ovm);
+  const CommandLineContext base_context("test", ovm);
   auto context = ParserContext::New(
       base_context, {StateTest::predefined_commands().at("default")});
   CHECK_VIOLATES_CONTRACT(state->OnEnter(event, context));
@@ -192,18 +191,18 @@ TEST(ParseOptionsStateContractTests, EnteringWithEndOfInputBreaksContract) {
 
 // NOLINTNEXTLINE
 TEST(ParseOptionsStateContractTests, EnteringWithEmptyContextBreaksContract) {
-  auto state = std::make_unique<ParseOptionsState>();
-  auto event = TokenEvent<TokenType::Value>("xxx");
+  const auto state = std::make_unique<ParseOptionsState>();
+  const auto event = TokenEvent<TokenType::Value>("xxx");
   CHECK_VIOLATES_CONTRACT(state->OnEnter(event, {}));
 }
 
 // NOLINTNEXTLINE
 TEST(ParseOptionsStateContractTests,
     EnteringWithContextButNoActiveCommandBreaksContract) {
-  auto state = std::make_unique<ParseOptionsState>();
-  auto event = TokenEvent<TokenType::Value>("xxx");
+  const auto state = std::make_unique<ParseOptionsState>();
+  const auto event = TokenEvent<TokenType::Value>("xxx");
   OptionValuesMap ovm;
-  CommandLineContext base_context("test", ovm);
+  const CommandLineContext base_context("test", ovm);
   auto context = ParserContext::New(
       base_context, {StateTest::predefined_commands().at("default")});
   CHECK_VIOLATES_CONTRACT(state->OnEnter(event, {}));
@@ -212,8 +211,8 @@ TEST(ParseOptionsStateContractTests,
 // NOLINTNEXTLINE
 TEST(ParseOptionsStateContractTests,
     EnteringWithNoContextButNoExistingContextBreaksContract) {
-  auto state = std::make_unique<ParseOptionsState>();
-  auto event = TokenEvent<TokenType::Value>("xxx");
+  const auto state = std::make_unique<ParseOptionsState>();
+  const auto event = TokenEvent<TokenType::Value>("xxx");
   CHECK_VIOLATES_CONTRACT(state->OnEnter(event));
 }
 #endif // ASAP_IS_DEBUG_BUILD
@@ -221,3 +220,5 @@ TEST(ParseOptionsStateContractTests,
 } // namespace
 
 } // namespace asap::clap::parser::detail
+ASAP_DIAGNOSTIC_POP
+// NOLINTEND(used-but-marked-unused)

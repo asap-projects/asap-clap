@@ -7,25 +7,20 @@
 /*!
  * \file
  *
- * \brief Types and macros used for clap.
+ * \brief Types representing a command line option and a group of options.
  */
 
 #pragma once
 
-#include <clap/asap_clap_api.h>
-#include <clap/detail/parse_value.h>
-#include <clap/value_semantics.h>
-
-#include <contract/contract.h>
-
-#include <any>
-#include <functional>
 #include <memory>
 #include <ostream>
-#include <sstream>
 #include <string>
 #include <utility>
 #include <vector>
+
+#include "clap/asap_clap_api.h"
+#include "clap/detail/parse_value.h"
+#include "clap/value_semantics.h"
 
 namespace asap::clap {
 
@@ -181,7 +176,7 @@ struct Options {
   /** Adds new variable description. Throws duplicate_variable_error if
       either short or long name matches that of already present one.
   */
-  ASAP_CLAP_API void Add(std::shared_ptr<Option> option);
+  ASAP_CLAP_API void Add(const std::shared_ptr<Option> &option);
 
   auto begin() -> OptionsCollectionType::iterator {
     return options_.begin();

@@ -10,10 +10,11 @@
  * \brief Implementation details for Option and related types.
  */
 
+#include "clap/option.h"
+
 #include <utility>
 
-#include <clap/fluent/dsl.h>
-#include <clap/option.h>
+#include "clap/fluent/dsl.h"
 
 namespace asap::clap {
 
@@ -54,7 +55,7 @@ void Options::Print(std::ostream &out, unsigned int width) const {
   }
 }
 
-void Options::Add(std::shared_ptr<Option> option) {
+void Options::Add(const std::shared_ptr<Option> &option) {
   options_.emplace_back(option);
 }
 

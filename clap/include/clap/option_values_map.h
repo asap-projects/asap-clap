@@ -7,16 +7,17 @@
 /*!
  * \file
  *
- * \brief OptionValue class interface.
+ * \brief OptionValuesMap class, used to store values for command line options
+ * and find them easily using the option name as a key.
  */
 
 #pragma once
 
-#include <clap/option_value.h>
-
 #include <string>
 #include <unordered_map>
 #include <vector>
+
+#include "clap/option_value.h"
 
 namespace asap::clap {
 
@@ -33,7 +34,7 @@ public:
   ~OptionValuesMap() = default;
 
   void StoreValue(const std::string &option_name, OptionValue new_value) {
-    auto in_ovm = ovm_.find(option_name);
+    const auto in_ovm = ovm_.find(option_name);
     if (in_ovm != ovm_.end()) {
       auto &option_values = in_ovm->second;
       option_values.emplace_back(std::move(new_value));
@@ -53,8 +54,7 @@ public:
 
   [[nodiscard]] auto OccurrencesOf(const std::string &option_name) const
       -> size_t {
-    auto option = ovm_.find(option_name);
-    if (option != ovm_.cend()) {
+    if (const auto option = ovm_.find(option_name); option != ovm_.cend()) {
       return option->second.size();
     }
     return 0;

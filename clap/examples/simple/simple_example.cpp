@@ -4,10 +4,17 @@
 // SPDX-License-Identifier: BSD-3-Clause
 //===----------------------------------------------------------------------===//
 
-#include <clap/cli.h>
-#include <clap/fluent/dsl.h>
+/*!
+ * \file
+ *
+ * \brief A simple command line example to demonstrate the commonly used
+ * capabilities of asap::clap library.
+ */
+
 #include <iostream>
-#include <iterator>
+
+#include "clap/cli.h"
+#include "clap/fluent/dsl.h"
 
 using asap::clap::Cli;
 using asap::clap::Command;
@@ -20,7 +27,7 @@ auto main(int argc, const char **argv) -> int {
   // We could also use a specific command by providing a specific name
   // when creating the command.
 
-  auto command = std::make_shared<Command>(Command::DEFAULT);
+  const auto command = std::make_shared<Command>(Command::DEFAULT);
   //! [SimpleOptionFlag example]
   command->WithOption(
       // Define a boolean flag option to configure `quiet` mode for the program

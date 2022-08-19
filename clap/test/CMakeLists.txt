@@ -26,6 +26,7 @@ asap_add_test(
   "main.cpp"
   LINK
   asap::common
+  asap::logging
   asap::contract-ut
   asap::clap
   GSL

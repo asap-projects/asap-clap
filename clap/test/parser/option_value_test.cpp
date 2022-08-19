@@ -6,10 +6,10 @@
 
 #include "clap/option_value.h"
 
-#include "common/compilers.h"
-
 #include "gmock/gmock.h"
 #include "gtest/gtest.h"
+
+#include "common/compilers.h"
 
 // Disable compiler and linter warnings originating from the unit test framework
 // and for which we cannot do anything. Additionally, every TEST or TEST_X macro
@@ -42,7 +42,7 @@ TEST(OptionValuesTest, IsNotDefaultedWhenCreatedWithDefaultedFalse) {
 // NOLINTNEXTLINE
 TEST(OptionValuesTest, IsDefaultedWhenCreatedWithDefaultedTrue) {
   const std::any stored_value{123};
-  OptionValue value(stored_value, "123", true);
+  const OptionValue value(stored_value, "123", true);
   EXPECT_THAT(value.IsDefaulted(), IsTrue());
   const OptionValue const_value(stored_value, "123", true);
   EXPECT_THAT(const_value.IsDefaulted(), IsTrue());
@@ -51,7 +51,7 @@ TEST(OptionValuesTest, IsDefaultedWhenCreatedWithDefaultedTrue) {
 // NOLINTNEXTLINE
 TEST(OptionValuesTest, ReturnsOriginalToken) {
   const std::any stored_value{};
-  OptionValue value(stored_value, "123", false);
+  const OptionValue value(stored_value, "123", false);
   EXPECT_THAT(value.OriginalToken(), Eq("123"));
   const OptionValue const_value(stored_value, "123", false);
   EXPECT_THAT(const_value.OriginalToken(), Eq("123"));
@@ -61,7 +61,7 @@ TEST(OptionValuesTest, ReturnsOriginalToken) {
 TEST(OptionValuesTest, ReturnsStoredValue) {
   const std::any stored_value{123};
   OptionValue opt_value(stored_value, "123", false);
-  std::any &value = opt_value.Value();
+  const std::any &value = opt_value.Value();
   EXPECT_THAT(std::any_cast<int>(value), Eq(std::any_cast<int>(stored_value)));
   const OptionValue const_opt_value(stored_value, "123", false);
   const std::any &const_value = const_opt_value.Value();
@@ -73,7 +73,7 @@ TEST(OptionValuesTest, ReturnsStoredValue) {
 TEST(OptionValuesTest, ReturnsStoredValueWithCorrectType) {
   constexpr int stored_value{123};
   OptionValue opt_value(std::make_any<int>(stored_value), "123", false);
-  auto &value = opt_value.GetAs<int>();
+  const auto &value = opt_value.GetAs<int>();
   EXPECT_THAT(value, Eq(stored_value));
   const OptionValue const_opt_value(
       std::make_any<int>(stored_value), "123", false);
@@ -96,7 +96,7 @@ TEST(OptionValuesTest, GetAsThrowsWithIncorrectType) {
       std::make_any<int>(stored_value), "123", false);
   // NOLINTNEXTLINE(hicpp-avoid-goto, cppcoreguidelines-avoid-goto)
   EXPECT_THROW([[maybe_unused]] const auto &const_value =
-      const_opt_value.GetAs<std::string>(),
+                   const_opt_value.GetAs<std::string>(),
       std::bad_any_cast);
 }
 

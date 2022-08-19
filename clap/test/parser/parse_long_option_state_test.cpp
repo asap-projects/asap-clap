@@ -6,13 +6,13 @@
 
 #include "./test_helpers.h"
 
+#include <gmock/gmock.h>
+#include <gtest/gtest.h>
+
 #include <common/compilers.h>
 #include <contract/contract.h>
 
-#include <clap/fluent/dsl.h>
-
-#include <gmock/gmock.h>
-#include <gtest/gtest.h>
+#include "clap/fluent/dsl.h"
 
 // Disable compiler and linter warnings originating from the unit test framework
 // and for which we cannot do anything. Additionally, every TEST or TEST_X macro
@@ -25,10 +25,6 @@ ASAP_DIAGNOSTIC_PUSH
 #endif
 // NOLINTBEGIN(used-but-marked-unused)
 
-using testing::Eq;
-using testing::IsFalse;
-using testing::IsTrue;
-
 namespace asap::clap::parser::detail {
 
 namespace {
@@ -36,7 +32,7 @@ namespace {
 class ParseLongOptionStateTest : public StateTest {
 public:
   static void SetUpTestSuite() {
-    auto my_command = std::make_shared<Command>("with-options");
+    const auto my_command = std::make_shared<Command>("with-options");
     my_command->WithOption(Option::WithName("opt_no_val")
                                .About("Option that takes no values")
                                .Short("n")
@@ -69,12 +65,12 @@ protected:
     state_ = std::make_unique<ParseLongOptionState>();
   }
 
-  void EnterState(const Token &token, const ParserContextPtr &context) {
+  void EnterState(const Token &token, const ParserContextPtr &context) const {
     ASAP_EXPECT(context->active_command);
 
     const auto &[token_type, token_value] = token;
     if (token_type == TokenType::LongOption) {
-      auto first_event = TokenEvent<TokenType::LongOption>(token_value);
+      const auto first_event = TokenEvent<TokenType::LongOption>(token_value);
       state_->OnEnter(first_event, context);
     } else {
       FAIL() << "Illegal token used to enter ParseLongOptionState: "
@@ -83,7 +79,7 @@ protected:
   }
 
   void LeaveState() const override {
-    auto last_event = TokenEvent<TokenType::EndOfInput>("");
+    const auto last_event = TokenEvent<TokenType::EndOfInput>("");
     state_->OnLeave(last_event);
   }
 
@@ -93,10 +89,10 @@ protected:
   void DoCheckStateAfterLastToken(const TestValueType &test_value) {
     const auto &[command_paths, args, action_check, state_check] = test_value;
 
-    Tokenizer tokenizer(args);
+    const Tokenizer tokenizer(args);
     const auto commands = BuildCommands(command_paths);
-    CommandLineContext base_context("test", ovm_);
-    auto context = ParserContext::New(base_context, commands);
+    const CommandLineContext base_context("test", ovm_);
+    const auto context = ParserContext::New(base_context, commands);
     context->active_command = predefined_commands().at("with-options");
     auto token = tokenizer.NextToken();
     // NOLINTNEXTLINE(hicpp-avoid-goto, cppcoreguidelines-avoid-goto)
@@ -158,7 +154,7 @@ INSTANTIATE_TEST_SUITE_P(OptionTakesOptionalValue,
 
 // NOLINTNEXTLINE
 TEST_P(ParseLongOptionStateTransitionsTest, TransitionWithNoError) {
-  auto test_value = GetParam();
+  const auto test_value = GetParam();
   DoCheckStateAfterLastToken(test_value);
 }
 
@@ -204,3 +200,5 @@ TEST_P(ParseLongOptionStateUnrecognizedOptionTest, FailWithAnException) {
 } // namespace
 
 } // namespace asap::clap::parser::detail
+ASAP_DIAGNOSTIC_POP
+// NOLINTEND(used-but-marked-unused)

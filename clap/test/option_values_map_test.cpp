@@ -5,12 +5,11 @@
 //===----------------------------------------------------------------------===//
 
 #include "clap/option_values_map.h"
-#include "parser/errors.h"
-
-#include <common/compilers.h>
 
 #include <gmock/gmock.h>
 #include <gtest/gtest.h>
+
+#include <common/compilers.h>
 
 // Disable compiler and linter warnings originating from the unit test framework
 // and for which we cannot do anything. Additionally, every TEST or TEST_X macro
@@ -23,9 +22,7 @@ ASAP_DIAGNOSTIC_PUSH
 #endif
 // NOLINTBEGIN(used-but-marked-unused)
 
-using testing::Eq;
-using testing::IsFalse;
-using testing::IsTrue;
+#include "parser/errors.h"
 
 namespace asap::clap {
 
@@ -34,6 +31,8 @@ namespace {
 // NOLINTNEXTLINE
 TEST(OptionValuesMapTest, StoringAfterFinalThrows) {
   OptionValuesMap ovm;
+
+  // TODO(Abdessattar): write unit tests for ovm
 
   ovm.StoreValue("verbose", {std::make_any<bool>(true), "true", false});
   ovm.StoreValue("verbose", {std::make_any<bool>(true), "true", false});

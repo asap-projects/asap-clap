@@ -4,7 +4,13 @@
 // SPDX-License-Identifier: BSD-3-Clause
 //===----------------------------------------------------------------------===//
 
-#include "clap/cli.h"
+#include "clap/detail/args.h"
+
+#include <algorithm>
+#include <array>
+
+#include <gmock/gmock.h>
+#include <gtest/gtest.h>
 
 #include <common/compilers.h>
 #if defined(ASAP_IS_DEBUG_BUILD)
@@ -12,12 +18,6 @@
 #endif
 
 #include <gsl/gsl>
-
-#include <gmock/gmock.h>
-#include <gtest/gtest.h>
-
-#include <algorithm>
-#include <array>
 
 // Disable compiler and linter warnings originating from the unit test framework
 // and for which we cannot do anything. Additionally, every TEST or TEST_X macro
@@ -31,10 +31,9 @@ ASAP_DIAGNOSTIC_PUSH
 // NOLINTBEGIN(used-but-marked-unused)
 
 using testing::Eq;
-using testing::IsTrue;
 using testing::Ne;
 
-namespace asap::clap {
+namespace asap::clap::detail {
 
 namespace {
 
@@ -51,7 +50,7 @@ TEST(ConstructArguments, WithNonEmptyProgramName) {
 TEST(ConstructArguments, WithManyArgs) {
   constexpr auto argc = 4;
   std::array<const char *, 4> argv{"test", "-x", "--opt=value", "arg"};
-  Arguments cla{argc, argv.data()};
+  const Arguments cla{argc, argv.data()};
   EXPECT_THAT(cla.ProgramName(), Eq("test"));
   EXPECT_THAT(cla.Args().size(), Eq(3));
   for (int index = 1; index < argc; index++) {
@@ -79,7 +78,7 @@ TEST(ConstructArguments, WithEmptyProgramName) {
 
 } // namespace
 
-} // namespace asap::clap
+} // namespace asap::clap::detail
 
 // NOLINTEND(used-but-marked-unused)
 ASAP_DIAGNOSTIC_POP

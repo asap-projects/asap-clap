@@ -7,11 +7,12 @@
 #include "clap/detail/parse_value.h"
 
 #include <array>
-#include <common/compilers.h>
-
-#include <gmock/gmock-more-matchers.h>
-#include <gtest/gtest.h>
 #include <optional>
+
+#include <gmock/gmock.h>
+#include <gtest/gtest.h>
+
+#include <common/compilers.h>
 
 // Disable compiler and linter warnings originating from the unit test framework
 // and for which we cannot do anything. Additionally, every TEST or TEST_X macro

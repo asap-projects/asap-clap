@@ -12,18 +12,17 @@
 
 #pragma once
 
-#include "context.h"
-#include "errors.h"
-#include "events.h"
-#include "parser.h"
-#include "tokenizer.h"
+#include <utility>
 
-#include <clap/command.h>
+#include "clap/command.h"
 #include <common/compilers.h>
 #include <contract/contract.h>
 #include <fsm/fsm.h>
 
-#include <utility>
+#include "context.h"
+#include "errors.h"
+#include "events.h"
+#include "tokenizer.h"
 
 namespace asap::clap::parser::detail {
 
@@ -217,8 +216,8 @@ struct IdentifyCommandState {
 
     path_segments_.push_back(event.token);
 
-    auto commands_begin = Commands().cbegin();
-    auto commands_end = Commands().cend();
+    const auto commands_begin = Commands().cbegin();
+    const auto commands_end = Commands().cend();
     std::copy_if(commands_begin, commands_end,
         std::back_inserter(filtered_commands_),
         [this, &event](const CommandPtr &command) {
@@ -431,7 +430,7 @@ private:
 };
 
 inline auto TryImplicitValue(const ParserContextPtr &context) -> bool {
-  auto semantics = context->active_option->value_semantic();
+  const auto semantics = context->active_option->value_semantic();
   std::any value;
   std::string value_as_text;
   if (semantics->ApplyImplicit(value, value_as_text)) {
@@ -443,8 +442,9 @@ inline auto TryImplicitValue(const ParserContextPtr &context) -> bool {
 }
 
 inline void CheckMultipleOccurrence(const ParserContextPtr &context) {
-  auto semantics = context->active_option->value_semantic();
-  auto occurrences = context->ovm_.OccurrencesOf(context->active_option->Key());
+  const auto semantics = context->active_option->value_semantic();
+  const auto occurrences =
+      context->ovm_.OccurrencesOf(context->active_option->Key());
   if (occurrences > 0 && !semantics->IsRepeatable()) {
     // can not have this option anymore
     throw IllegalMultipleOccurrence(context);
@@ -520,7 +520,7 @@ struct ParseShortOptionState
   auto OnLeave(const TokenEvent<token_type> & /*event*/) -> Status {
     if (!value_) {
       if (!TryImplicitValue(context_)) {
-        auto semantics = context_->active_option->value_semantic();
+        const auto semantics = context_->active_option->value_semantic();
         if (semantics->IsRequired()) {
           throw MissingValueForOption(context_);
         }
@@ -534,7 +534,7 @@ struct ParseShortOptionState
   auto Handle(const TokenEvent<TokenType::Value> &event)
       -> OneOf<DoNothing, ReportError, TransitionTo<ParseOptionsState>> {
     ASAP_ASSERT(context_->active_option);
-    auto semantics = context_->active_option->value_semantic();
+    const auto semantics = context_->active_option->value_semantic();
     ASAP_ASSERT(semantics);
 
     // If we already accepted a value, we're done
@@ -622,7 +622,12 @@ struct ParseLongOptionState : Will<ByDefault<TransitionTo<ParseOptionsState>>> {
       context_->active_option_flag = "--" + event.token;
       option = context_->active_command->FindLongOption(event.token);
       break;
-    default:
+    case TokenType::ShortOption:
+    case TokenType::LoneDash:
+    case TokenType::DashDash:
+    case TokenType::Value:
+    case TokenType::EqualSign:
+    case TokenType::EndOfInput:
       // See contract assertions for entering this state
       ASAP_UNREACHABLE();
     }
@@ -638,7 +643,7 @@ struct ParseLongOptionState : Will<ByDefault<TransitionTo<ParseOptionsState>>> {
   auto OnLeave(const TokenEvent<token_type> & /*event*/) -> Status {
     if (!value_) {
       if (!TryImplicitValue(context_)) {
-        auto semantics = context_->active_option->value_semantic();
+        const auto semantics = context_->active_option->value_semantic();
         if (semantics->IsRequired()) {
           throw MissingValueForOption(context_);
         }
@@ -652,7 +657,7 @@ struct ParseLongOptionState : Will<ByDefault<TransitionTo<ParseOptionsState>>> {
   auto Handle(const TokenEvent<TokenType::EqualSign> & /*event*/)
       -> OneOf<DoNothing, ReportError> {
     ASAP_ASSERT(context_->active_option);
-    auto semantics = context_->active_option->value_semantic();
+    const auto semantics = context_->active_option->value_semantic();
     ASAP_ASSERT(semantics);
     after_equal_sign = true;
     return DoNothing{};
@@ -661,7 +666,7 @@ struct ParseLongOptionState : Will<ByDefault<TransitionTo<ParseOptionsState>>> {
   auto Handle(const TokenEvent<TokenType::Value> &event)
       -> OneOf<DoNothing, TransitionTo<ParseOptionsState>, ReportError> {
     ASAP_ASSERT(context_->active_option);
-    auto semantics = context_->active_option->value_semantic();
+    const auto semantics = context_->active_option->value_semantic();
     ASAP_ASSERT(semantics);
 
     if (value_) {
@@ -776,7 +781,7 @@ private:
     // Check if we have any required options with default values that were not
     // provided on the command line and use the defaults
     for (const auto &option : context_->active_command->Options()) {
-      auto semantics = option->value_semantic();
+      const auto semantics = option->value_semantic();
       if (!context_->ovm_.HasOption(option->Key())) {
         std::any value;
         std::string value_as_text;
@@ -793,7 +798,7 @@ private:
     }
   }
   void StorePositional(const OptionPtr &option, std::string token) {
-    auto semantics = option->value_semantic();
+    const auto semantics = option->value_semantic();
     ASAP_ASSERT(semantics);
     std::any value;
     if (semantics->Parse(value, token)) {

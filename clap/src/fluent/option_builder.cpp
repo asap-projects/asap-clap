@@ -10,30 +10,29 @@
  * \brief Implementation details for the option builder fluent API.
  */
 
-#include <clap/fluent/option_builder.h>
-#include <clap/fluent/option_value_builder.h>
+#include <contract/contract.h>
 
-// #include <contract/contract.h>
+#include "clap/fluent/option_builder.h"
+#include "clap/fluent/option_value_builder.h"
 
-// auto asap::clap::OptionBuilder::Short(std::string short_name)
-//     -> OptionBuilder & {
-//   ASAP_ASSERT(option_ && "builder used after Build() was called");
-//   option_->Short(std::move(short_name));
-//   return *this;
-// }
+auto asap::clap::OptionBuilder::Short(std::string short_name)
+    -> OptionBuilder & {
+  ASAP_ASSERT(option_ && "builder used after Build() was called");
+  option_->Short(std::move(short_name));
+  return *this;
+}
 
-// auto asap::clap::OptionBuilder::Long(std::string long_name) -> OptionBuilder
-// & {
-//   ASAP_ASSERT(option_ && "builder used after Build() was called");
-//   option_->Long(std::move(long_name));
-//   return *this;
-// }
+auto asap::clap::OptionBuilder::Long(std::string long_name) -> OptionBuilder & {
+  ASAP_ASSERT(option_ && "builder used after Build() was called");
+  option_->Long(std::move(long_name));
+  return *this;
+}
 
-// auto asap::clap::OptionBuilder::About(std::string about) -> OptionBuilder & {
-//   ASAP_ASSERT(option_ && "builder used after Build() was called");
-//   option_->About(std::move(about));
-//   return *this;
-// }
+auto asap::clap::OptionBuilder::About(std::string about) -> OptionBuilder & {
+  ASAP_ASSERT(option_ && "builder used after Build() was called");
+  option_->About(std::move(about));
+  return *this;
+}
 
 template <>
 auto asap::clap::OptionBuilder::WithValue<bool>() -> OptionValueBuilder<bool> {

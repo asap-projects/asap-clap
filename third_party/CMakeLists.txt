@@ -37,9 +37,9 @@ cpmaddpackage(
   NAME
   fmtlib
   GIT_TAG
-  master
+  9.0.0
   GITHUB_REPOSITORY
-  abdes/fmt
+  fmtlib/fmt
   OPTIONS
   "FMT_INSTALL ON")
 
@@ -47,8 +47,15 @@ cpmaddpackage(
 # asap::common
 # ------------------------------------------------------------------------------
 
-cpmaddpackage(NAME asap_common GIT_TAG master GITHUB_REPOSITORY
-              asap-projects/asap-common)
+cpmaddpackage(
+  NAME
+  asap_common
+  GIT_TAG
+  master
+  GITHUB_REPOSITORY
+  asap-projects/asap-common
+  OPTIONS
+  "ASAP_COMMON_INSTALL ON")
 
 # ------------------------------------------------------------------------------
 # asap::fsm
@@ -105,3 +112,17 @@ cpmaddpackage(
   asap-projects/asap-contract
   OPTIONS
   "ASAP_CONTRACT_INSTALL ON")
+
+# ------------------------------------------------------------------------------
+# asap::logging
+# ------------------------------------------------------------------------------
+
+cpmaddpackage(
+  NAME
+  asap_logging
+  GIT_TAG
+  master
+  GITHUB_REPOSITORY
+  asap-projects/asap-logging
+  OPTIONS
+  "ASAP_LOGGING_INSTALL ON")

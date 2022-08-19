@@ -7,19 +7,19 @@
 /*!
  * \file
  *
- * \brief Types and macros used for clap.
+ * \brief Template specializations to implement option value parsers for
+ * different types.
  */
 
 #pragma once
 
-#include "string_utils.h"
-
-#include <magic_enum.hpp>
-
-#include <algorithm>
 #include <stdexcept>
 #include <string>
 #include <type_traits>
+
+#include <magic_enum.hpp>
+
+#include "string_utils.h"
 
 namespace asap::clap::detail {
 
@@ -75,7 +75,7 @@ auto ParseValue(const std::string &input, AssignTo &output) -> bool {
 /// Convert a flag into an integer value typically binary flags
 inline auto StringToFlagValue(std::string val) -> std::int64_t {
   val = detail::ToLower(val);
-  std::int64_t ret = 0;
+  std::int64_t ret;
   if (val.size() == 1) {
     if (val[0] >= '1' && val[0] <= '9') {
       return (static_cast<std::int64_t>(val[0]) - '0');
@@ -112,7 +112,7 @@ template <typename AssignTo,
     std::enable_if_t<std::is_same_v<AssignTo, bool>, std::nullptr_t> = nullptr>
 auto ParseValue(const std::string &input, AssignTo &output) -> bool {
   try {
-    auto flag_value = StringToFlagValue(input);
+    const auto flag_value = StringToFlagValue(input);
     output = (flag_value > 0);
     return true;
   } catch (const std::invalid_argument &) {
@@ -181,7 +181,7 @@ auto ParseValue(const std::string &input, AssignTo &output) -> bool {
   auto enum_val = magic_enum::enum_cast<AssignTo>(detail::ToLower(input));
   if (!enum_val.has_value()) {
     // maybe it's an integer value then
-    typename std::underlying_type<AssignTo>::type val;
+    std::underlying_type_t<AssignTo> val;
     if (!NumberConversion(input, val)) {
       return false;
     }

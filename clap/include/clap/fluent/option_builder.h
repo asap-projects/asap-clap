@@ -12,15 +12,12 @@
 
 #pragma once
 
-#include <clap/asap_clap_api.h>
-#include <clap/option.h>
-
-#include <contract/contract.h>
-
-#include <memory.h>
 #include <memory>
 #include <string>
 #include <utility>
+
+#include "clap/asap_clap_api.h"
+#include "clap/option.h"
 
 namespace asap::clap {
 
@@ -34,23 +31,11 @@ public:
       : option_(new Option(std::move(name))) {
   }
 
-  auto Short(std::string short_name) -> OptionBuilder & {
-    ASAP_ASSERT(option_ && "builder used after Build() was called");
-    option_->Short(std::move(short_name));
-    return *this;
-  }
+  ASAP_CLAP_API auto Short(std::string short_name) -> OptionBuilder &;
 
-  auto Long(std::string long_name) -> OptionBuilder & {
-    ASAP_ASSERT(option_ && "builder used after Build() was called");
-    option_->Long(std::move(long_name));
-    return *this;
-  }
+  ASAP_CLAP_API auto Long(std::string long_name) -> OptionBuilder &;
 
-  auto About(std::string about) -> OptionBuilder & {
-    ASAP_ASSERT(option_ && "builder used after Build() was called");
-    option_->About(std::move(about));
-    return *this;
-  }
+  ASAP_CLAP_API auto About(std::string about) -> OptionBuilder &;
 
   // template <typename T>
   // auto WithValue(typename ValueDescriptor<T>::Builder &option_value_builder)

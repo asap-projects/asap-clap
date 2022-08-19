@@ -7,7 +7,8 @@
 /*!
  * \file
  *
- * \brief Types and macros used for clap.
+ * \brief Template class concretely implementing the `ValueSemantics` interface
+ * for a value of type `T`.
  */
 
 #pragma once
@@ -16,6 +17,7 @@
 
 #include <any>
 #include <functional>
+#include <sstream>
 #include <string>
 
 namespace asap::clap {
@@ -136,7 +138,7 @@ public:
 
   /**
    * \brief Specifies that the option can appear multiple times on the command
-   * line (i.e. it can accpt multiple values).
+   * line (i.e. it can accept multiple values).
    */
   void Repeatable() {
     repeatable_ = true;

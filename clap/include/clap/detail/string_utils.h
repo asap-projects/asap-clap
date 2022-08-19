@@ -7,7 +7,8 @@
 /*!
  * \file
  *
- * \brief Types and macros used for clap.
+ * \brief String manipulation helper functions, not available in the standard
+ * library.
  */
 
 #pragma once

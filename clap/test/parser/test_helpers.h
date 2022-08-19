@@ -4,17 +4,18 @@
 //  SPDX-License-Identifier: BSD-3-Clause
 // ===----------------------------------------------------------------------===/
 
-#include "parser/errors.h"
-#include "parser/events.h"
-#include "parser/states.h"
+#pragma once
 
-#include <common/compilers.h>
+#include <utility>
 
 #include <gmock/gmock.h>
 #include <gtest/gtest.h>
 
-#include <type_traits>
-#include <utility>
+#include <common/compilers.h>
+
+#include "parser/errors.h"
+#include "parser/events.h"
+#include "parser/states.h"
 
 // Disable compiler and linter warnings originating from the unit test framework
 // and for which we cannot do anything. Additionally, every TEST or TEST_X macro
@@ -110,54 +111,50 @@ protected:
     case TokenType::ShortOption: {
       auto action =
           state->Handle(TokenEvent<TokenType::ShortOption>{token_value});
-      bool continue_after_check_action{true};
-      bool continue_after_check_state{true};
-      continue_after_check_action =
+      auto continue_after_check_state{true};
+      const bool continue_after_check_action =
           CheckAction(action, token_type, action_data);
       if (!continue_after_check_action) {
         LeaveState();
         continue_after_check_state = CheckState(state, state_data);
       }
       return continue_after_check_action && continue_after_check_state;
-    } break;
+    }
     case TokenType::LongOption: {
       auto action =
           state->Handle(TokenEvent<TokenType::LongOption>{token_value});
-      bool continue_after_check_action{true};
       bool continue_after_check_state{true};
-      continue_after_check_action =
+      const bool continue_after_check_action =
           CheckAction(action, token_type, action_data);
       if (!continue_after_check_action) {
         LeaveState();
         continue_after_check_state = CheckState(state, state_data);
       }
       return continue_after_check_action && continue_after_check_state;
-    } break;
+    }
     case TokenType::LoneDash: {
       auto action = state->Handle(TokenEvent<TokenType::LoneDash>{token_value});
-      bool continue_after_check_action{true};
       bool continue_after_check_state{true};
-      continue_after_check_action =
+      const bool continue_after_check_action =
           CheckAction(action, token_type, action_data);
       if (!continue_after_check_action) {
         LeaveState();
         continue_after_check_state = CheckState(state, state_data);
       }
       return continue_after_check_action && continue_after_check_state;
-    } break;
+    }
     case TokenType::EqualSign: {
       auto action =
           state->Handle(TokenEvent<TokenType::EqualSign>{token_value});
-      bool continue_after_check_action{true};
       bool continue_after_check_state{true};
-      continue_after_check_action =
+      const bool continue_after_check_action =
           CheckAction(action, token_type, action_data);
       if (!continue_after_check_action) {
         LeaveState();
         continue_after_check_state = CheckState(state, state_data);
       }
       return continue_after_check_action && continue_after_check_state;
-    } break;
+    }
     case TokenType::DashDash: {
       auto action = state->Handle(TokenEvent<TokenType::DashDash>{token_value});
       bool continue_after_check_action{true};
@@ -169,7 +166,7 @@ protected:
         continue_after_check_state = CheckState(state, state_data);
       }
       return continue_after_check_action && continue_after_check_state;
-    } break;
+    }
     case TokenType::Value: {
       auto action = state->Handle(TokenEvent<TokenType::Value>{token_value});
       bool continue_after_check_action{true};
@@ -181,7 +178,7 @@ protected:
         continue_after_check_state = CheckState(state, state_data);
       }
       return continue_after_check_action && continue_after_check_state;
-    } break;
+    }
     case TokenType::EndOfInput: {
       auto action =
           state->Handle(TokenEvent<TokenType::EndOfInput>{token_value});
@@ -194,14 +191,14 @@ protected:
         continue_after_check_state = CheckState(state, state_data);
       }
       return continue_after_check_action && continue_after_check_state;
-    } break;
+    }
     }
     ASAP_UNREACHABLE();
   }
 
   template <typename ActionType>
-  [[nodiscard]] auto CheckAction(const ActionType &action, TokenType token_type,
-      const ExpectedTransitionData &data) const -> bool {
+  [[nodiscard]] static auto CheckAction(const ActionType &action,
+      TokenType token_type, const ExpectedTransitionData &data) -> bool {
     if (!action.template IsA<DoNothing>() ||
         token_type == TokenType::EndOfInput) {
       std::visit([&action](auto &test_data) { test_data.Check(action); }, data);
@@ -211,8 +208,8 @@ protected:
   }
 
   template <typename State>
-  [[nodiscard]] auto CheckState(
-      const State &state, const ExpectedStateData &data) const -> bool {
+  [[nodiscard]] static auto CheckState(
+      const State &state, const ExpectedStateData &data) -> bool {
     std::visit([&state](auto &test_data) { test_data.Check(state); }, data);
     return true; // continue processing
   }
@@ -300,7 +297,7 @@ struct ReportErrorTransitionTestData {
 
 struct DoNothingTransitionTestData {
   template <typename ActionType>
-  void Check(const ActionType & /*action*/) const {
+  static void Check(const ActionType & /*action*/) {
     // Do nothing
   }
 };
@@ -318,7 +315,7 @@ inline void asap::clap::parser::detail::InitialStateTestData::Check(
 }
 
 struct FinalStateTestData {
-  template <typename State> void Check(const State & /*state*/) const {
+  template <typename State> static void Check(const State & /*state*/) {
   }
 };
 struct ParseOptionsStateTestData {
@@ -361,19 +358,19 @@ inline void asap::clap::parser::detail::ParseShortOptionStateTestData::Check(
 }
 
 struct ParseLongOptionStateTestData {
-  template <typename State> void Check(const State & /*state*/) const {
+  template <typename State> static void Check(const State & /*state*/) {
   }
 };
 
 struct DashDashStateTestData {
-  template <typename State> void Check(const State & /*state*/) const {
+  template <typename State> static void Check(const State & /*state*/) {
   }
 };
 struct IdentifyCommandStateTestData {
-  template <typename State> void Check(const State & /*state*/) const {
+  template <typename State> static void Check(const State & /*state*/) {
   }
 };
 
 } // namespace asap::clap::parser::detail
-
 ASAP_DIAGNOSTIC_POP
+// NOLINTEND(used-but-marked-unused)

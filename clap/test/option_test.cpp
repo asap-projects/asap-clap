@@ -6,10 +6,10 @@
 
 #include "clap/option.h"
 
-#include <common/compilers.h>
-
 #include <gmock/gmock.h>
 #include <gtest/gtest.h>
+
+#include <common/compilers.h>
 
 // Disable compiler and linter warnings originating from the unit test framework
 // and for which we cannot do anything. Additionally, every TEST or TEST_X macro

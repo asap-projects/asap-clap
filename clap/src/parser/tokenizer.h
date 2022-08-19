@@ -12,8 +12,14 @@
 
 #pragma once
 
-#include <clap/asap_clap_api.h>
+#include <deque>
+#include <iostream>
+#include <string>
+#include <utility>
+#include <vector>
+
 #include <common/compilers.h>
+#include <magic_enum.hpp>
 
 // Disable compiler and linter warnings originating from 'fmt' and for which we
 // cannot do anything.
@@ -21,18 +27,12 @@ ASAP_DIAGNOSTIC_PUSH
 #if defined(__clang__)
 #pragma clang diagnostic ignored "-Wsigned-enum-bitfield"
 #pragma clang diagnostic ignored "-Wweak-vtables"
+#pragma clang diagnostic ignored "-Wfloat-equal"
 #endif
 #include <fmt/core.h>
 ASAP_DIAGNOSTIC_POP
 
-#include <magic_enum.hpp>
-
-#include <deque>
-#include <iostream>
-#include <optional>
-#include <string>
-#include <utility>
-#include <vector>
+#include "clap/asap_clap_api.h"
 
 namespace asap::clap::parser {
 
@@ -79,7 +79,7 @@ public:
       return token;
     }
     if (cursor_ != args_.end()) {
-      auto arg = *cursor_++;
+      const auto arg = *cursor_++;
       Tokenize(arg);
       if (!tokens_.empty()) {
         auto token = tokens_.front();
@@ -90,7 +90,7 @@ public:
     return Token{TokenType::EndOfInput, ""};
   }
 
-  auto HasMoreTokens() -> bool {
+  auto HasMoreTokens() const -> bool {
     return !tokens_.empty() || cursor_ != args_.end();
   }
 
@@ -106,7 +106,8 @@ private:
 
 #if !defined(DOXYGEN_DOCUMENTATION_BUILD)
 template <> struct fmt::formatter<asap::clap::parser::TokenType> {
-  template <typename ParseContext> constexpr auto parse(ParseContext &ctx) {
+  template <typename ParseContext>
+  static constexpr auto parse(ParseContext &ctx) {
     return ctx.begin();
   }
 

@@ -12,15 +12,11 @@
 
 #pragma once
 
-#include "tokenizer.h"
-
-#include "./context.h"
-#include "clap/asap_clap_api.h"
 #include "clap/command.h"
 
-#include <map>
-#include <optional>
-#include <utility>
+#include "clap/asap_clap_api.h"
+#include "context.h"
+#include "tokenizer.h"
 
 namespace asap::clap::parser {
 

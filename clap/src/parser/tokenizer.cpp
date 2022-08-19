@@ -13,9 +13,9 @@
 
 #include "tokenizer.h"
 
-#include <fsm/fsm.h>
-
 #include <utility>
+
+#include <fsm/fsm.h>
 
 using asap::fsm::ByDefault;
 using asap::fsm::Continue;
@@ -23,10 +23,8 @@ using asap::fsm::DoNothing;
 using asap::fsm::Maybe;
 using asap::fsm::On;
 using asap::fsm::OneOf;
-using asap::fsm::ReissueEvent;
 using asap::fsm::StateMachine;
 using asap::fsm::Status;
-using asap::fsm::Terminate;
 using asap::fsm::TransitionTo;
 using asap::fsm::Will;
 
@@ -69,7 +67,8 @@ struct FinalState : public Will<ByDefault<DoNothing>> {
 struct InitialState : public ByDefault<TransitionTo<FinalState>> {
   using ByDefault::Handle;
 
-  template <typename Event> auto OnLeave(const Event & /*event*/) -> Status {
+  template <typename Event>
+  static auto OnLeave(const Event & /*event*/) -> Status {
     //    std::cout << "InitialState -> " << std::endl;
     return Continue{};
   }
@@ -127,7 +126,8 @@ struct OptionState {
     return Continue{};
   }
 
-  template <typename Event> auto OnLeave(const Event & /*event*/) -> Status {
+  template <typename Event>
+  static auto OnLeave(const Event & /*event*/) -> Status {
     //    std::cout << "OptionState -> " << std::endl;
     return Continue{};
   }
@@ -166,7 +166,8 @@ struct ShortOptionState : public On<InputEnd, TransitionTo<FinalState>> {
     return Continue{};
   }
 
-  template <typename Event> auto OnLeave(const Event & /*event*/) -> Status {
+  template <typename Event>
+  static auto OnLeave(const Event & /*event*/) -> Status {
     //    std::cout << "ShortOptionState -> " << std::endl;
     return Continue{};
   }
@@ -193,7 +194,8 @@ struct DashDashState : On<InputChar, TransitionTo<LongOptionState>> {
     return Continue{};
   }
 
-  template <typename Event> auto OnLeave(const Event & /*event*/) -> Status {
+  template <typename Event>
+  static auto OnLeave(const Event & /*event*/) -> Status {
     //    std::cout << "DashDashState -> " << std::endl;
     return Continue{};
   }
@@ -260,8 +262,8 @@ private:
 
 void Tokenizer::Tokenize(const std::string &arg) const {
 
-  TokenConsumer consume_token = [this](TokenType token_type,
-                                    std::string token) -> void {
+  const TokenConsumer consume_token = [this](TokenType token_type,
+                                          std::string token) -> void {
     //    std::cout << "New token: " << token_type << " / " << token <<
     //    std::endl;
     this->tokens_.emplace_back(token_type, std::move(token));
@@ -277,7 +279,7 @@ void Tokenizer::Tokenize(const std::string &arg) const {
   auto cursor = arg.begin();
   while (cursor != arg.end()) {
     machine.Handle(InputChar{*cursor});
-    cursor++;
+    ++cursor;
   }
   machine.Handle(InputEnd{});
 }

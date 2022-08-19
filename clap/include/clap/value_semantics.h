@@ -7,24 +7,16 @@
 /*!
  * \file
  *
- * \brief Types and macros used for clap.
+ * \brief ValueSemantics class, describes how a command line option's value is
+ * to be parsed and converted into C++ types.
  */
 
 #pragma once
 
-#include "clap/detail/parse_value.h"
-
-#include <clap/asap_clap_api.h>
-#include <contract/contract.h>
-
 #include <any>
-#include <functional>
-#include <memory>
-#include <ostream>
-#include <sstream>
 #include <string>
-#include <utility>
-#include <vector>
+
+#include "clap/asap_clap_api.h"
 
 namespace asap::clap {
 
