@@ -16,7 +16,7 @@
 #include <any>
 #include <string>
 
-#include "clap/asap_clap_api.h"
+#include "clap/asap_clap_export.h"
 
 namespace asap::clap {
 

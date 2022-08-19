@@ -16,7 +16,7 @@
 #include <string>
 #include <utility>
 
-#include "clap/asap_clap_api.h"
+#include "clap/asap_clap_export.h"
 #include "clap/option.h"
 
 namespace asap::clap {

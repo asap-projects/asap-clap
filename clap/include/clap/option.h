@@ -18,7 +18,7 @@
 #include <utility>
 #include <vector>
 
-#include "clap/asap_clap_api.h"
+#include "clap/asap_clap_export.h"
 #include "clap/detail/parse_value.h"
 #include "clap/value_semantics.h"
 
@@ -160,8 +160,7 @@ private:
   }
 
   template <typename T>
-  ASAP_CLAP_TEMPLATE_API Option(
-      std::string key, std::unique_ptr<ValueSemantics> value_semantic)
+  Option(std::string key, std::unique_ptr<ValueSemantics> value_semantic)
       : key_(std::move(key)), value_semantic_(std::move(value_semantic)) {
   }
 };

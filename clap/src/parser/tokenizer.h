@@ -32,7 +32,7 @@ ASAP_DIAGNOSTIC_PUSH
 #include <fmt/core.h>
 ASAP_DIAGNOSTIC_POP
 
-#include "clap/asap_clap_api.h"
+#include "clap/asap_clap_export.h"
 
 namespace asap::clap::parser {
 

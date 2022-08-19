@@ -20,7 +20,7 @@
 #include <utility>
 #include <vector>
 
-#include "clap/asap_clap_api.h"
+#include "clap/asap_clap_export.h"
 #include "clap/option.h"
 
 /// Namespace for command line parsing related APIs.

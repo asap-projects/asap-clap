@@ -20,7 +20,7 @@
 #include <utility>
 #include <vector>
 
-#include "clap/asap_clap_api.h"
+#include "clap/asap_clap_export.h"
 #include "clap/command.h"
 #include "clap/option_values_map.h"
 

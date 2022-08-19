@@ -14,7 +14,7 @@
 
 #include "clap/command.h"
 
-#include "clap/asap_clap_api.h"
+#include "clap/asap_clap_export.h"
 #include "context.h"
 #include "tokenizer.h"
 

@@ -16,7 +16,7 @@
 
 #include <fsm/fsm.h>
 
-#include "clap/asap_clap_api.h"
+#include "clap/asap_clap_export.h"
 #include "context.h"
 
 namespace asap::clap::parser::detail {
