@@ -28,7 +28,7 @@ namespace {
 // NOLINTNEXTLINE
 TEST(ConstructArguments, WithNonEmptyProgramName) {
   constexpr auto argc = 1;
-  std::array<const char *, 1> argv{"bin/test-program"};
+  std::array<const char *, 1> argv{{"bin/test-program"}};
   const Arguments cla{argc, argv.data()};
   EXPECT_THAT(cla.ProgramName(), Eq("bin/test-program"));
   EXPECT_THAT(cla.Args().size(), Eq(0));
@@ -37,7 +37,7 @@ TEST(ConstructArguments, WithNonEmptyProgramName) {
 // NOLINTNEXTLINE
 TEST(ConstructArguments, WithManyArgs) {
   constexpr auto argc = 4;
-  std::array<const char *, 4> argv{"test", "-x", "--opt=value", "arg"};
+  std::array<const char *, 4> argv{{"test", "-x", "--opt=value", "arg"}};
   const Arguments cla{argc, argv.data()};
   EXPECT_THAT(cla.ProgramName(), Eq("test"));
   EXPECT_THAT(cla.Args().size(), Eq(3));
@@ -59,7 +59,7 @@ TEST(ConstructArguments, WithNoArgs) {
 // NOLINTNEXTLINE
 TEST(ConstructArguments, WithEmptyProgramName) {
   constexpr auto argc = 1;
-  std::array<const char *, 1> argv{""};
+  std::array<const char *, 1> argv{{""}};
   CHECK_VIOLATES_CONTRACT(auto args = Arguments(argc, argv.data()));
 }
 #endif // ASAP_IS_DEBUG_BUILD

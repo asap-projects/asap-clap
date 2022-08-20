@@ -263,6 +263,8 @@ struct IdentifyCommandState {
       case TokenType::Value:
       case TokenType::EqualSign:
         return TransitionTo<ParseOptionsState>(context_);
+      default:
+        ASAP_UNREACHABLE();
       }
     }
     if (default_command_) {
@@ -513,6 +515,7 @@ struct ParseShortOptionState
     case TokenType::Value:
     case TokenType::EqualSign:
     case TokenType::EndOfInput:
+    default:
       // See contract assertions for entering this state
       ASAP_UNREACHABLE();
     }
@@ -636,6 +639,7 @@ struct ParseLongOptionState : Will<ByDefault<TransitionTo<ParseOptionsState>>> {
     case TokenType::Value:
     case TokenType::EqualSign:
     case TokenType::EndOfInput:
+    default:
       // See contract assertions for entering this state
       ASAP_UNREACHABLE();
     }

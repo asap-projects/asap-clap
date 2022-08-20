@@ -21,11 +21,15 @@
 // Disable compiler and linter warnings originating from 'fmt' and for which we
 // cannot do anything.
 ASAP_DIAGNOSTIC_PUSH
-#if defined(__clang__)
+#if defined(ASAP_CLANG_VERSION)
 #pragma clang diagnostic ignored "-Wsigned-enum-bitfield"
 #pragma clang diagnostic ignored "-Wweak-vtables"
 #pragma clang diagnostic ignored "-Wundefined-func-template"
 #pragma clang diagnostic ignored "-Wswitch-enum"
+#endif
+#if defined(ASAP_GNUC_VERSION)
+#pragma GCC diagnostic ignored "-Wswitch-enum"
+#pragma GCC diagnostic ignored "-Wswitch-default"
 #endif
 #include <fmt/core.h>
 #include <fmt/format.h>

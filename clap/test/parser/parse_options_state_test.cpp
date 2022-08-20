@@ -78,7 +78,8 @@ protected:
     }
       // The following token types are not allowed
     case TokenType::EqualSign:
-    case TokenType::EndOfInput:;
+    case TokenType::EndOfInput:
+    default:;
     }
     return TerminateWithError{"Illegal token used to enter ParseOptionsState"};
   }

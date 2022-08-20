@@ -71,6 +71,7 @@ protected:
     case TokenType::Value:
     case TokenType::EqualSign:
     case TokenType::EndOfInput:
+    default:
       FAIL() << "Illegal token used to enter ParseShortOptionState: "
              << token_type << "/" << token_value << std::endl;
     }

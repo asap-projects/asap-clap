@@ -53,7 +53,7 @@ inline auto MakeAfter_1() -> std::shared_ptr<Option> {
 TEST(PositionalArgumentsTest, JustRest) {
   constexpr auto argc = 5;
   std::array<const char *, argc> argv{
-      "/usr/bin/test-program.exe", "r_1", "r_2", "r_3", "r_4"};
+      {"/usr/bin/test-program.exe", "r_1", "r_2", "r_3", "r_4"}};
 
   const auto default_command = std::make_shared<Command>(Command::DEFAULT);
   default_command->WithPositionals(MakeRest());
@@ -74,7 +74,7 @@ TEST(PositionalArgumentsTest, JustRest) {
 TEST(PositionalArgumentsTest, BeforeRest) {
   constexpr auto argc = 5;
   std::array<const char *, argc> argv{
-      "/usr/bin/test-program.exe", "b_1", "b_2", "r_1", "r_2"};
+      {"/usr/bin/test-program.exe", "b_1", "b_2", "r_1", "r_2"}};
 
   auto default_command = std::make_shared<Command>(Command::DEFAULT);
   default_command->WithPositionals(MakeBefore_1(), MakeBefore_2(), MakeRest());
@@ -101,7 +101,7 @@ TEST(PositionalArgumentsTest, BeforeRest) {
 TEST(PositionalArgumentsTest, AfterRest) {
   constexpr auto argc = 5;
   std::array<const char *, argc> argv{
-      "/usr/bin/test-program.exe", "r_1", "r_2", "r_3", "a_1"};
+      {"/usr/bin/test-program.exe", "r_1", "r_2", "r_3", "a_1"}};
 
   const auto default_command = std::make_shared<Command>(Command::DEFAULT);
   default_command->WithPositionals(MakeRest(), MakeAfter_1());
@@ -125,7 +125,7 @@ TEST(PositionalArgumentsTest, AfterRest) {
 TEST(PositionalArgumentsTest, BeforeAndAfterRest) {
   constexpr auto argc = 5;
   std::array<const char *, argc> argv{
-      "/usr/bin/test-program.exe", "b_1", "r_1", "r_2", "a_1"};
+      {"/usr/bin/test-program.exe", "b_1", "r_1", "r_2", "a_1"}};
 
   auto default_command = std::make_shared<Command>(Command::DEFAULT);
   default_command->WithPositionals(MakeBefore_1(), MakeRest(), MakeAfter_1());
@@ -151,7 +151,7 @@ TEST(PositionalArgumentsTest, BeforeAndAfterRest) {
 // NOLINTNEXTLINE
 TEST(PositionalArgumentsTest, UnexpectedPositionals) {
   constexpr auto argc = 2;
-  std::array<const char *, argc> argv{"/usr/bin/test-program.exe", "pos"};
+  std::array<const char *, argc> argv{{"/usr/bin/test-program.exe", "pos"}};
 
   const auto default_command = std::make_shared<Command>(Command::DEFAULT);
 

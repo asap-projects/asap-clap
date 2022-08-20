@@ -24,6 +24,10 @@ ASAP_DIAGNOSTIC_PUSH
 #if defined(__clang__)
 #pragma clang diagnostic ignored "-Wsigned-enum-bitfield"
 #endif
+#if defined(ASAP_GNUC_VERSION)
+#pragma GCC diagnostic ignored "-Wswitch-enum"
+#pragma GCC diagnostic ignored "-Wswitch-default"
+#endif
 #include <fmt/core.h>
 ASAP_DIAGNOSTIC_POP
 

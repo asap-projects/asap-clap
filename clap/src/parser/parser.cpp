@@ -16,6 +16,7 @@
 #include <fsm/fsm.h>
 #include <logging/logging.h>
 
+#include "common/compilers.h"
 #include "events.h"
 #include "states.h"
 #include "tokenizer.h"
@@ -95,6 +96,8 @@ auto asap::clap::parser::CmdLineParser::Parse() -> bool {
       execution_status =
           machine.Handle(TokenEvent<TokenType::EndOfInput>{token_value});
       break;
+    default:
+      ASAP_UNREACHABLE();
     }
 
     // https://en.cppreference.com/w/cpp/utility/variant/visit

@@ -22,6 +22,10 @@ ASAP_DIAGNOSTIC_PUSH
 #if defined(__clang__)
 #pragma clang diagnostic ignored "-Wsigned-enum-bitfield"
 #endif
+#if defined(ASAP_GNUC_VERSION)
+#pragma GCC diagnostic ignored "-Wswitch-enum"
+#pragma GCC diagnostic ignored "-Wswitch-default"
+#endif
 #include <fmt/core.h>
 ASAP_DIAGNOSTIC_POP
 
@@ -262,7 +266,7 @@ TEST(CommandLineTest, Test) {
   {
     constexpr size_t argc = 6;
     std::array<const char *, argc> argv{
-        "/usr/bin/test-program.exe", "head", "-n", "+20", "-q", "file.txt"};
+        {"/usr/bin/test-program.exe", "head", "-n", "+20", "-q", "file.txt"}};
 
     UtilsCli cli;
     cli.CommandLine().Print(std::cout, 80);
@@ -290,8 +294,8 @@ TEST(CommandLineTest, Test) {
   }
   {
     constexpr size_t argc = 5;
-    std::array<const char *, argc> argv{"/usr/bin/test-program.exe", "head",
-        "--lines=+20", "--quiet", "file.txt"};
+    std::array<const char *, argc> argv{{"/usr/bin/test-program.exe", "head",
+        "--lines=+20", "--quiet", "file.txt"}};
 
     UtilsCli cli;
     cli.CommandLine().Print(std::cout, 80);
@@ -312,7 +316,7 @@ TEST(CommandLineTest, Test) {
   {
     constexpr size_t argc = 2;
     std::array<const char *, argc> argv{
-        "/usr/bin/test-program.exe", "--version"};
+        {"/usr/bin/test-program.exe", "--version"}};
 
     HeadCli cli;
     const auto &matches = cli.CommandLine().Parse(argc, argv.data());
@@ -323,7 +327,7 @@ TEST(CommandLineTest, Test) {
   {
     constexpr size_t argc = 2;
     std::array<const char *, argc> argv{
-        "/usr/bin/test-program.exe", "--version"};
+        {"/usr/bin/test-program.exe", "--version"}};
 
     UtilsCli cli;
     const auto &matches = cli.CommandLine().Parse(argc, argv.data());
@@ -333,8 +337,9 @@ TEST(CommandLineTest, Test) {
   }
   {
     constexpr size_t argc = 8;
-    std::array<const char *, argc> argv{"/usr/bin/test-program.exe", "paint",
-        "-c", "red", "--color=GREEN", "--color=bLue", "--color=1", "--color=3"};
+    std::array<const char *, argc> argv{
+        {"/usr/bin/test-program.exe", "paint", "-c", "red", "--color=GREEN",
+            "--color=bLue", "--color=1", "--color=3"}};
 
     UtilsCli cli;
     const auto &matches = cli.CommandLine().Parse(argc, argv.data());

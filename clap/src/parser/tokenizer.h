@@ -30,6 +30,10 @@ ASAP_DIAGNOSTIC_PUSH
 #pragma clang diagnostic ignored "-Wfloat-equal"
 #pragma clang diagnostic ignored "-Wswitch-enum"
 #endif
+#if defined(ASAP_GNUC_VERSION)
+#pragma GCC diagnostic ignored "-Wswitch-enum"
+#pragma GCC diagnostic ignored "-Wswitch-default"
+#endif
 #include <fmt/core.h>
 ASAP_DIAGNOSTIC_POP
 
