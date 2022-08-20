@@ -177,8 +177,8 @@ public:
   /** Produces a human readable output of 'desc', listing options,
       their descriptions and allowed parameters. Other options_description
       instances previously passed to add will be output separately. */
-  friend ASAP_CLAP_API auto operator<<(
-      std::ostream &out, const Command &command) -> std::ostream &;
+  friend auto operator<<(std::ostream &out, const Command &command)
+      -> std::ostream &;
 
   /** Outputs 'desc' to the specified stream, calling 'f' to output each
       option_description element. */

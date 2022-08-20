@@ -257,7 +257,11 @@ struct IdentifyCommandState {
         return TransitionTo<DashDashState>(context_);
       case TokenType::EndOfInput:
         return TransitionTo<FinalState>(context_);
-      default:
+      case TokenType::LongOption:
+      case TokenType::ShortOption:
+      case TokenType::LoneDash:
+      case TokenType::Value:
+      case TokenType::EqualSign:
         return TransitionTo<ParseOptionsState>(context_);
       }
     }
@@ -504,7 +508,11 @@ struct ParseShortOptionState
       context_->active_option_flag = "-" + event.token;
       option = context_->active_command->FindShortOption(event.token);
       break;
-    default:
+    case TokenType::LongOption:
+    case TokenType::DashDash:
+    case TokenType::Value:
+    case TokenType::EqualSign:
+    case TokenType::EndOfInput:
       // See contract assertions for entering this state
       ASAP_UNREACHABLE();
     }

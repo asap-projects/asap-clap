@@ -17,15 +17,6 @@
 #include "parser/events.h"
 #include "parser/states.h"
 
-// Disable compiler and linter warnings originating from the unit test framework
-// and for which we cannot do anything. Additionally, every TEST or TEST_X macro
-// usage must be preceded by a '// NOLINTNEXTLINE'.
-ASAP_DIAGNOSTIC_PUSH
-#if defined(__clang__) && ASAP_HAS_WARNING("-Wused-but-marked-unused")
-#pragma clang diagnostic ignored "-Wused-but-marked-unused"
-#endif
-// NOLINTBEGIN(used-but-marked-unused)
-
 namespace asap::clap::parser::detail {
 
 struct FinalStateTransitionTestData;
@@ -157,9 +148,8 @@ protected:
     }
     case TokenType::DashDash: {
       auto action = state->Handle(TokenEvent<TokenType::DashDash>{token_value});
-      bool continue_after_check_action{true};
       bool continue_after_check_state{true};
-      continue_after_check_action =
+      const bool continue_after_check_action =
           CheckAction(action, token_type, action_data);
       if (!continue_after_check_action) {
         LeaveState();
@@ -169,9 +159,8 @@ protected:
     }
     case TokenType::Value: {
       auto action = state->Handle(TokenEvent<TokenType::Value>{token_value});
-      bool continue_after_check_action{true};
       bool continue_after_check_state{true};
-      continue_after_check_action =
+      const bool continue_after_check_action =
           CheckAction(action, token_type, action_data);
       if (!continue_after_check_action) {
         this->LeaveState();
@@ -182,9 +171,8 @@ protected:
     case TokenType::EndOfInput: {
       auto action =
           state->Handle(TokenEvent<TokenType::EndOfInput>{token_value});
-      bool continue_after_check_action{true};
       bool continue_after_check_state{true};
-      continue_after_check_action =
+      const bool continue_after_check_action =
           CheckAction(action, token_type, action_data);
       if (!continue_after_check_action) {
         LeaveState();
@@ -372,5 +360,3 @@ struct IdentifyCommandStateTestData {
 };
 
 } // namespace asap::clap::parser::detail
-ASAP_DIAGNOSTIC_POP
-// NOLINTEND(used-but-marked-unused)

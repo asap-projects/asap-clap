@@ -21,6 +21,7 @@ ASAP_DIAGNOSTIC_PUSH
 #pragma clang diagnostic ignored "-Wsigned-enum-bitfield"
 #pragma clang diagnostic ignored "-Wweak-vtables"
 #pragma clang diagnostic ignored "-Wundefined-func-template"
+#pragma clang diagnostic ignored "-Wswitch-enum"
 #endif
 #include <fmt/core.h>
 #include <fmt/format.h>

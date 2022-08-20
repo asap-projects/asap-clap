@@ -4,10 +4,10 @@
 // SPDX-License-Identifier: BSD-3-Clause
 //===----------------------------------------------------------------------===//
 
+#include <gmock/gmock.h>
+
 #include <contract/ut/gtest.h>
 #include <logging/logging.h>
-
-#include <gmock/gmock.h>
 
 auto main(int argc, char *argv[]) -> int {
   asap::logging::Registry::SetLogLevel(spdlog::level::off);

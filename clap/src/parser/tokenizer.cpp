@@ -58,7 +58,7 @@ struct DashDashState;
 struct FinalState;
 
 struct FinalState : public Will<ByDefault<DoNothing>> {
-  static auto OnEnter(const InputEnd & /*event*/) -> Status {
+  [[maybe_unused]] static auto OnEnter(const InputEnd & /*event*/) -> Status {
     //    std::cout << "InputEnd -> FinalState" << std::endl;
     return Continue{};
   }
@@ -73,7 +73,7 @@ struct InitialState : public ByDefault<TransitionTo<FinalState>> {
     return Continue{};
   }
 
-  static auto Handle(const InputChar &event)
+  [[maybe_unused]] static auto Handle(const InputChar &event)
       -> OneOf<TransitionTo<ValueState>, TransitionTo<OptionState>> {
     switch (event.value) {
     case '-':
@@ -91,20 +91,20 @@ struct ValueState : public On<InputEnd, TransitionTo<FinalState>> {
       : consume_token_{std::move(callback)} {
   }
 
-  auto OnEnter(const InputChar &event) -> Status {
+  [[maybe_unused]] auto OnEnter(const InputChar &event) -> Status {
     //    std::cout << "InputChar(" << event.value << ") -> ValueState" <<
     //    std::endl;
     token_.push_back((event.value));
     return Continue{};
   }
 
-  auto OnLeave(const InputEnd & /*event*/) -> Status {
+  [[maybe_unused]] auto OnLeave(const InputEnd & /*event*/) -> Status {
     //    std::cout << "ValueState -> " << std::endl;
     consume_token_(TokenType::Value, token_);
     return Continue{};
   }
 
-  auto Handle(const InputChar &event) -> DoNothing {
+  [[maybe_unused]] auto Handle(const InputChar &event) -> DoNothing {
     token_.push_back(event.value);
     return DoNothing{};
   }
@@ -120,7 +120,7 @@ struct OptionState {
       : consume_token_{std::move(callback)} {
   }
 
-  static auto OnEnter(const InputChar & /*event*/) -> Status {
+  [[maybe_unused]] static auto OnEnter(const InputChar & /*event*/) -> Status {
     //    std::cout << "InputChar(" << event.value << ") -> OptionState" <<
     //    std::endl;
     return Continue{};
@@ -132,13 +132,13 @@ struct OptionState {
     return Continue{};
   }
 
-  auto Handle([[maybe_unused]] const InputEnd &event)
+  [[maybe_unused]] auto Handle([[maybe_unused]] const InputEnd &event)
       -> TransitionTo<FinalState> {
     consume_token_(TokenType::LoneDash, "-");
     return TransitionTo<FinalState>{};
   }
 
-  static auto Handle(const InputChar &event)
+  [[maybe_unused]] static auto Handle(const InputChar &event)
       -> OneOf<TransitionTo<DashDashState>, TransitionTo<ShortOptionState>> {
     switch (event.value) {
     case '-':
@@ -159,7 +159,7 @@ struct ShortOptionState : public On<InputEnd, TransitionTo<FinalState>> {
       : consume_token_{std::move(callback)} {
   }
 
-  auto OnEnter(const InputChar &event) -> Status {
+  [[maybe_unused]] auto OnEnter(const InputChar &event) -> Status {
     //    std::cout << "InputChar(" << event.value << ") -> ShortOptionState" <<
     //    std::endl;
     consume_token_(TokenType::ShortOption, std::string{event.value});
@@ -172,7 +172,7 @@ struct ShortOptionState : public On<InputEnd, TransitionTo<FinalState>> {
     return Continue{};
   }
 
-  auto Handle(const InputChar &event) -> DoNothing {
+  [[maybe_unused]] auto Handle(const InputChar &event) -> DoNothing {
     consume_token_(TokenType::ShortOption, std::string{event.value});
     return DoNothing{};
   }
@@ -188,7 +188,7 @@ struct DashDashState : On<InputChar, TransitionTo<LongOptionState>> {
       : consume_token_{std::move(callback)} {
   }
 
-  static auto OnEnter(const InputChar & /*event*/) -> Status {
+  [[maybe_unused]] static auto OnEnter(const InputChar & /*event*/) -> Status {
     //    std::cout << "InputChar(" << event.value << ") -> DashDashState" <<
     //    std::endl;
     return Continue{};
@@ -200,7 +200,7 @@ struct DashDashState : On<InputChar, TransitionTo<LongOptionState>> {
     return Continue{};
   }
 
-  auto Handle([[maybe_unused]] const InputEnd &event)
+  [[maybe_unused]] auto Handle([[maybe_unused]] const InputEnd &event)
       -> TransitionTo<FinalState> {
     consume_token_(TokenType::DashDash, "--");
     return TransitionTo<FinalState>{};
@@ -217,26 +217,27 @@ struct LongOptionState : public On<InputEnd, TransitionTo<FinalState>> {
       : consume_token_{std::move(callback)} {
   }
 
-  auto OnEnter(const InputChar &event) -> Status {
+  [[maybe_unused]] auto OnEnter(const InputChar &event) -> Status {
     //    std::cout << "InputChar(" << event.value << ") -> LongOptionState" <<
     //    std::endl;
     token_.push_back((event.value));
     return Continue{};
   }
 
-  auto OnLeave(const InputEnd & /*event*/) -> Status {
+  [[maybe_unused]] auto OnLeave(const InputEnd & /*event*/) -> Status {
     //    std::cout << "LongOptionState -> " << std::endl;
     consume_token_(TokenType::LongOption, token_);
     return Continue{};
   }
 
-  auto OnLeave(const InputChar & /*event*/) -> Status {
+  [[maybe_unused]] auto OnLeave(const InputChar & /*event*/) -> Status {
     //    std::cout << "LongOptionState -> " << std::endl;
     after_equal_sign = false;
     return Continue{};
   }
 
-  auto Handle(const InputChar &event) -> Maybe<TransitionTo<ValueState>> {
+  [[maybe_unused]] auto Handle(const InputChar &event)
+      -> Maybe<TransitionTo<ValueState>> {
     switch (event.value) {
     case '=':
       consume_token_(TokenType::LongOption, token_);

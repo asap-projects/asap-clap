@@ -9,21 +9,9 @@
 #include <gmock/gmock.h>
 #include <gtest/gtest.h>
 
-#include <common/compilers.h>
 #include <contract/contract.h>
 
 #include "clap/fluent/dsl.h"
-
-// Disable compiler and linter warnings originating from the unit test framework
-// and for which we cannot do anything. Additionally, every TEST or TEST_X macro
-// usage must be preceded by a '// NOLINTNEXTLINE'.
-ASAP_DIAGNOSTIC_PUSH
-#if defined(__clang__) && ASAP_HAS_WARNING("-Wused-but-marked-unused")
-#pragma clang diagnostic ignored "-Wused-but-marked-unused"
-#pragma clang diagnostic ignored "-Wglobal-constructors"
-#pragma clang diagnostic ignored "-Wunused-member-function"
-#endif
-// NOLINTBEGIN(used-but-marked-unused)
 
 namespace asap::clap::parser::detail {
 
@@ -31,7 +19,7 @@ namespace {
 
 class ParseShortOptionStateTest : public StateTest {
 public:
-  static void SetUpTestSuite() {
+  [[maybe_unused]] static void SetUpTestSuite() {
     const auto my_command = std::make_shared<Command>("with-options");
     my_command->WithOption(Option::WithName("opt_no_val")
                                .About("Option that takes no values")
@@ -211,5 +199,3 @@ TEST_P(ParseShortOptionStateUnrecognizedOptionTest, FailWithAnException) {
 } // namespace
 
 } // namespace asap::clap::parser::detail
-ASAP_DIAGNOSTIC_POP
-// NOLINTEND(used-but-marked-unused)

@@ -25,17 +25,6 @@ ASAP_DIAGNOSTIC_PUSH
 #include <fmt/core.h>
 ASAP_DIAGNOSTIC_POP
 
-// Disable compiler and linter warnings originating from the unit test framework
-// and for which we cannot do anything. Additionally, every TEST or TEST_X macro
-// usage must be preceded by a '// NOLINTNEXTLINE'.
-ASAP_DIAGNOSTIC_PUSH
-#if defined(__clang__) && ASAP_HAS_WARNING("-Wused-but-marked-unused")
-#pragma clang diagnostic ignored "-Wused-but-marked-unused"
-#pragma clang diagnostic ignored "-Wglobal-constructors"
-#pragma clang diagnostic ignored "-Wunused-member-function"
-#endif
-// NOLINTBEGIN(used-but-marked-unused)
-
 #include "clap/command.h"
 #include "clap/fluent/dsl.h"
 #include "clap/option.h"
@@ -51,7 +40,7 @@ namespace {
 // NOLINTNEXTLINE(cppcoreguidelines-special-member-functions,hicpp-special-member-functions)
 class BaseCli {
 public:
-  [[nodiscard]] virtual auto CommandLine() -> Cli & = 0;
+  [[nodiscard]] [[maybe_unused]] virtual auto CommandLine() -> Cli & = 0;
 
   [[nodiscard]] auto CommonOptions() const -> const std::shared_ptr<Options> & {
     if (!common_options_) {
@@ -94,11 +83,12 @@ constexpr const auto head_command_detailed_usage =
     "M 1024*1024, GB 1000*1000*1000, G 1024*1024*1024, and so on for T, P, E, "
     "Z, Y. Binary prefixes can be used, too: KiB=K, MiB=M, and so on.";
 
-constexpr const auto usage_footer =
-    "GNU coreutils online help: <https://www.gnu.org/software/coreutils/>. "
-    "Report head translation bugs to <https://translationproject.org/team/>. "
-    "Full documentation at: <https://www.gnu.org/software/coreutils/head> or "
-    "available locally via: info '(coreutils) head invocation'.";
+// TODO(Abdessattar): add support for usage footer
+// constexpr const auto usage_footer =
+//     "GNU coreutils online help: <https://www.gnu.org/software/coreutils/>. "
+//     "Report head translation bugs to <https://translationproject.org/team/>.
+//     " "Full documentation at: <https://www.gnu.org/software/coreutils/head>
+//     or " "available locally via: info '(coreutils) head invocation'.";
 
 constexpr const int default_num_lines = 10;
 
@@ -362,6 +352,3 @@ TEST(CommandLineTest, Test) {
 } // namespace
 
 } // namespace asap::clap
-
-// NOLINTEND(used-but-marked-unused)
-ASAP_DIAGNOSTIC_POP
