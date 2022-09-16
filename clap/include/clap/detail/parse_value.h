@@ -75,7 +75,6 @@ auto ParseValue(const std::string &input, AssignTo &output) -> bool {
 /// Convert a flag into an integer value typically binary flags
 inline auto StringToFlagValue(std::string val) -> std::int64_t {
   val = detail::ToLower(val);
-  std::int64_t ret = -1;
   if (val.size() == 1) {
     if (val[0] >= '1' && val[0] <= '9') {
       return (static_cast<std::int64_t>(val[0]) - '0');
@@ -85,27 +84,25 @@ inline auto StringToFlagValue(std::string val) -> std::int64_t {
     case 'f':
     case 'n':
     case '-':
-      ret = -1;
+      return -1;
       break;
     case 't':
     case 'y':
     case '+':
-      ret = 1;
+      return 1;
       break;
     default:
       throw std::invalid_argument("unrecognized character");
     }
-    return ret;
   }
   if (val == "true" || val == "on" || val == "yes" || val == "enable") {
-    ret = 1;
+    return 1;
   } else if (val == "false" || val == "off" || val == "no" ||
              val == "disable") {
-    ret = -1;
+    return -1;
   } else {
-    ret = std::stoll(val);
+    return std::stoll(val);
   }
-  return ret;
 }
 
 template <typename AssignTo,
