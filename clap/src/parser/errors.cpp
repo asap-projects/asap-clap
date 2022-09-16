@@ -212,16 +212,17 @@ asap::clap::parser::detail::MissingRequiredOption::MissingRequiredOption(
   StateMachineError::What(description);
 }
 
-asap::clap::parser::detail::UnexpectedPositionals::~UnexpectedPositionals() =
-    default;
+asap::clap::parser::detail::UnexpectedPositionalArguments::
+    ~UnexpectedPositionalArguments() = default;
 
-asap::clap::parser::detail::UnexpectedPositionals::UnexpectedPositionals(
-    const ParserContextPtr &context)
-    : UnexpectedPositionals(context, nullptr) {
+asap::clap::parser::detail::UnexpectedPositionalArguments::
+    UnexpectedPositionalArguments(const ParserContextPtr &context)
+    : UnexpectedPositionalArguments(context, nullptr) {
 }
 
-asap::clap::parser::detail::UnexpectedPositionals::UnexpectedPositionals(
-    const ParserContextPtr &context, const char *message) {
+asap::clap::parser::detail::UnexpectedPositionalArguments::
+    UnexpectedPositionalArguments(
+        const ParserContextPtr &context, const char *message) {
   auto description = fmt::format("{}argument{} '{}' "
                                  "{} not expected by any option",
       CommandDiagnostic(context->active_command),

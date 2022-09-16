@@ -45,7 +45,7 @@ void asap::clap::Command::PrintOptionsSummary(std::ostream &out) const {
     }
     out << (option->value_semantic()->IsRequired() ? " " : "] ");
   }
-  for (const auto &positional : positionals_) {
+  for (const auto &positional : positional_args_) {
     out << " " << (positional->value_semantic()->IsRequired() ? "" : "[")
         << positional->Key()
         << (positional->value_semantic()->IsRequired() ? "" : "]");

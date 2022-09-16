@@ -8,7 +8,7 @@
 # Build instructions
 # ==============================================================================
 
-set(MAIN_TEST_TARGET_NAME ${MODULE_TARGET_NAME}_positionals_test)
+set(MAIN_TEST_TARGET_NAME ${MODULE_TARGET_NAME}_positional_args_test)
 
 asap_add_test(
   ${MAIN_TEST_TARGET_NAME}

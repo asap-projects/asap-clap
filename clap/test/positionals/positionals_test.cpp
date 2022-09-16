@@ -56,10 +56,10 @@ TEST(PositionalArgumentsTest, JustRest) {
       {"/usr/bin/test-program.exe", "r_1", "r_2", "r_3", "r_4"}};
 
   const auto default_command = std::make_shared<Command>(Command::DEFAULT);
-  default_command->WithPositionals(MakeRest());
+  default_command->WithPositionalArguments(MakeRest());
 
   Cli cli;
-  cli.ProgramName("positionals").WithCommand(default_command);
+  cli.ProgramName("positional_args").WithCommand(default_command);
   const auto &matches = cli.Parse(argc, argv.data());
 
   const auto &v_rest = matches.ValuesOf(Option::key_rest);
@@ -77,10 +77,11 @@ TEST(PositionalArgumentsTest, BeforeRest) {
       {"/usr/bin/test-program.exe", "b_1", "b_2", "r_1", "r_2"}};
 
   auto default_command = std::make_shared<Command>(Command::DEFAULT);
-  default_command->WithPositionals(MakeBefore_1(), MakeBefore_2(), MakeRest());
+  default_command->WithPositionalArguments(
+      MakeBefore_1(), MakeBefore_2(), MakeRest());
 
   Cli cli;
-  cli.ProgramName("positionals").WithCommand(default_command);
+  cli.ProgramName("positional_args").WithCommand(default_command);
   const auto &matches = cli.Parse(argc, argv.data());
 
   const auto &v_before_1 = matches.ValuesOf("BEFORE_1");
@@ -104,10 +105,10 @@ TEST(PositionalArgumentsTest, AfterRest) {
       {"/usr/bin/test-program.exe", "r_1", "r_2", "r_3", "a_1"}};
 
   const auto default_command = std::make_shared<Command>(Command::DEFAULT);
-  default_command->WithPositionals(MakeRest(), MakeAfter_1());
+  default_command->WithPositionalArguments(MakeRest(), MakeAfter_1());
 
   Cli cli;
-  cli.ProgramName("positionals").WithCommand(default_command);
+  cli.ProgramName("positional_args").WithCommand(default_command);
   const auto &matches = cli.Parse(argc, argv.data());
 
   const auto &v_after_1 = matches.ValuesOf("AFTER_1");
@@ -128,10 +129,11 @@ TEST(PositionalArgumentsTest, BeforeAndAfterRest) {
       {"/usr/bin/test-program.exe", "b_1", "r_1", "r_2", "a_1"}};
 
   auto default_command = std::make_shared<Command>(Command::DEFAULT);
-  default_command->WithPositionals(MakeBefore_1(), MakeRest(), MakeAfter_1());
+  default_command->WithPositionalArguments(
+      MakeBefore_1(), MakeRest(), MakeAfter_1());
 
   Cli cli;
-  cli.ProgramName("positionals").WithCommand(default_command);
+  cli.ProgramName("positional_args").WithCommand(default_command);
   const auto &matches = cli.Parse(argc, argv.data());
 
   const auto &v_before_1 = matches.ValuesOf("BEFORE_1");
@@ -149,14 +151,14 @@ TEST(PositionalArgumentsTest, BeforeAndAfterRest) {
 }
 
 // NOLINTNEXTLINE
-TEST(PositionalArgumentsTest, UnexpectedPositionals) {
+TEST(PositionalArgumentsTest, UnexpectedPositionalArguments) {
   constexpr auto argc = 2;
   std::array<const char *, argc> argv{{"/usr/bin/test-program.exe", "pos"}};
 
   const auto default_command = std::make_shared<Command>(Command::DEFAULT);
 
   Cli cli;
-  cli.ProgramName("positionals").WithCommand(default_command);
+  cli.ProgramName("positional_args").WithCommand(default_command);
   try {
     cli.Parse(argc, argv.data());
     FAIL();

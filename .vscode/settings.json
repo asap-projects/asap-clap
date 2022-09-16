@@ -295,4 +295,9 @@
   "files.exclude": {
     "**/.sphinx": true
   },
+  "cSpell.words": [
+    "copydoc",
+    "copybrief",
+    "NOLINTNEXTLINE"
+  ],
 }

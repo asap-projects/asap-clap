@@ -23,7 +23,7 @@ namespace asap::clap::parser::detail {
 
 class ASAP_CLAP_API UnrecognizedCommand : public asap::fsm::StateMachineError {
 public:
-  UnrecognizedCommand(std::vector<std::string> path_segments);
+  explicit UnrecognizedCommand(std::vector<std::string> path_segments);
   UnrecognizedCommand(
       std::vector<std::string> path_segments, const char *message);
 
@@ -149,20 +149,23 @@ public:
   ~MissingRequiredOption() override;
 };
 
-class ASAP_CLAP_API UnexpectedPositionals
+class ASAP_CLAP_API UnexpectedPositionalArguments
     : public asap::fsm::StateMachineError {
 public:
-  UnexpectedPositionals(const ParserContextPtr &context);
-  UnexpectedPositionals(const ParserContextPtr &context, const char *message);
+  explicit UnexpectedPositionalArguments(const ParserContextPtr &context);
+  UnexpectedPositionalArguments(
+      const ParserContextPtr &context, const char *message);
 
-  UnexpectedPositionals(const UnexpectedPositionals &) = default;
-  UnexpectedPositionals(UnexpectedPositionals &&) = default;
+  UnexpectedPositionalArguments(
+      const UnexpectedPositionalArguments &) = default;
+  UnexpectedPositionalArguments(UnexpectedPositionalArguments &&) = default;
 
-  auto operator=(const UnexpectedPositionals &)
-      -> UnexpectedPositionals & = default;
-  auto operator=(UnexpectedPositionals &&) -> UnexpectedPositionals & = default;
+  auto operator=(const UnexpectedPositionalArguments &)
+      -> UnexpectedPositionalArguments & = default;
+  auto operator=(UnexpectedPositionalArguments &&)
+      -> UnexpectedPositionalArguments & = default;
 
-  ~UnexpectedPositionals() override;
+  ~UnexpectedPositionalArguments() override;
 };
 
 } // namespace asap::clap::parser::detail

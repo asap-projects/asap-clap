@@ -747,36 +747,36 @@ struct FinalState : Will<ByDefault<DoNothing>> {
     ASAP_EXPECT(data.has_value());
     context_ = std::any_cast<ParserContextPtr>(data);
 
-    // process buffered positionals
+    // process buffered positional arguments
     bool before_rest{true};
-    auto &positionals = context_->positional_tokens;
+    auto &positional_args = context_->positional_tokens;
     OptionPtr rest_option{};
-    for (const auto &option : context_->active_command->Positionals()) {
+    for (const auto &option : context_->active_command->PositionalArguments()) {
       ASAP_EXPECT(option->IsPositional());
       if (!option->IsPositionalRest()) {
         if (before_rest) {
           // Pick a value from positional arguments starting from the front
-          StorePositional(option, positionals.front());
-          positionals.erase(positionals.begin());
+          StorePositional(option, positional_args.front());
+          positional_args.erase(positional_args.begin());
         } else {
           // Pick a value from positional arguments starting from the front
-          StorePositional(option, positionals.back());
-          positionals.pop_back();
+          StorePositional(option, positional_args.back());
+          positional_args.pop_back();
         }
       } else {
         rest_option = option;
         before_rest = false;
       }
     }
-    if (!positionals.empty()) {
+    if (!positional_args.empty()) {
       if (rest_option) {
         // Put the rest in 'rest'
-        for (const auto &token : positionals) {
+        for (const auto &token : positional_args) {
           StorePositional(rest_option, token);
         }
-        positionals.clear();
+        positional_args.clear();
       } else {
-        throw UnexpectedPositionals(context_);
+        throw UnexpectedPositionalArguments(context_);
       }
     }
 

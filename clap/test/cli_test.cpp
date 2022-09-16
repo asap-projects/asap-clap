@@ -166,7 +166,8 @@ public:
                           .Long("zero-terminated")
                           .WithValue<bool>()
                           .Build())
-          .WithPositionals(Option::Rest().WithValue<std::string>().Build());
+          .WithPositionalArguments(
+              Option::Rest().WithValue<std::string>().Build());
     }
     return command_;
   }

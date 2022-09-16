@@ -149,8 +149,9 @@ public:
   }
 
   template <typename... Args>
-  auto WithPositionals(Args &&...options) -> Command & {
-    positionals_.insert(positionals_.end(), {std::forward<Args>(options)...});
+  auto WithPositionalArguments(Args &&...options) -> Command & {
+    positional_args_.insert(
+        positional_args_.end(), {std::forward<Args>(options)...});
     return *this;
   }
 
@@ -190,8 +191,9 @@ public:
     return options_;
   }
 
-  [[nodiscard]] auto Positionals() const -> const std::vector<Option::Ptr> & {
-    return positionals_;
+  [[nodiscard]] auto PositionalArguments() const
+      -> const std::vector<Option::Ptr> & {
+    return positional_args_;
   }
 
 private:
@@ -200,7 +202,7 @@ private:
   std::vector<Option::Ptr> options_;
   std::vector<bool> options_in_groups_;
   std::vector<std::pair<Options::Ptr, bool>> groups_;
-  std::vector<Option::Ptr> positionals_;
+  std::vector<Option::Ptr> positional_args_;
 };
 
 inline auto operator<<(std::ostream &out, const Command &command)
