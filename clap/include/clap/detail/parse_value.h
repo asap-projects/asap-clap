@@ -75,7 +75,7 @@ auto ParseValue(const std::string &input, AssignTo &output) -> bool {
 /// Convert a flag into an integer value typically binary flags
 inline auto StringToFlagValue(std::string val) -> std::int64_t {
   val = detail::ToLower(val);
-  std::int64_t ret;
+  std::int64_t ret = -1;
   if (val.size() == 1) {
     if (val[0] >= '1' && val[0] <= '9') {
       return (static_cast<std::int64_t>(val[0]) - '0');
