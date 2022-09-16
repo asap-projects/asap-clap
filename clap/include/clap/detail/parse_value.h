@@ -74,7 +74,7 @@ auto ParseValue(const std::string &input, AssignTo &output) -> bool {
 
 /// Convert a flag into an integer value typically binary flags
 inline auto StringToFlagValue(std::string val) -> std::int64_t {
-  val = detail::ToLower(val);
+  val = ToLower(val);
   if (val.size() == 1) {
     if (val[0] >= '1' && val[0] <= '9') {
       return (static_cast<std::int64_t>(val[0]) - '0');
@@ -85,24 +85,21 @@ inline auto StringToFlagValue(std::string val) -> std::int64_t {
     case 'n':
     case '-':
       return -1;
-      break;
     case 't':
     case 'y':
     case '+':
       return 1;
-      break;
     default:
       throw std::invalid_argument("unrecognized character");
     }
   }
   if (val == "true" || val == "on" || val == "yes" || val == "enable") {
     return 1;
-  } else if (val == "false" || val == "off" || val == "no" ||
-             val == "disable") {
-    return -1;
-  } else {
-    return std::stoll(val);
   }
+  if (val == "false" || val == "off" || val == "no" || val == "disable") {
+    return -1;
+  }
+  return std::stoll(val);
 }
 
 template <typename AssignTo,
@@ -175,7 +172,7 @@ template <typename AssignTo,
     std::enable_if_t<std::is_enum_v<AssignTo>, std::nullptr_t> = nullptr>
 auto ParseValue(const std::string &input, AssignTo &output) -> bool {
   // first try to parse for an enum name
-  auto enum_val = magic_enum::enum_cast<AssignTo>(detail::ToLower(input));
+  auto enum_val = magic_enum::enum_cast<AssignTo>(ToLower(input));
   if (!enum_val.has_value()) {
     // maybe it's an integer value then
     std::underlying_type_t<AssignTo> val;
