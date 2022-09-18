@@ -297,7 +297,7 @@
       "name": "dev-base",
       "hidden": true,
       "jobs": 4,
-      "verbose": false
+      "verbose": true
     },
     {
       "name": "dev-windows",
