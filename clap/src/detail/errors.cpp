@@ -54,31 +54,17 @@ auto CommandDiagnostic(const asap::clap::parser::detail::CommandPtr &command)
 
 } // namespace
 
-asap::clap::parser::detail::UnrecognizedCommand::~UnrecognizedCommand() =
-    default;
-
-asap::clap::parser::detail::UnrecognizedCommand::UnrecognizedCommand(
-    std::vector<std::string> path_segments)
-    : UnrecognizedCommand(std::move(path_segments), nullptr) {
-}
-
-asap::clap::parser::detail::UnrecognizedCommand::UnrecognizedCommand(
-    std::vector<std::string> path_segments, const char *message) {
+auto asap::clap::parser::detail::UnrecognizedCommand(
+    const std::vector<std::string> &path_segments, const char *message)
+    -> std::string {
   auto description = fmt::format(
       "Unrecognized command with path '{}'", fmt::join(path_segments, " "));
   AppendOptionalMessage(description, message);
-  StateMachineError::What(description);
+  return description;
 }
 
-asap::clap::parser::detail::MissingCommand::~MissingCommand() = default;
-
-asap::clap::parser::detail::MissingCommand::MissingCommand(
-    const ParserContextPtr &context)
-    : MissingCommand(context, nullptr) {
-}
-
-asap::clap::parser::detail::MissingCommand::MissingCommand(
-    const ParserContextPtr &context, const char *message) {
+auto asap::clap::parser::detail::MissingCommand(
+    const ParserContextPtr &context, const char *message) -> std::string {
   auto supported_commands =
       std::accumulate(context->commands.cbegin(), context->commands.cend(),
           std::vector<std::string>(), [](auto &dest, const auto &command) {
@@ -90,38 +76,21 @@ asap::clap::parser::detail::MissingCommand::MissingCommand(
       fmt::format("You must specify a command. Supported commands are: {}",
           fmt::join(supported_commands, ", "));
   AppendOptionalMessage(description, message);
-  StateMachineError::What(description);
+  return description;
 }
 
-asap::clap::parser::detail::UnrecognizedOption::~UnrecognizedOption() = default;
-
-asap::clap::parser::detail::UnrecognizedOption::UnrecognizedOption(
-    const ParserContextPtr &context, const std::string &token)
-    : UnrecognizedOption(context, token, nullptr) {
-}
-
-asap::clap::parser::detail::UnrecognizedOption::UnrecognizedOption(
+auto asap::clap::parser::detail::UnrecognizedOption(
     const ParserContextPtr &context, const std::string &token,
-    const char *message) {
+    const char *message) -> std::string {
 
   auto option_name = (token.length() == 1) ? "-" + token : "--" + token;
   auto description = fmt::format("{}'{}' is not a recognized option",
       CommandDiagnostic(context->active_command), option_name);
   AppendOptionalMessage(description, message);
-  StateMachineError::What(description);
+  return description;
 }
-
-asap::clap::parser::detail::IllegalMultipleOccurrence::
-    ~IllegalMultipleOccurrence() = default;
-
-asap::clap::parser::detail::IllegalMultipleOccurrence::
-    IllegalMultipleOccurrence(const ParserContextPtr &context)
-    : IllegalMultipleOccurrence(context, nullptr) {
-}
-
-asap::clap::parser::detail::IllegalMultipleOccurrence::
-    IllegalMultipleOccurrence(
-        const ParserContextPtr &context, const char *message) {
+auto asap::clap::parser::detail::IllegalMultipleOccurrence(
+    const ParserContextPtr &context, const char *message) -> std::string {
   ASAP_EXPECT(context->active_option);
   ASAP_EXPECT(context->ovm_.OccurrencesOf(context->active_option->Key()) > 0);
 
@@ -134,55 +103,32 @@ asap::clap::parser::detail::IllegalMultipleOccurrence::
           context->active_option_flag,
           context->ovm_.ValuesOf(option_name).front().OriginalToken());
   AppendOptionalMessage(description, message);
-  StateMachineError::What(description);
+  return description;
 }
 
-asap::clap::parser::detail::OptionSyntaxError::~OptionSyntaxError() = default;
-
-asap::clap::parser::detail::OptionSyntaxError::OptionSyntaxError(
-    const ParserContextPtr &context)
-    : OptionSyntaxError(context, nullptr) {
-}
-
-asap::clap::parser::detail::OptionSyntaxError::OptionSyntaxError(
-    const ParserContextPtr &context, const char *message) {
+auto asap::clap::parser::detail::OptionSyntaxError(
+    const ParserContextPtr &context, const char *message) -> std::string {
   auto description = fmt::format("{}option '{}' is using an invalid syntax",
       CommandDiagnostic(context->active_command),
       context->active_option->Key());
   AppendOptionalMessage(description, message);
-  StateMachineError::What(description);
+  return description;
 }
 
-asap::clap::parser::detail::MissingValueForOption::~MissingValueForOption() =
-    default;
-
-asap::clap::parser::detail::MissingValueForOption::MissingValueForOption(
-    const ParserContextPtr &context)
-    : MissingValueForOption(context, nullptr) {
-}
-
-asap::clap::parser::detail::MissingValueForOption::MissingValueForOption(
-    const ParserContextPtr &context, const char *message) {
+auto asap::clap::parser::detail::MissingValueForOption(
+    const ParserContextPtr &context, const char *message) -> std::string {
   auto description =
       fmt::format("{}option '{}' seen as '{}' "
                   "has no value on the command line and no implicit one",
           CommandDiagnostic(context->active_command),
           context->active_option->Key(), context->active_option_flag);
   AppendOptionalMessage(description, message);
-  StateMachineError::What(description);
+  return description;
 }
 
-asap::clap::parser::detail::InvalidValueForOption::~InvalidValueForOption() =
-    default;
-
-asap::clap::parser::detail::InvalidValueForOption::InvalidValueForOption(
-    const ParserContextPtr &context, const std::string &token)
-    : InvalidValueForOption(context, token, nullptr) {
-}
-
-asap::clap::parser::detail::InvalidValueForOption::InvalidValueForOption(
+auto asap::clap::parser::detail::InvalidValueForOption(
     const ParserContextPtr &context, const std::string &token,
-    const char *message) {
+    const char *message) -> std::string {
 
   auto description = fmt::format(
       "{}option '{}' seen as '{}',"
@@ -191,38 +137,22 @@ asap::clap::parser::detail::InvalidValueForOption::InvalidValueForOption(
       CommandDiagnostic(context->active_command), context->active_option->Key(),
       context->active_option_flag, token, "<TODO: TYPE NAME>");
   AppendOptionalMessage(description, message);
-  StateMachineError::What(description);
+  return description;
 }
 
-asap::clap::parser::detail::MissingRequiredOption::~MissingRequiredOption() =
-    default;
-
-asap::clap::parser::detail::MissingRequiredOption::MissingRequiredOption(
-    const CommandPtr &command, const OptionPtr &option)
-    : MissingRequiredOption(command, option, nullptr) {
-}
-
-asap::clap::parser::detail::MissingRequiredOption::MissingRequiredOption(
-    const CommandPtr &command, const OptionPtr &option, const char *message) {
+auto asap::clap::parser::detail::MissingRequiredOption(
+    const CommandPtr &command, const OptionPtr &option, const char *message)
+    -> std::string {
   auto description =
       fmt::format("{}no option '{}' was specified. "
                   "It is required and does not have a default value",
           CommandDiagnostic(command), option->Key());
   AppendOptionalMessage(description, message);
-  StateMachineError::What(description);
+  return description;
 }
 
-asap::clap::parser::detail::UnexpectedPositionalArguments::
-    ~UnexpectedPositionalArguments() = default;
-
-asap::clap::parser::detail::UnexpectedPositionalArguments::
-    UnexpectedPositionalArguments(const ParserContextPtr &context)
-    : UnexpectedPositionalArguments(context, nullptr) {
-}
-
-asap::clap::parser::detail::UnexpectedPositionalArguments::
-    UnexpectedPositionalArguments(
-        const ParserContextPtr &context, const char *message) {
+auto asap::clap::parser::detail::UnexpectedPositionalArguments(
+    const ParserContextPtr &context, const char *message) -> std::string {
   auto description = fmt::format("{}argument{} '{}' "
                                  "{} not expected by any option",
       CommandDiagnostic(context->active_command),
@@ -230,5 +160,5 @@ asap::clap::parser::detail::UnexpectedPositionalArguments::
       fmt::join(context->positional_tokens, ", "),
       context->positional_tokens.size() > 1 ? "are" : "is");
   AppendOptionalMessage(description, message);
-  StateMachineError::What(description);
+  return description;
 }

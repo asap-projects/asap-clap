@@ -19,8 +19,8 @@
 #include <contract/contract.h>
 #include <fsm/fsm.h>
 
+#include "../detail/errors.h"
 #include "context.h"
-#include "errors.h"
 #include "events.h"
 #include "tokenizer.h"
 
@@ -447,14 +447,12 @@ inline auto TryImplicitValue(const ParserContextPtr &context) -> bool {
   return false;
 }
 
-inline void CheckMultipleOccurrence(const ParserContextPtr &context) {
+[[nodiscard]] inline auto CheckMultipleOccurrence(
+    const ParserContextPtr &context) -> bool {
   const auto semantics = context->active_option->value_semantic();
   const auto occurrences =
       context->ovm_.OccurrencesOf(context->active_option->Key());
-  if (occurrences > 0 && !semantics->IsRepeatable()) {
-    // can not have this option anymore
-    throw IllegalMultipleOccurrence(context);
-  }
+  return (occurrences < 1 || semantics->IsRepeatable());
 }
 
 /*!
@@ -520,10 +518,12 @@ struct ParseShortOptionState
       ASAP_UNREACHABLE();
     }
     if (!option) {
-      throw UnrecognizedOption(context_, event.token);
+      return TerminateWithError{UnrecognizedOption(context_, event.token)};
     }
     context_->active_option.swap(option.value());
-    CheckMultipleOccurrence(context_);
+    if (!CheckMultipleOccurrence(context_)) {
+      return TerminateWithError{IllegalMultipleOccurrence(context_)};
+    }
     return Continue{};
   }
 
@@ -533,7 +533,7 @@ struct ParseShortOptionState
       if (!TryImplicitValue(context_)) {
         const auto semantics = context_->active_option->value_semantic();
         if (semantics->IsRequired()) {
-          throw MissingValueForOption(context_);
+          return TerminateWithError{MissingValueForOption(context_)};
         }
       }
     }
@@ -644,10 +644,12 @@ struct ParseLongOptionState : Will<ByDefault<TransitionTo<ParseOptionsState>>> {
       ASAP_UNREACHABLE();
     }
     if (!option) {
-      throw UnrecognizedOption(context_, event.token);
+      return TerminateWithError{UnrecognizedOption(context_, event.token)};
     }
     context_->active_option.swap(option.value());
-    CheckMultipleOccurrence(context_);
+    if (!CheckMultipleOccurrence(context_)) {
+      return TerminateWithError{IllegalMultipleOccurrence(context_)};
+    }
     return Continue{};
   }
 
@@ -657,7 +659,7 @@ struct ParseLongOptionState : Will<ByDefault<TransitionTo<ParseOptionsState>>> {
       if (!TryImplicitValue(context_)) {
         const auto semantics = context_->active_option->value_semantic();
         if (semantics->IsRequired()) {
-          throw MissingValueForOption(context_);
+          return TerminateWithError{MissingValueForOption(context_)};
         }
       }
     }
@@ -776,7 +778,7 @@ struct FinalState : Will<ByDefault<DoNothing>> {
         }
         positional_args.clear();
       } else {
-        throw UnexpectedPositionalArguments(context_);
+        return TerminateWithError{UnexpectedPositionalArguments(context_)};
       }
     }
 

@@ -13,7 +13,6 @@
 
 #include <common/compilers.h>
 
-#include "parser/errors.h"
 #include "parser/events.h"
 #include "parser/states.h"
 
@@ -278,9 +277,8 @@ struct IdentifyCommandTransitionTestData {
 struct ReportErrorTransitionTestData {
   template <typename ActionType> void Check(const ActionType &action) const {
     EXPECT_THAT(action.template IsA<fsm::ReportError>(), ::testing::IsTrue());
-    const auto &action_data =
-        std::any_cast<asap::fsm::StateMachineError>(action.data());
-    EXPECT_THAT(action_data.What(), ::testing::HasSubstr(error));
+    const auto &action_data = std::any_cast<std::string>(action.data());
+    EXPECT_THAT(action_data, ::testing::HasSubstr(error));
   }
   std::string error;
 };

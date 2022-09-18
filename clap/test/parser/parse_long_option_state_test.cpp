@@ -6,12 +6,18 @@
 
 #include "./test_helpers.h"
 
+#include "gmock/gmock.h"
 #include <gmock/gmock.h>
 #include <gtest/gtest.h>
 
 #include <contract/contract.h>
+#include <variant>
 
 #include "clap/fluent/dsl.h"
+#include "fsm/fsm.h"
+
+using testing::Eq;
+using testing::IsTrue;
 
 namespace asap::clap::parser::detail {
 
@@ -53,17 +59,14 @@ protected:
     state_ = std::make_unique<ParseLongOptionState>();
   }
 
-  void EnterState(const Token &token, const ParserContextPtr &context) const {
+  auto EnterState(const Token &token, const ParserContextPtr &context) const
+      -> fsm::Status {
     ASAP_EXPECT(context->active_command);
 
     const auto &[token_type, token_value] = token;
-    if (token_type == TokenType::LongOption) {
-      const auto first_event = TokenEvent<TokenType::LongOption>(token_value);
-      state_->OnEnter(first_event, context);
-    } else {
-      FAIL() << "Illegal token used to enter ParseLongOptionState: "
-             << token_type << "/" << token_value << std::endl;
-    }
+    EXPECT_THAT(token_type, Eq(TokenType::LongOption));
+    const auto first_event = TokenEvent<TokenType::LongOption>(token_value);
+    return state_->OnEnter(first_event, context);
   }
 
   void LeaveState() const override {
@@ -181,8 +184,9 @@ TEST_P(ParseLongOptionStateUnrecognizedOptionTest, FailWithAnException) {
   auto context = ParserContext::New(base_context, commands);
   context->active_command = predefined_commands().at("with-options");
   auto token = tokenizer.NextToken();
-  // NOLINTNEXTLINE(hicpp-avoid-goto, cppcoreguidelines-avoid-goto)
-  EXPECT_THROW(EnterState(token, context), UnrecognizedOption);
+  auto status = EnterState(token, context);
+  EXPECT_THAT(
+      std::holds_alternative<fsm::TerminateWithError>(status), IsTrue());
 }
 
 } // namespace

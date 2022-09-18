@@ -6,12 +6,17 @@
 
 #include "./test_helpers.h"
 
+#include "gmock/gmock.h"
 #include <gmock/gmock.h>
 #include <gtest/gtest.h>
 
 #include <contract/contract.h>
 
 #include "clap/fluent/dsl.h"
+#include "fsm/fsm.h"
+
+using testing::Eq;
+using testing::IsTrue;
 
 namespace asap::clap::parser::detail {
 
@@ -53,28 +58,24 @@ protected:
     state_ = std::make_unique<ParseShortOptionState>();
   }
 
-  void EnterState(const Token &token, const ParserContextPtr &context) const {
+  auto EnterState(const Token &token, const ParserContextPtr &context) const
+      -> fsm::Status {
     ASAP_EXPECT(context->active_command);
 
     const auto &[token_type, token_value] = token;
-    switch (token_type) {
-    case TokenType::ShortOption: {
+    EXPECT_THAT((token_type == TokenType::ShortOption ||
+                    token_type == TokenType::LoneDash),
+        IsTrue());
+
+    if (token_type == TokenType::ShortOption) {
       const auto first_event = TokenEvent<TokenType::ShortOption>(token_value);
-      state_->OnEnter(first_event, context);
-    } break;
-    case TokenType::LoneDash: {
-      const auto first_event = TokenEvent<TokenType::LoneDash>(token_value);
-      state_->OnEnter(first_event, context);
-    } break;
-    case TokenType::LongOption:
-    case TokenType::DashDash:
-    case TokenType::Value:
-    case TokenType::EqualSign:
-    case TokenType::EndOfInput:
-    default:
-      FAIL() << "Illegal token used to enter ParseShortOptionState: "
-             << token_type << "/" << token_value << std::endl;
+      return state_->OnEnter(first_event, context);
     }
+    if (token_type == TokenType::LoneDash) {
+      const auto first_event = TokenEvent<TokenType::LoneDash>(token_value);
+      return state_->OnEnter(first_event, context);
+    }
+    return fsm::TerminateWithError{"Illegal Token"};
   }
 
   void LeaveState() const override {
@@ -193,8 +194,9 @@ TEST_P(ParseShortOptionStateUnrecognizedOptionTest, FailWithAnException) {
   auto context = ParserContext::New(base_context, commands);
   context->active_command = predefined_commands().at("with-options");
   auto token = tokenizer.NextToken();
-  // NOLINTNEXTLINE(hicpp-avoid-goto, cppcoreguidelines-avoid-goto)
-  EXPECT_THROW(EnterState(token, context), UnrecognizedOption);
+  auto status = EnterState(token, context);
+  EXPECT_THAT(
+      std::holds_alternative<fsm::TerminateWithError>(status), IsTrue());
 }
 
 } // namespace
