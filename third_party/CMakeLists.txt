@@ -55,7 +55,9 @@ cpmaddpackage(
   GITHUB_REPOSITORY
   asap-projects/asap-common
   OPTIONS
-  "ASAP_COMMON_INSTALL ON")
+  "ASAP_COMMON_INSTALL ON"
+  "ASAP_BUILD_TESTS OFF"
+  "ASAP_BUILD_EXAMPLES OFF")
 
 # ------------------------------------------------------------------------------
 # asap::fsm
@@ -69,7 +71,9 @@ cpmaddpackage(
   GITHUB_REPOSITORY
   asap-projects/asap-fsm
   OPTIONS
-  "ASAP_FSM_INSTALL ON")
+  "ASAP_FSM_INSTALL ON"
+  "ASAP_BUILD_TESTS OFF"
+  "ASAP_BUILD_EXAMPLES OFF")
 
 # ------------------------------------------------------------------------------
 # asap::textwrap
@@ -83,7 +87,9 @@ cpmaddpackage(
   GITHUB_REPOSITORY
   asap-projects/asap-textwrap
   OPTIONS
-  "ASAP_TEXTWRAP_INSTALL ON")
+  "ASAP_TEXTWRAP_INSTALL ON"
+  "ASAP_BUILD_TESTS OFF"
+  "ASAP_BUILD_EXAMPLES OFF")
 
 # ------------------------------------------------------------------------------
 # asap::mixin
@@ -97,7 +103,9 @@ cpmaddpackage(
   GITHUB_REPOSITORY
   asap-projects/asap-mixin
   OPTIONS
-  "ASAP_MIXIN_INSTALL ON")
+  "ASAP_MIXIN_INSTALL ON"
+  "ASAP_BUILD_TESTS OFF"
+  "ASAP_BUILD_EXAMPLES OFF")
 
 # ------------------------------------------------------------------------------
 # asap::contract
@@ -111,7 +119,9 @@ cpmaddpackage(
   GITHUB_REPOSITORY
   asap-projects/asap-contract
   OPTIONS
-  "ASAP_CONTRACT_INSTALL ON")
+  "ASAP_CONTRACT_INSTALL ON"
+  "ASAP_BUILD_TESTS OFF"
+  "ASAP_BUILD_EXAMPLES OFF")
 
 # ------------------------------------------------------------------------------
 # asap::logging
@@ -125,4 +135,6 @@ cpmaddpackage(
   GITHUB_REPOSITORY
   asap-projects/asap-logging
   OPTIONS
-  "ASAP_LOGGING_INSTALL ON")
+  "ASAP_LOGGING_INSTALL ON"
+  "ASAP_BUILD_TESTS OFF"
+  "ASAP_BUILD_EXAMPLES OFF")
