@@ -6,6 +6,24 @@
 
 message("=> [third-party modules]")
 
+# Call `asap_add_package` to add third party packages using CPM, while
+# automatically adding/removing them to the project hierarchy stack.
+#
+# Refer to https://github.com/cpm-cmake/CPM.cmake for the full usage.
+#
+# Example:
+# ~~~
+# asap_add_package(
+#   NAME
+#   magic_enum
+#   GIT_TAG
+#   master
+#   GITHUB_REPOSITORY
+#   abdes/magic_enum
+#   OPTIONS
+#   "MAGIC_ENUM_OPT_INSTALL ON")
+# ~~~
+
 # Live at Head philosophy. Always use the latest commit in the main branch in
 # your projects.
 
@@ -13,13 +31,13 @@ message("=> [third-party modules]")
 # GSL
 # ------------------------------------------------------------------------------
 
-cpmaddpackage(NAME gsl GIT_TAG main GITHUB_REPOSITORY microsoft/GSL)
+asap_add_package(NAME gsl GIT_TAG main GITHUB_REPOSITORY microsoft/GSL)
 
 # ------------------------------------------------------------------------------
 # magic_enum
 # ------------------------------------------------------------------------------
 
-cpmaddpackage(
+asap_add_package(
   NAME
   magic_enum
   GIT_TAG
@@ -33,7 +51,7 @@ cpmaddpackage(
 # fmt::fmt-header-only
 # ------------------------------------------------------------------------------
 
-cpmaddpackage(
+asap_add_package(
   NAME
   fmtlib
   GIT_TAG
@@ -47,7 +65,7 @@ cpmaddpackage(
 # asap::common
 # ------------------------------------------------------------------------------
 
-cpmaddpackage(
+asap_add_package(
   NAME
   asap_common
   GIT_TAG
@@ -63,7 +81,7 @@ cpmaddpackage(
 # asap::fsm
 # ------------------------------------------------------------------------------
 
-cpmaddpackage(
+asap_add_package(
   NAME
   asap_fsm
   GIT_TAG
@@ -79,7 +97,7 @@ cpmaddpackage(
 # asap::textwrap
 # ------------------------------------------------------------------------------
 
-cpmaddpackage(
+asap_add_package(
   NAME
   asap_textwrap
   GIT_TAG
@@ -95,7 +113,7 @@ cpmaddpackage(
 # asap::mixin
 # ------------------------------------------------------------------------------
 
-cpmaddpackage(
+asap_add_package(
   NAME
   asap_mixin
   GIT_TAG
@@ -111,7 +129,7 @@ cpmaddpackage(
 # asap::contract
 # ------------------------------------------------------------------------------
 
-cpmaddpackage(
+asap_add_package(
   NAME
   asap_contract
   GIT_TAG
@@ -127,7 +145,7 @@ cpmaddpackage(
 # asap::logging
 # ------------------------------------------------------------------------------
 
-cpmaddpackage(
+asap_add_package(
   NAME
   asap_logging
   GIT_TAG
@@ -138,3 +156,4 @@ cpmaddpackage(
   "ASAP_LOGGING_INSTALL ON"
   "ASAP_BUILD_TESTS OFF"
   "ASAP_BUILD_EXAMPLES OFF")
+message(STATUS "${ASAP_LOG_PROJECT_HIERARCHY} >> third-party modules")
