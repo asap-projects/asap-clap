@@ -8,9 +8,5 @@
 # Build instructions
 # ==============================================================================
 
-asap_add_executable(
-  "simple-example"
-  WARNING SOURCES
-  "simple_example.cpp"
-)
+asap_add_executable("simple-example" WARNING SOURCES "simple_example.cpp")
 target_link_libraries("simple-example" PRIVATE asap::clap)
