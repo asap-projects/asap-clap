@@ -20,6 +20,15 @@
 
 namespace asap::clap::detail {
 
+/**
+ * \brief A safer type to encapsulate the program's `argc` and `argv`.
+ *
+ * This class has been designed to be safe because the program arguments
+ * are stored using a safe C++ container, separate from the program name and
+ * accessible only via safe accessor methods. In addition to being a safer
+ * implementation, this will eliminate many linter warnings and static analysis
+ * complaints.
+ */
 class Arguments {
 public:
   /*!
