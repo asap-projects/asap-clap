@@ -16,7 +16,7 @@
 
 #include "clap/detail/args.h"
 
-class asap::clap::detail::ArgumentsImpl {
+class asap::clap::detail::Arguments::ArgumentsImpl {
 public:
   ArgumentsImpl(int argc, const char **argv) {
     ASAP_EXPECT(argc > 0);

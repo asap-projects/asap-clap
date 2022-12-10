@@ -20,8 +20,6 @@
 
 namespace asap::clap::detail {
 
-class ArgumentsImpl;
-
 class Arguments {
 public:
   /*!
@@ -55,11 +53,14 @@ public:
       -> const std::vector<std::string> &;
 
 private:
-  // Stores the implementation and the implementation's deleter as well.
+  class ArgumentsImpl;
+
+  // Stores the implementation and the implementation's deleter as well to work
+  // around the fact that the implementation class is an incomplete type so far.
   // Deleter is a pointer to a function with signature
   // `void func(ArgumentsImpl *)`.
   // https://oliora.github.io/2015/12/29/pimpl-and-rule-of-zero.html
-  std::unique_ptr<ArgumentsImpl, void (*)(ArgumentsImpl *)> impl_;
+  const std::unique_ptr<ArgumentsImpl, void (*)(ArgumentsImpl *)> impl_;
 };
 
 } // namespace asap::clap::detail
