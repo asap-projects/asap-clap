@@ -27,14 +27,15 @@ template <typename AssignTo,
     std::enable_if_t<std::is_integral_v<AssignTo> && std::is_signed_v<AssignTo>,
         std::nullptr_t> = nullptr>
 auto NumberConversion(const std::string &input, AssignTo &output) -> bool {
-  if (input.empty()) {
+  std::size_t consumed{};
+  try {
+    const auto output_ll{std::stoll(input, &consumed)};
+    output = static_cast<AssignTo>(output_ll);
+    return (consumed == input.size() &&
+            static_cast<std::int64_t>(output) == output_ll);
+  } catch (const std::exception &) {
     return false;
   }
-  char *val = nullptr;
-  std::int64_t output_ll = std::strtoll(input.c_str(), &val, 0);
-  output = static_cast<AssignTo>(output_ll);
-  return val == (input.c_str() + input.size()) &&
-         static_cast<std::int64_t>(output) == output_ll;
 }
 
 template <typename AssignTo, std::enable_if_t<std::is_integral_v<AssignTo> &&
@@ -42,14 +43,20 @@ template <typename AssignTo, std::enable_if_t<std::is_integral_v<AssignTo> &&
                                  std::nullptr_t> = nullptr>
 auto UnsignedNumberConversion(const std::string &input, AssignTo &output)
     -> bool {
-  if (input.empty() || input[0] == '-') {
+  // Contrarily to the behavior od std::stoull, we do not accept a '-' sign
+  // in the input
+  if (input[0] == '-') {
     return false;
   }
-  char *val = nullptr;
-  std::uint64_t output_ll = std::strtoull(input.c_str(), &val, 0);
-  output = static_cast<AssignTo>(output_ll);
-  return val == (input.c_str() + input.size()) &&
-         static_cast<std::uint64_t>(output) == output_ll;
+  std::size_t consumed{};
+  try {
+    const auto output_ull{std::stoull(input, &consumed)};
+    output = static_cast<AssignTo>(output_ull);
+    return (consumed == input.size() &&
+            static_cast<std::uint64_t>(output) == output_ull);
+  } catch (const std::exception &) {
+    return false;
+  }
 }
 
 template <typename AssignTo,
@@ -135,13 +142,14 @@ template <typename AssignTo,
     std::enable_if_t<std::is_floating_point_v<AssignTo>, std::nullptr_t> =
         nullptr>
 auto ParseValue(const std::string &input, AssignTo &output) -> bool {
-  if (input.empty()) {
+  std::size_t consumed{};
+  try {
+    const auto output_ld{std::stold(input, &consumed)};
+    output = static_cast<AssignTo>(output_ld);
+    return (consumed == input.size());
+  } catch (const std::exception &) {
     return false;
   }
-  char *val = nullptr;
-  auto output_ld = std::strtold(input.c_str(), &val);
-  output = static_cast<AssignTo>(output_ld);
-  return val == (input.c_str() + input.size());
 }
 
 /// String and similar direct assignment
