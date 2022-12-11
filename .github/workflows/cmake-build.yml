@@ -27,8 +27,8 @@ jobs:
               generators: "Visual Studio 17 2022",
             }
           - {
-              name: "Ubuntu_GCC_10",
-              os: ubuntu-latest,
+              name: "Ubuntu_20.04_GCC_10",
+              os: ubuntu-20.04,
               artifact: "Linux.7z",
               build_type: "Release",
               cc: "gcc-10",
@@ -37,9 +37,9 @@ jobs:
               generators: "Ninja",
             }
           - {
-              name: "Ubuntu_GCC_11",
-              os: ubuntu-latest,
-              artifact: "Linux-GCC-11.7z",
+              name: "Ubuntu_22.04_GCC_12",
+              os: ubuntu-22.04,
+              artifact: "Linux-GCC-12.7z",
               build_type: "Release",
               cc: "gcc",
               cxx: "g++",
@@ -112,12 +112,12 @@ jobs:
             )
           endif()
 
-      - name: Install gcc-11
+      - name: Install gcc-12
         shell: bash
-        if: endsWith(matrix.config.name, 'GCC_11')
+        if: endsWith(matrix.config.name, 'GCC_12')
         run: |
           sudo apt-get update
-          sudo apt-get install gcc-11 g++-11
+          sudo apt-get install gcc-12 g++-12
           sudo update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-11 110 --slave /usr/bin/g++ g++ /usr/bin/g++-11 --slave /usr/bin/gcov gcov /usr/bin/gcov-11
 
       - name: Install ccache
