@@ -56,8 +56,8 @@ protected:
     state_ = std::make_unique<ParseShortOptionState>();
   }
 
-  auto EnterState(const Token &token, const ParserContextPtr &context) const
-      -> fsm::Status {
+  [[nodiscard]] auto EnterState(const Token &token,
+      const ParserContextPtr &context) const -> fsm::Status {
     ASAP_EXPECT(context->active_command);
 
     const auto &[token_type, token_value] = token;
@@ -94,7 +94,7 @@ protected:
     context->active_command = predefined_commands().at("with-options");
     auto token = tokenizer.NextToken();
     // NOLINTNEXTLINE(hicpp-avoid-goto, cppcoreguidelines-avoid-goto)
-    EXPECT_NO_THROW(EnterState(token, context));
+    EXPECT_NO_THROW(auto status = EnterState(token, context));
     while (true) {
       token = tokenizer.NextToken();
       if (!ProcessToken(token, state(), action_check, state_check)) {
