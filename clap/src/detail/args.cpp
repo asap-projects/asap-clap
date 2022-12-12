@@ -40,7 +40,7 @@ public:
 asap::clap::detail::Arguments::Arguments(int argc, const char **argv)
     : impl_(new ArgumentsImpl(argc, argv),
           // NOLINTNEXTLINE(cppcoreguidelines-owning-memory)
-          [](ArgumentsImpl *impl) { delete impl; }) {
+          [](const ArgumentsImpl *impl) { delete impl; }) {
 }
 
 auto asap::clap::detail::Arguments::ProgramName() const -> const std::string & {

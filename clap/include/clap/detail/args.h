@@ -69,7 +69,7 @@ private:
   // Deleter is a pointer to a function with signature
   // `void func(ArgumentsImpl *)`.
   // https://oliora.github.io/2015/12/29/pimpl-and-rule-of-zero.html
-  const std::unique_ptr<ArgumentsImpl, void (*)(ArgumentsImpl *)> impl_;
+  const std::unique_ptr<ArgumentsImpl, void (*)(const ArgumentsImpl *)> impl_;
 };
 
 } // namespace asap::clap::detail
