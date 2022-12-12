@@ -13,7 +13,6 @@
 #include "errors.h"
 
 #include <numeric>
-#include <utility>
 
 #include <common/compilers.h>
 #include <contract/contract.h>
