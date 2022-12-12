@@ -53,6 +53,7 @@ function(asap_set_compile_options)
     set(targets ${x_UNPARSED_ARGUMENTS})
     foreach(target ${targets})
       target_compile_options(${target} PRIVATE /EHsc /MP /W4)
+      target_link_options(${target} PRIVATE $<$<CONFIG:Debug>:/PROFILE>)
     endforeach()
   endif()
 
