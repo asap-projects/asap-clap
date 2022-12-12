@@ -179,8 +179,7 @@ protected:
       }
       return continue_after_check_action && continue_after_check_state;
     }
-    default:
-      ASAP_UNREACHABLE();
+    default:;
     }
     ASAP_UNREACHABLE();
   }
