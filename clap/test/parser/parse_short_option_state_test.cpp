@@ -7,7 +7,6 @@
 #include "./test_helpers.h"
 
 #include "gmock/gmock.h"
-#include <gmock/gmock.h>
 #include <gtest/gtest.h>
 
 #include <contract/contract.h>
