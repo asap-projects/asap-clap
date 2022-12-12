@@ -14,7 +14,6 @@
 #include "clap/fluent/dsl.h"
 #include "fsm/fsm.h"
 
-using testing::Eq;
 using testing::IsTrue;
 
 namespace asap::clap::parser::detail {
