@@ -6,6 +6,7 @@ _build/
 _build-*/
 cmake-build*/
 out/
+/TestResults
 
 .vs
 .sphinx
