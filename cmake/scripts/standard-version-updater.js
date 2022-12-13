@@ -68,7 +68,7 @@ module.exports.readVersion =
       }
     }
     if (major != null && minor != null && patch != null) break;
-  };
+  }
 
   if (major == null)
     console.error(
