@@ -110,17 +110,17 @@ public:
   virtual ~HeadCli() = default;
   auto CommandLine() -> Cli & override {
     if (!cli_) {
-      cli_.emplace();
       const auto command = MakeCommand(Command::DEFAULT);
       command->WithOptions(CommonOptions());
-      cli_->ProgramName(ProgramName())
-          .Version("1.1.0")
-          .About(about_head)
-          // TODO(Abdessattar) support usage footer
-          //.Footer(usage_footer)
-          .WithCommand(command);
+      cli_ = CliBuilder()
+                 .ProgramName(ProgramName())
+                 .Version("1.1.0")
+                 .About(about_head)
+                 // TODO(Abdessattar) support usage footer
+                 //.Footer(usage_footer)
+                 .WithCommand(command);
     }
-    return cli_.value();
+    return *cli_;
   }
   [[nodiscard]] auto MakeCommand(std::string name) const -> Command::Ptr {
     if (!command_) {
@@ -179,7 +179,7 @@ protected:
 
 private:
   mutable Command::Ptr command_;
-  std::optional<Cli> cli_;
+  std::unique_ptr<Cli> cli_;
 };
 
 // NOLINTNEXTLINE(cppcoreguidelines-special-member-functions,hicpp-special-member-functions)
@@ -190,17 +190,17 @@ public:
   virtual ~PaintCli() = default;
   auto CommandLine() -> Cli & override {
     if (!cli_) {
-      cli_.emplace();
       const auto command = MakeCommand(Command::DEFAULT);
       command->WithOptions(CommonOptions());
-      cli_->ProgramName(ProgramName())
-          .Version("1.0.0")
-          .About("Paint something using a color")
-          // TODO(Abdessattar) support usage footer
-          //.Footer(usage_footer)
-          .WithCommand(command);
+      cli_ = CliBuilder()
+                 .ProgramName(ProgramName())
+                 .Version("1.0.0")
+                 .About("Paint something using a color")
+                 // TODO(Abdessattar) support usage footer
+                 //.Footer(usage_footer)
+                 .WithCommand(command);
     }
-    return cli_.value();
+    return *cli_;
   }
   [[nodiscard]] auto MakeCommand(std::string name) const -> Command::Ptr {
     if (!command_) {
@@ -226,7 +226,7 @@ protected:
 
 private:
   mutable Command::Ptr command_;
-  std::optional<Cli> cli_;
+  std::unique_ptr<Cli> cli_;
 };
 
 // NOLINTNEXTLINE(cppcoreguidelines-special-member-functions,hicpp-special-member-functions)
@@ -235,22 +235,23 @@ public:
   virtual ~UtilsCli() = default;
   auto CommandLine() -> Cli & override {
     if (!cli_) {
-      cli_.emplace();
       auto default_command = std::make_shared<Command>(Command::DEFAULT);
       default_command->WithOptions(CommonOptions());
       HeadCli head;
       PaintCli paint;
-      cli_->ProgramName(ProgramName())
-          .Version("1.1.0")
-          .About("GNU Core Utils - the basic file, shell and text manipulation "
-                 "utilities of the GNU operating system.")
-          // TODO(Abdessattar) support usage footer
-          //.Footer(usage_footer)
-          .WithCommand(default_command)
-          .WithCommand(head.MakeCommand("head"))
-          .WithCommand(paint.MakeCommand("paint"));
+      cli_ = CliBuilder()
+                 .ProgramName(ProgramName())
+                 .Version("1.1.0")
+                 .About("GNU Core Utils - the basic file, shell and text "
+                        "manipulation "
+                        "utilities of the GNU operating system.")
+                 // TODO(Abdessattar) support usage footer
+                 //.Footer(usage_footer)
+                 .WithCommand(default_command)
+                 .WithCommand(head.MakeCommand("head"))
+                 .WithCommand(paint.MakeCommand("paint"));
     }
-    return cli_.value();
+    return *cli_;
   }
 
 protected:
@@ -259,7 +260,7 @@ protected:
   }
 
 private:
-  std::optional<Cli> cli_;
+  std::unique_ptr<Cli> cli_;
 };
 
 // NOLINTNEXTLINE

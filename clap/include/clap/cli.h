@@ -7,7 +7,7 @@
 /*!
  * \file
  *
- * \brief Types and macros used for clap.
+ * \brief The main entry point for the asap-clap library.
  */
 
 #pragma once
@@ -27,6 +27,13 @@
 /// Namespace for command line parsing related APIs.
 namespace asap::clap {
 
+/*!
+ * \brief An exception thrown when a command line arguments parsing error
+ * occurs.
+ *
+ * Note that this exception indicates an unrecoverable error and nothing much is
+ * expected from the caller to handle such error except failing.
+ */
 class CmdLineArgumentsError : public std::runtime_error {
 public:
   using runtime_error::runtime_error;
@@ -39,37 +46,37 @@ public:
   ~CmdLineArgumentsError() override;
 };
 
+class CliBuilder;
+
+/*!
+ * \brief The main entry point of the command line arguments parsing API.
+ *
+ * To parse command line arguments, use a CliBuilder to create a `Cli`,
+ * configure its different options and add commands to it. Once built, you can
+ * call `Parse()` with the program command line arguments.
+ */
 class Cli {
 public:
-  auto Version(std::string version) -> Cli & {
-    version_ = std::move(version);
-    return *this;
-  }
+  /// The program version string.
   [[nodiscard]] auto Version() const -> const std::string & {
     return version_;
   }
 
-  auto About(std::string about) -> Cli & {
-    about_ = std::move(about);
-    return *this;
-  }
-
+  /// A descriptive message about this command line program.
   [[nodiscard]] auto About() const -> const std::string & {
     return about_;
   }
 
-  auto ProgramName(std::string name) -> Cli & {
-    program_name_ = std::move(name);
-    return *this;
-  }
-
+  /*!
+   * \brief The program name.
+   *
+   * This is either set explicitly using the builder's
+   * `CLiBuilder::ProgramName()` method or deduced from the command line
+   * arguments array. In the latter case, the value is only available after a
+   * call to `Parse()`.
+   */
   [[nodiscard]] auto ProgramName() const -> std::string {
     return program_name_.value_or("");
-  }
-
-  auto WithCommand(std::shared_ptr<Command> command) -> Cli & {
-    commands_.push_back(std::move(command));
-    return *this;
   }
 
   ASAP_CLAP_API auto Parse(int argc, const char **argv)
@@ -85,7 +92,29 @@ public:
       option_description element. */
   ASAP_CLAP_API void Print(std::ostream &out, unsigned width = 0) const;
 
+  // Cli instances are created and configured only via the associated
+  // CliBuilder.
+  friend class CliBuilder;
+
 private:
+  Cli() = default;
+
+  void Version(std::string version) {
+    version_ = std::move(version);
+  }
+
+  void About(std::string about) {
+    about_ = std::move(about);
+  }
+
+  void ProgramName(std::string name) {
+    program_name_ = std::move(name);
+  }
+
+  void WithCommand(std::shared_ptr<Command> command) {
+    commands_.push_back(std::move(command));
+  }
+
   [[nodiscard]] auto HasHelpOption() const -> bool;
 
   std::string version_;

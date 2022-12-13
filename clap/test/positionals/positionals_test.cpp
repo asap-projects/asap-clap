@@ -58,9 +58,9 @@ TEST(PositionalArgumentsTest, JustRest) {
   const auto default_command = std::make_shared<Command>(Command::DEFAULT);
   default_command->WithPositionalArguments(MakeRest());
 
-  Cli cli;
-  cli.ProgramName("positional_args").WithCommand(default_command);
-  const auto &matches = cli.Parse(argc, argv.data());
+  std::unique_ptr<Cli> cli =
+      CliBuilder().ProgramName("positional_args").WithCommand(default_command);
+  const auto &matches = cli->Parse(argc, argv.data());
 
   const auto &v_rest = matches.ValuesOf(Option::key_rest);
   EXPECT_THAT(v_rest.size(), Eq(4));
@@ -80,9 +80,9 @@ TEST(PositionalArgumentsTest, BeforeRest) {
   default_command->WithPositionalArguments(
       MakeBefore_1(), MakeBefore_2(), MakeRest());
 
-  Cli cli;
-  cli.ProgramName("positional_args").WithCommand(default_command);
-  const auto &matches = cli.Parse(argc, argv.data());
+  std::unique_ptr<Cli> cli =
+      CliBuilder().ProgramName("positional_args").WithCommand(default_command);
+  const auto &matches = cli->Parse(argc, argv.data());
 
   const auto &v_before_1 = matches.ValuesOf("BEFORE_1");
   EXPECT_THAT(v_before_1.size(), Eq(1));
@@ -107,9 +107,9 @@ TEST(PositionalArgumentsTest, AfterRest) {
   const auto default_command = std::make_shared<Command>(Command::DEFAULT);
   default_command->WithPositionalArguments(MakeRest(), MakeAfter_1());
 
-  Cli cli;
-  cli.ProgramName("positional_args").WithCommand(default_command);
-  const auto &matches = cli.Parse(argc, argv.data());
+  std::unique_ptr<Cli> cli =
+      CliBuilder().ProgramName("positional_args").WithCommand(default_command);
+  const auto &matches = cli->Parse(argc, argv.data());
 
   const auto &v_after_1 = matches.ValuesOf("AFTER_1");
   EXPECT_THAT(v_after_1.size(), Eq(1));
@@ -132,9 +132,9 @@ TEST(PositionalArgumentsTest, BeforeAndAfterRest) {
   default_command->WithPositionalArguments(
       MakeBefore_1(), MakeRest(), MakeAfter_1());
 
-  Cli cli;
-  cli.ProgramName("positional_args").WithCommand(default_command);
-  const auto &matches = cli.Parse(argc, argv.data());
+  std::unique_ptr<Cli> cli =
+      CliBuilder().ProgramName("positional_args").WithCommand(default_command);
+  const auto &matches = cli->Parse(argc, argv.data());
 
   const auto &v_before_1 = matches.ValuesOf("BEFORE_1");
   EXPECT_THAT(v_before_1.size(), Eq(1));
@@ -157,10 +157,10 @@ TEST(PositionalArgumentsTest, UnexpectedPositionalArguments) {
 
   const auto default_command = std::make_shared<Command>(Command::DEFAULT);
 
-  Cli cli;
-  cli.ProgramName("positional_args").WithCommand(default_command);
+  std::unique_ptr<Cli> cli =
+      CliBuilder().ProgramName("positional_args").WithCommand(default_command);
   try {
-    cli.Parse(argc, argv.data());
+    cli->Parse(argc, argv.data());
     FAIL();
   } catch (...) {
   }

@@ -17,6 +17,7 @@
 #include "clap/fluent/dsl.h"
 
 using asap::clap::Cli;
+using asap::clap::CliBuilder;
 using asap::clap::Command;
 using asap::clap::Option;
 
@@ -58,13 +59,14 @@ auto main(int argc, const char **argv) -> int {
             .Build());
     //! [ComplexOption example]
 
-    Cli cli;
-    cli.ProgramName("simple-cli")
-        .Version("1.0.0")
-        .About("A simple command line example.")
-        .WithCommand(command);
+    const std::unique_ptr<Cli> cli =
+        CliBuilder()
+            .ProgramName("simple-cli")
+            .Version("1.0.0")
+            .About("A simple command line example.")
+            .WithCommand(command);
 
-    const auto &ovm = cli.Parse(argc, argv);
+    const auto &ovm = cli->Parse(argc, argv);
     if (!quiet) {
       std::cout << "-- Simple command line invoked, value of `lines` is: "
                 << ovm.ValuesOf("lines").at(0).GetAs<int>() << std::endl;
