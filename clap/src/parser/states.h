@@ -794,7 +794,7 @@ private:
   void CheckRequiredOptions() {
     // Check if we have any required options with default values that were not
     // provided on the command line and use the defaults
-    for (const auto &option : context_->active_command->Options()) {
+    for (const auto &option : context_->active_command->CommandOptions()) {
       const auto semantics = option->value_semantic();
       if (!context_->ovm_.HasOption(option->Key())) {
         std::any value;

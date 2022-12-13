@@ -42,56 +42,8 @@ public:
    */
   static constexpr const char *DEFAULT = "";
 
-  /*!
-   * \brief Construct a new Command object to be mounted at the path
-   * corresponding to the provided segments.
-   *
-   * By default a command is mounted at the top level, meaning that it starts
-   * executing from the very first token in the command line arguments. This
-   * corresponds to the typical command line programs that just do one specific
-   * task and accept options to parametrize that task. This however does not fit
-   * the scenario of command line tools that can execute multiple tasks (such as
-   * `git` for example).
-   *
-   * To help with that, we support mounting commands at the specific path,
-   * composed of one or more
-   * **non-null** string segments. All the path segments of a command must be
-   * matched in the order they are specified for the command to be selected as a
-   * candidate.
-   *
-   * \tparam Segment we use a variadic template parameter pack for the path
-   * segments, but we want all the segments to simply be `const char *` strings.
-   * This is achieved by forcing the first path segment type to `const char *`.
-   *
-   * \param first_segment first segment of that command path; here only to force
-   * the parameter pack to only accept `const char *`.
-   *
-   * \param other_segments zero or more path segments; must all be of type
-   * `const char *`.
-   *
-   * \throws std::domain_error when multiple path segments are provided and one
-   * of them is `""` (empty string). The default command can only have one
-   * segment that must be `""`.
-   *
-   * **Example**
-   * \snippet command_test.cpp Non-default command path
-   *
-   * \see DEFAULT
-   */
-  template <typename... Segment>
-  explicit Command(std::string first_segment, Segment... other_segments)
-      : path_{std::move(first_segment), std::move(other_segments)...} {
-    if ((std::find(path_.begin(), path_.end(), "") != std::end(path_)) &&
-        (path_.size() != 1)) {
-      throw std::domain_error(
-          "default command can only have one path segment (an empty string)");
-    }
-  }
-
   Command(const Command &other) = delete;
-
-  Command(Command &&other) noexcept = default;
-
+  Command(Command &&other) noexcept = delete;
   auto operator=(const Command &other) -> Command & = delete;
   auto operator=(Command &&other) noexcept -> Command & = delete;
 
@@ -127,33 +79,6 @@ public:
   [[nodiscard]] auto About() const -> const std::string & {
     return about_;
   }
-  auto About(std::string about) -> Command & {
-    about_ = std::move(about);
-    return *this;
-  }
-
-  auto WithOptions(std::shared_ptr<Options> options, bool hidden = false)
-      -> Command & {
-    for (const auto &option : *options) {
-      options_.push_back(option);
-      options_in_groups_.push_back(true);
-    }
-    groups_.emplace_back(std::move(options), hidden);
-    return *this;
-  }
-
-  auto WithOption(const std::shared_ptr<Option> &option) -> Command & {
-    options_.emplace_back(option);
-    options_in_groups_.push_back(false);
-    return *this;
-  }
-
-  template <typename... Args>
-  auto WithPositionalArguments(Args &&...options) -> Command & {
-    positional_args_.insert(
-        positional_args_.end(), {std::forward<Args>(options)...});
-    return *this;
-  }
 
   [[nodiscard]] auto FindShortOption(const std::string &name) const
       -> std::optional<std::shared_ptr<Option>> {
@@ -187,7 +112,8 @@ public:
 
   ASAP_CLAP_API void PrintOptionsSummary(std::ostream &out) const;
 
-  [[nodiscard]] auto Options() const -> const std::vector<Option::Ptr> & {
+  [[nodiscard]] auto CommandOptions() const
+      -> const std::vector<Option::Ptr> & {
     return options_;
   }
 
@@ -196,7 +122,78 @@ public:
     return positional_args_;
   }
 
+  friend class CommandBuilder;
+
 private:
+  /*!
+   * \brief Construct a new Command object to be mounted at the path
+   * corresponding to the provided segments.
+   *
+   * By default a command is mounted at the top level, meaning that it starts
+   * executing from the very first token in the command line arguments. This
+   * corresponds to the typical command line programs that just do one specific
+   * task and accept options to parametrize that task. This however does not fit
+   * the scenario of command line tools that can execute multiple tasks (such as
+   * `git` for example).
+   *
+   * To help with that, we support mounting commands at the specific path,
+   * composed of one or more string segments. All the path segments of a command
+   * must be matched in the order they are specified for the command to be
+   * selected as a candidate.
+   *
+   * \tparam Segment we use a variadic template parameter pack for the path
+   * segments, but we want all the segments to simply be strings. This is
+   * achieved by forcing the first path segment type to string.
+   *
+   * \param first_segment first segment of that command path; here only to force
+   * the parameter pack to only accept string.
+   *
+   * \param other_segments zero or more path segments; must all be of type
+   * string.
+   *
+   * \throws std::domain_error when multiple path segments are provided and one
+   * of them is `""` (empty string). The default command can only have one
+   * segment that must be `""`.
+   *
+   * **Example**
+   *
+   * \snippet command_test.cpp Non-default command path
+   *
+   * \see DEFAULT
+   */
+  template <typename... Segment>
+  explicit Command(std::string first_segment, Segment... other_segments)
+      : path_{std::move(first_segment), std::move(other_segments)...} {
+    if ((std::find(path_.begin(), path_.end(), "") != std::end(path_)) &&
+        (path_.size() != 1)) {
+      throw std::domain_error(
+          "default command can only have one path segment (an empty string)");
+    }
+  }
+
+  auto About(std::string about) -> Command & {
+    about_ = std::move(about);
+    return *this;
+  }
+
+  void WithOptions(std::shared_ptr<Options> options, bool hidden) {
+    for (const auto &option : *options) {
+      options_.push_back(option);
+      options_in_groups_.push_back(true);
+    }
+    groups_.emplace_back(std::move(options), hidden);
+  }
+
+  void WithOption(std::shared_ptr<Option> &&option) {
+    options_.emplace_back(option);
+    options_in_groups_.push_back(false);
+  }
+
+  template <typename... Args> void WithPositionalArguments(Args &&...options) {
+    positional_args_.insert(
+        positional_args_.end(), {std::forward<Args>(options)...});
+  }
+
   std::string about_;
   const std::vector<std::string> path_;
   std::vector<Option::Ptr> options_;

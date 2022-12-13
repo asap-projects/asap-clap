@@ -28,39 +28,44 @@ TEST(ParserExample, ComplexCommandLine) {
                           .WithValue<bool>()
                           .Build());
 
-  const auto default_command = std::make_shared<Command>(Command::DEFAULT);
-  default_command->WithOptions(common_options);
-  default_command->WithOption(Option::WithName("INPUT")
-                                  .About("The input file")
-                                  .WithValue<std::string>()
-                                  .Build());
+  const Command::Ptr default_command{
+      CommandBuilder(Command::DEFAULT)
+          .WithOptions(common_options)
+          .WithOption(Option::WithName("INPUT")
+                          .About("The input file")
+                          .WithValue<std::string>()
+                          .Build())
+          .Build()};
 
-  const auto just_command = std::make_shared<Command>("just", "hello");
-  just_command->WithOptions(common_options, /* hidden */ true);
-  just_command->WithOption(Option::WithName("first_opt")
-                               .About("The first option")
-                               .Short("f")
-                               .Long("first-option")
-                               .WithValue<unsigned>()
-                               .DefaultValue(1)
-                               .ImplicitValue(1)
-                               .Build());
-  just_command->WithOption(Option::WithName("second_opt")
-                               .About("The second option")
-                               .Short("s")
-                               .Long("second-option")
-                               .WithValue<std::string>()
-                               .DefaultValue("1")
-                               .ImplicitValue("1")
-                               .Build());
+  const Command::Ptr just_command{
+      CommandBuilder("just", "hello")
+          .WithOptions(common_options, /* hidden */ true)
+          .WithOption(Option::WithName("first_opt")
+                          .About("The first option")
+                          .Short("f")
+                          .Long("first-option")
+                          .WithValue<unsigned>()
+                          .DefaultValue(1)
+                          .ImplicitValue(1)
+                          .Build())
+          .WithOption(Option::WithName("second_opt")
+                          .About("The second option")
+                          .Short("s")
+                          .Long("second-option")
+                          .WithValue<std::string>()
+                          .DefaultValue("1")
+                          .ImplicitValue("1")
+                          .Build())
+          .Build()};
 
-  const auto doit_command = std::make_shared<Command>("just", "do", "it");
-  doit_command->WithOption(Option::WithName("third_opt")
-                               .About("The third option")
-                               .Short("t")
-                               .Long("third-option")
-                               .WithValue<unsigned>()
-                               .Build());
+  const Command::Ptr doit_command{CommandBuilder("just", "do", "it")
+                                      .WithOption(Option::WithName("third_opt")
+                                                      .About("The third option")
+                                                      .Short("t")
+                                                      .Long("third-option")
+                                                      .WithValue<unsigned>()
+                                                      .Build())
+                                      .Build()};
 
   const std::vector<std::shared_ptr<Command>> commands{
       default_command, just_command, doit_command};

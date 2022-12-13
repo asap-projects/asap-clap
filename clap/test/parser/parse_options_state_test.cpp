@@ -24,23 +24,25 @@ namespace {
 class ParseOptionsStateTest : public StateTest {
 public:
   [[maybe_unused]] static void SetUpTestSuite() {
-    const auto my_command = std::make_shared<Command>("with-options");
-    my_command->WithOption(Option::WithName("first_opt")
-                               .About("The first option")
-                               .Short("f")
-                               .Long("first-option")
-                               .WithValue<std::string>()
-                               .DefaultValue("1")
-                               .ImplicitValue("1")
-                               .Build());
-    my_command->WithOption(Option::WithName("second_opt")
-                               .About("The second option")
-                               .Short("s")
-                               .Long("second-option")
-                               .WithValue<unsigned>()
-                               .DefaultValue(2)
-                               .ImplicitValue(2)
-                               .Build());
+    const Command::Ptr my_command{
+        CommandBuilder("with-options")
+            .WithOption(Option::WithName("first_opt")
+                            .About("The first option")
+                            .Short("f")
+                            .Long("first-option")
+                            .WithValue<std::string>()
+                            .DefaultValue("1")
+                            .ImplicitValue("1")
+                            .Build())
+            .WithOption(Option::WithName("second_opt")
+                            .About("The second option")
+                            .Short("s")
+                            .Long("second-option")
+                            .WithValue<unsigned>()
+                            .DefaultValue(2)
+                            .ImplicitValue(2)
+                            .Build())
+            .Build()};
     predefined_commands()["with-options"] = my_command;
   }
 

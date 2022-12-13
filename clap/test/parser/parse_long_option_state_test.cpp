@@ -25,30 +25,32 @@ namespace {
 class ParseLongOptionStateTest : public StateTest {
 public:
   [[maybe_unused]] static void SetUpTestSuite() {
-    const auto my_command = std::make_shared<Command>("with-options");
-    my_command->WithOption(Option::WithName("opt_no_val")
-                               .About("Option that takes no values")
-                               .Short("n")
-                               .Long("no-value")
-                               .WithValue<bool>()
-                               .DefaultValue(false, "false")
-                               .ImplicitValue(true, "true")
-                               .Build());
-    my_command->WithOption(Option::WithName("first_opt")
-                               .About("The first option")
-                               .Short("f")
-                               .Long("first-option")
-                               .WithValue<std::string>()
-                               .DefaultValue("1")
-                               .ImplicitValue("1")
-                               .Build());
-    my_command->WithOption(Option::WithName("second_opt")
-                               .About("The second option")
-                               .Short("s")
-                               .Long("second-option")
-                               .WithValue<std::string>()
-                               .Repeatable()
-                               .Build());
+    const Command::Ptr my_command{
+        CommandBuilder("with-options")
+            .WithOption(Option::WithName("opt_no_val")
+                            .About("Option that takes no values")
+                            .Short("n")
+                            .Long("no-value")
+                            .WithValue<bool>()
+                            .DefaultValue(false, "false")
+                            .ImplicitValue(true, "true")
+                            .Build())
+            .WithOption(Option::WithName("first_opt")
+                            .About("The first option")
+                            .Short("f")
+                            .Long("first-option")
+                            .WithValue<std::string>()
+                            .DefaultValue("1")
+                            .ImplicitValue("1")
+                            .Build())
+            .WithOption(Option::WithName("second_opt")
+                            .About("The second option")
+                            .Short("s")
+                            .Long("second-option")
+                            .WithValue<std::string>()
+                            .Repeatable()
+                            .Build())
+            .Build()};
     predefined_commands()["with-options"] = my_command;
   }
 

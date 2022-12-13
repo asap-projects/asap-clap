@@ -14,11 +14,13 @@
 #include <iostream>
 
 #include "clap/cli.h"
+#include "clap/fluent/command_builder.h"
 #include "clap/fluent/dsl.h"
 
 using asap::clap::Cli;
 using asap::clap::CliBuilder;
 using asap::clap::Command;
+using asap::clap::CommandBuilder;
 using asap::clap::Option;
 
 auto main(int argc, const char **argv) -> int {
@@ -29,11 +31,11 @@ auto main(int argc, const char **argv) -> int {
     // We could also use a specific command by providing a specific name
     // when creating the command.
 
-    const auto command = std::make_shared<Command>(Command::DEFAULT);
+    CommandBuilder command_builder(Command::DEFAULT);
     //! [SimpleOptionFlag example]
-    command->WithOption(
-        // Define a boolean flag option to configure `quiet` mode for the
-        // program
+    command_builder.WithOption(
+        // Define a boolean flag option to configure `quiet` mode for
+        // the program
         Option::WithName("quiet")
             .About("don't print anything to the standard output")
             .Short("q")
@@ -41,11 +43,12 @@ auto main(int argc, const char **argv) -> int {
             .WithValue<bool>()
             .StoreTo(&quiet)
             .Build());
+
     //! [SimpleOptionFlag example]
 
     //! [ComplexOption example]
     constexpr const int default_num_lines = 10;
-    command->WithOption(
+    command_builder.WithOption(
         // Define an option to control a more sophisticated program
         // configuration parameter
         Option::WithName("lines")
@@ -64,7 +67,7 @@ auto main(int argc, const char **argv) -> int {
             .ProgramName("simple-cli")
             .Version("1.0.0")
             .About("A simple command line example.")
-            .WithCommand(command);
+            .WithCommand(command_builder);
 
     const auto &ovm = cli->Parse(argc, argv);
     if (!quiet) {

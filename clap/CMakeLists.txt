@@ -54,6 +54,7 @@ asap_add_library(
   "include/clap/detail/string_utils.h"
   "include/clap/detail/value_descriptor.h"
   "include/clap/fluent/cli_builder.h"
+  "include/clap/fluent/command_builder.h"
   "include/clap/fluent/dsl.h"
   "include/clap/fluent/option_builder.h"
   "include/clap/fluent/option_value_builder.h"
@@ -62,7 +63,6 @@ asap_add_library(
   "include/clap/option_value.h"
   "include/clap/option_values_map.h"
   "include/clap/value_semantics.h"
-  "include/clap/with_usage.h"
   # Sources
   "src/cli.cpp"
   "src/command.cpp"
@@ -70,6 +70,7 @@ asap_add_library(
   "src/detail/errors.cpp"
   "src/detail/errors.h"
   "src/fluent/cli_builder.cpp"
+  "src/fluent/command_builder.cpp"
   "src/fluent/option_builder.cpp"
   "src/option.cpp"
   "src/parser/context.h"
@@ -83,7 +84,7 @@ asap_add_library(
 target_link_libraries(
   ${MODULE_TARGET_NAME}
   PRIVATE asap::common asap::logging GSL
-  PUBLIC magic_enum::magic_enum fmt::fmt asap::fsm asap::textwrap asap::mixin
+  PUBLIC magic_enum::magic_enum fmt::fmt asap::fsm asap::textwrap
          asap::contract)
 
 target_include_directories(

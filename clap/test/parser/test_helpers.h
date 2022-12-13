@@ -13,6 +13,7 @@
 
 #include <common/compilers.h>
 
+#include "clap/fluent/dsl.h"
 #include "parser/events.h"
 #include "parser/states.h"
 
@@ -64,15 +65,15 @@ public:
     ASAP_PRAGMA(clang diagnostic ignored "-Wexit-time-destructors")
 #endif
     static std::map<std::string, CommandPtr> predefined_commands_{
-        {"default", std::make_shared<Command>(Command::DEFAULT)},
-        {"just", std::make_shared<Command>("just")},
-        {"just do", std::make_shared<Command>("just", "do")},
-        {"do it", std::make_shared<Command>("do", "it")},
-        {"just it", std::make_shared<Command>("just", "it")},
-        {"just do it", std::make_shared<Command>("just", "do", "it")},
-        {"just do nothing", std::make_shared<Command>("just", "do", "nothing")},
-        {"justice", std::make_shared<Command>("justice")},
-        {"partial", std::make_shared<Command>("partial")}};
+        {"default", CommandBuilder(Command::DEFAULT)},
+        {"just", CommandBuilder("just")},
+        {"just do", CommandBuilder("just", "do")},
+        {"do it", CommandBuilder("do", "it")},
+        {"just it", CommandBuilder("just", "it")},
+        {"just do it", CommandBuilder("just", "do", "it")},
+        {"just do nothing", CommandBuilder("just", "do", "nothing")},
+        {"justice", CommandBuilder("justice")},
+        {"partial", CommandBuilder("partial")}};
     ASAP_DIAGNOSTIC_POP
     return predefined_commands_;
   }

@@ -5,6 +5,7 @@
 //===----------------------------------------------------------------------===//
 
 #include "clap/command.h"
+#include "clap/fluent/command_builder.h"
 
 #include <exception>
 
@@ -21,65 +22,40 @@ namespace {
 // NOLINTNEXTLINE
 TEST(Command, Default) {
   //! [Default command]
-  class MyCommand : public Command {
-  public:
-    MyCommand() : Command(DEFAULT) {
-    }
-  };
+  std::unique_ptr<Command> cmd = CommandBuilder(Command::DEFAULT);
   //! [Default command]
-  const MyCommand cmd;
-  EXPECT_THAT(cmd.Path().size(), Eq(1));
-  EXPECT_THAT(cmd.Path(), testing::Contains(""));
-  EXPECT_THAT(cmd.IsDefault(), IsTrue());
+  EXPECT_THAT(cmd->Path().size(), Eq(1));
+  EXPECT_THAT(cmd->Path(), testing::Contains(""));
+  EXPECT_THAT(cmd->IsDefault(), IsTrue());
 }
 
 // NOLINTNEXTLINE
 TEST(Command, OneSegmentPath) {
   //! [Non-default command path]
-  class MyCommand : public Command {
-  public:
-    MyCommand() : Command("path") {
-    }
-  };
+  std::unique_ptr<Command> cmd = CommandBuilder("path");
   //! [Non-default command path]
-  const MyCommand cmd;
-  EXPECT_THAT(cmd.Path().size(), Eq(1));
-  EXPECT_THAT(cmd.Path(), testing::Contains("path"));
+  EXPECT_THAT(cmd->Path().size(), Eq(1));
+  EXPECT_THAT(cmd->Path(), testing::Contains("path"));
 }
 
 // NOLINTNEXTLINE
 TEST(Command, MultiSegmentPath) {
-  class MyCommand : public Command {
-  public:
-    MyCommand() : Command("segment1", "segment2") {
-    }
-  };
-  const MyCommand cmd;
-  EXPECT_THAT(cmd.Path().size(), Eq(2));
-  EXPECT_THAT(cmd.Path(), testing::Contains("segment1"));
-  EXPECT_THAT(cmd.Path(), testing::Contains("segment2"));
+  std::unique_ptr<Command> cmd = CommandBuilder("segment1", "segment2");
+  EXPECT_THAT(cmd->Path().size(), Eq(2));
+  EXPECT_THAT(cmd->Path(), testing::Contains("segment1"));
+  EXPECT_THAT(cmd->Path(), testing::Contains("segment2"));
 }
 
 // NOLINTNEXTLINE
 TEST(Command, DefaultFollowedByOtherSegmentIsIllegalPath) {
-  class MyCommand : public Command {
-  public:
-    MyCommand() : Command("", "segment") {
-    }
-  };
   // NOLINTNEXTLINE(hicpp-avoid-goto, cppcoreguidelines-avoid-goto)
-  ASSERT_THROW(MyCommand cmd, std::exception);
+  ASSERT_THROW(CommandBuilder("", "segment"), std::exception);
 }
 
 // NOLINTNEXTLINE
 TEST(Command, MultipleSegmentsContainingDefaultIsIllegalPath) {
-  class MyCommand : public Command {
-  public:
-    MyCommand() : Command("segment", "", "segment") {
-    }
-  };
   // NOLINTNEXTLINE(hicpp-avoid-goto, cppcoreguidelines-avoid-goto)
-  ASSERT_THROW(MyCommand cmd, std::exception);
+  ASSERT_THROW(CommandBuilder("sgement1", "", "segment2"), std::exception);
 }
 
 } // namespace

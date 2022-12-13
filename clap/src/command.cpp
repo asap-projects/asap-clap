@@ -12,6 +12,8 @@
 
 #include "clap/command.h"
 
+#include "clap/fluent/command_builder.h"
+
 #include <common/compilers.h>
 
 // Disable compiler and linter warnings originating from 'fmt' and for which we

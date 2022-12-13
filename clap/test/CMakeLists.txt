@@ -22,7 +22,6 @@ asap_add_test(
   "parse_value_test.cpp"
   "parser_example.cpp"
   "string_utils_test.cpp"
-  "with_usage_test.cpp"
   "main.cpp"
   LINK
   asap::common

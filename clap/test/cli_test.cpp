@@ -14,7 +14,6 @@
 #include <gtest/gtest.h>
 
 #include <common/compilers.h>
-#include <mixin/mixin.h>
 
 // Disable compiler and linter warnings originating from 'fmt' and for which we
 // cannot do anything.
@@ -32,7 +31,6 @@ ASAP_DIAGNOSTIC_POP
 #include "clap/command.h"
 #include "clap/fluent/dsl.h"
 #include "clap/option.h"
-#include "clap/with_usage.h"
 
 using ::testing::Eq;
 using ::testing::IsTrue;
@@ -99,19 +97,12 @@ constexpr const int default_num_lines = 10;
 // NOLINTNEXTLINE(cppcoreguidelines-special-member-functions,hicpp-special-member-functions)
 class HeadCli : public BaseCli {
 public:
-  class MyCommand : public Command,
-                    asap::mixin::Mixin<MyCommand, WithUsageDetails> {
-  public:
-    explicit MyCommand(std::string name)
-        : Command(std::move(name)), Mixin(head_command_detailed_usage) {
-    }
-  };
-
   virtual ~HeadCli() = default;
   auto CommandLine() -> Cli & override {
     if (!cli_) {
-      const auto command = MakeCommand(Command::DEFAULT);
-      command->WithOptions(CommonOptions());
+      const Command::Ptr command{CommandBuilder(Command::DEFAULT)
+                                     .WithOptions(CommonOptions())
+                                     .Build()};
       cli_ = CliBuilder()
                  .ProgramName(ProgramName())
                  .Version("1.1.0")
@@ -124,50 +115,52 @@ public:
   }
   [[nodiscard]] auto MakeCommand(std::string name) const -> Command::Ptr {
     if (!command_) {
-      command_ = std::make_shared<HeadCli::MyCommand>(std::move(name));
-      command_->About("output the first part of files")
-          .WithOption(
-              Option::WithName("bytes")
-                  .About("print the first NUM bytes of each file; with the "
-                         "leading '-', print all but the last NUM bytes of "
-                         "each file")
-                  .Short("c")
-                  .Long("bytes")
-                  .WithValue<int>()
-                  .Build())
-          .WithOption(
-              Option::WithName("lines")
-                  .About(
-                      "print the first NUM lines instead of the first 10; with "
-                      "the leading '-', print all but the last  NUM lines of "
-                      "each file")
-                  .Short("n")
-                  .Long("lines")
-                  .WithValue<int>()
-                  .DefaultValue(default_num_lines)
-                  .Build())
-          .WithOption(Option::WithName("quiet")
-                          .About("never print headers giving file names")
-                          .Short("q")
-                          .Long("quiet")
-                          // TODO(Abdessattar): support multiple name
-                          // aliases .Long("silent")
-                          .WithValue<bool>()
-                          .Build())
-          .WithOption(Option::WithName("verbose")
-                          .About("always print headers giving file names")
-                          .Short("v")
-                          .Long("verbose")
-                          .WithValue<bool>()
-                          .Build())
-          .WithOption(Option::WithName("zero-terminated")
-                          .About("line delimiter is NULL, not newline")
-                          .Short("z")
-                          .Long("zero-terminated")
-                          .WithValue<bool>()
-                          .Build())
-          .WithPositionalArguments(
-              Option::Rest().WithValue<std::string>().Build());
+      command_ =
+          CommandBuilder(std::move(name))
+              .About("output the first part of files")
+              .WithOption(
+                  Option::WithName("bytes")
+                      .About("print the first NUM bytes of each file; with the "
+                             "leading '-', print all but the last NUM bytes of "
+                             "each file")
+                      .Short("c")
+                      .Long("bytes")
+                      .WithValue<int>()
+                      .Build())
+              .WithOption(Option::WithName("lines")
+                              .About("print the first NUM lines instead of the "
+                                     "first 10; with "
+                                     "the leading '-', print all but the last  "
+                                     "NUM lines of "
+                                     "each file")
+                              .Short("n")
+                              .Long("lines")
+                              .WithValue<int>()
+                              .DefaultValue(default_num_lines)
+                              .Build())
+              .WithOption(Option::WithName("quiet")
+                              .About("never print headers giving file names")
+                              .Short("q")
+                              .Long("quiet")
+                              // TODO(Abdessattar): support multiple name
+                              // aliases .Long("silent")
+                              .WithValue<bool>()
+                              .Build())
+              .WithOption(Option::WithName("verbose")
+                              .About("always print headers giving file names")
+                              .Short("v")
+                              .Long("verbose")
+                              .WithValue<bool>()
+                              .Build())
+              .WithOption(Option::WithName("zero-terminated")
+                              .About("line delimiter is NULL, not newline")
+                              .Short("z")
+                              .Long("zero-terminated")
+                              .WithValue<bool>()
+                              .Build())
+              .WithPositionalArguments(
+                  Option::Rest().WithValue<std::string>().Build())
+              .Build();
     }
     return command_;
   }
@@ -190,8 +183,9 @@ public:
   virtual ~PaintCli() = default;
   auto CommandLine() -> Cli & override {
     if (!cli_) {
-      const auto command = MakeCommand(Command::DEFAULT);
-      command->WithOptions(CommonOptions());
+      const std::shared_ptr<Command> command{CommandBuilder(Command::DEFAULT)
+                                                 .WithOptions(CommonOptions())
+                                                 .Build()};
       cli_ = CliBuilder()
                  .ProgramName(ProgramName())
                  .Version("1.0.0")
@@ -204,17 +198,18 @@ public:
   }
   [[nodiscard]] auto MakeCommand(std::string name) const -> Command::Ptr {
     if (!command_) {
-      command_ = std::make_shared<Command>(std::move(name));
-      command_->About("paint something");
-      command_->WithOption(
-          Option::WithName("color")
-              .About("select a color from possible values `Red`(1), `Green`(2) "
-                     "or `Blue`(3)")
-              .Short("c")
-              .Long("color")
-              .WithValue<Color>()
-              .Repeatable()
-              .Build());
+      command_ = CommandBuilder(std::move(name))
+                     .About("paint something")
+                     .WithOption(Option::WithName("color")
+                                     .About("select a color from possible "
+                                            "values `Red`(1), `Green`(2) "
+                                            "or `Blue`(3)")
+                                     .Short("c")
+                                     .Long("color")
+                                     .WithValue<Color>()
+                                     .Repeatable()
+                                     .Build())
+                     .Build();
     }
     return command_;
   }
@@ -235,8 +230,9 @@ public:
   virtual ~UtilsCli() = default;
   auto CommandLine() -> Cli & override {
     if (!cli_) {
-      auto default_command = std::make_shared<Command>(Command::DEFAULT);
-      default_command->WithOptions(CommonOptions());
+      const Command::Ptr default_command{CommandBuilder(Command::DEFAULT)
+                                             .WithOptions(CommonOptions())
+                                             .Build()};
       HeadCli head;
       PaintCli paint;
       cli_ = CliBuilder()

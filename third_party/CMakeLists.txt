@@ -110,22 +110,6 @@ asap_add_package(
   "ASAP_BUILD_EXAMPLES OFF")
 
 # ------------------------------------------------------------------------------
-# asap::mixin
-# ------------------------------------------------------------------------------
-
-asap_add_package(
-  NAME
-  asap_mixin
-  GIT_TAG
-  master
-  GITHUB_REPOSITORY
-  asap-projects/asap-mixin
-  OPTIONS
-  "ASAP_MIXIN_INSTALL ON"
-  "ASAP_BUILD_TESTS OFF"
-  "ASAP_BUILD_EXAMPLES OFF")
-
-# ------------------------------------------------------------------------------
 # asap::contract
 # ------------------------------------------------------------------------------
 

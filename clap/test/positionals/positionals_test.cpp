@@ -12,6 +12,7 @@
 
 #include "clap/cli.h"
 #include "clap/command.h"
+#include "clap/fluent/command_builder.h"
 #include "clap/fluent/dsl.h"
 #include "clap/option.h"
 
@@ -55,8 +56,10 @@ TEST(PositionalArgumentsTest, JustRest) {
   std::array<const char *, argc> argv{
       {"/usr/bin/test-program.exe", "r_1", "r_2", "r_3", "r_4"}};
 
-  const auto default_command = std::make_shared<Command>(Command::DEFAULT);
-  default_command->WithPositionalArguments(MakeRest());
+  const std::shared_ptr<Command> default_command{
+      CommandBuilder(Command::DEFAULT)
+          .WithPositionalArguments(MakeRest())
+          .Build()};
 
   std::unique_ptr<Cli> cli =
       CliBuilder().ProgramName("positional_args").WithCommand(default_command);
@@ -76,9 +79,10 @@ TEST(PositionalArgumentsTest, BeforeRest) {
   std::array<const char *, argc> argv{
       {"/usr/bin/test-program.exe", "b_1", "b_2", "r_1", "r_2"}};
 
-  auto default_command = std::make_shared<Command>(Command::DEFAULT);
-  default_command->WithPositionalArguments(
-      MakeBefore_1(), MakeBefore_2(), MakeRest());
+  const std::shared_ptr<Command> default_command{
+      CommandBuilder(Command::DEFAULT)
+          .WithPositionalArguments(MakeBefore_1(), MakeBefore_2(), MakeRest())
+          .Build()};
 
   std::unique_ptr<Cli> cli =
       CliBuilder().ProgramName("positional_args").WithCommand(default_command);
@@ -104,8 +108,10 @@ TEST(PositionalArgumentsTest, AfterRest) {
   std::array<const char *, argc> argv{
       {"/usr/bin/test-program.exe", "r_1", "r_2", "r_3", "a_1"}};
 
-  const auto default_command = std::make_shared<Command>(Command::DEFAULT);
-  default_command->WithPositionalArguments(MakeRest(), MakeAfter_1());
+  const std::shared_ptr<Command> default_command{
+      CommandBuilder(Command::DEFAULT)
+          .WithPositionalArguments(MakeRest(), MakeAfter_1())
+          .Build()};
 
   std::unique_ptr<Cli> cli =
       CliBuilder().ProgramName("positional_args").WithCommand(default_command);
@@ -128,9 +134,10 @@ TEST(PositionalArgumentsTest, BeforeAndAfterRest) {
   std::array<const char *, argc> argv{
       {"/usr/bin/test-program.exe", "b_1", "r_1", "r_2", "a_1"}};
 
-  auto default_command = std::make_shared<Command>(Command::DEFAULT);
-  default_command->WithPositionalArguments(
-      MakeBefore_1(), MakeRest(), MakeAfter_1());
+  const std::shared_ptr<Command> default_command{
+      CommandBuilder(Command::DEFAULT)
+          .WithPositionalArguments(MakeBefore_1(), MakeRest(), MakeAfter_1())
+          .Build()};
 
   std::unique_ptr<Cli> cli =
       CliBuilder().ProgramName("positional_args").WithCommand(default_command);
@@ -155,7 +162,8 @@ TEST(PositionalArgumentsTest, UnexpectedPositionalArguments) {
   constexpr auto argc = 2;
   std::array<const char *, argc> argv{{"/usr/bin/test-program.exe", "pos"}};
 
-  const auto default_command = std::make_shared<Command>(Command::DEFAULT);
+  const std::shared_ptr<Command> default_command{
+      CommandBuilder(Command::DEFAULT).Build()};
 
   std::unique_ptr<Cli> cli =
       CliBuilder().ProgramName("positional_args").WithCommand(default_command);
