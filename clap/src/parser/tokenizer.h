@@ -102,7 +102,7 @@ public:
 private:
   ASAP_CLAP_API void Tokenize(const std::string &arg) const;
 
-  const std::vector<std::string> args_;
+  std::vector<std::string> args_;
   mutable std::vector<std::string>::const_iterator cursor_;
   mutable std::deque<Token> tokens_;
 };

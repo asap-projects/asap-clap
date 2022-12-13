@@ -310,7 +310,7 @@ struct ParseOptionsStateTestData {
   template <typename State> void Check(const State & /*state*/) const {
   }
 
-  const std::vector<std::string> value_tokens;
+  std::vector<std::string> value_tokens;
 };
 
 template <>
@@ -323,10 +323,10 @@ struct ParseShortOptionStateTestData {
   template <typename State> void Check(const State & /*state*/) const {
   }
 
-  const std::string active_option;
-  const std::string active_option_flag;
-  const size_t values_size{0};
-  const std::optional<const std::string> value;
+  std::string active_option;
+  std::string active_option_flag;
+  size_t values_size{0};
+  std::optional<const std::string> value;
 };
 
 template <>

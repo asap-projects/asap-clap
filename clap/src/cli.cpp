@@ -15,7 +15,6 @@
 #include <sstream>
 
 #include <common/compilers.h>
-#include <gsl/gsl>
 #include <textwrap/textwrap.h>
 
 // Disable compiler and linter warnings originating from 'fmt' and for which we

@@ -33,7 +33,7 @@ public:
 
 private:
   const Tokenizer &tokenizer_;
-  const detail::ParserContextPtr context_;
+  detail::ParserContextPtr context_;
 };
 
 } // namespace asap::clap::parser

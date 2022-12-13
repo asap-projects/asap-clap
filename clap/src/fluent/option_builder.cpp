@@ -15,20 +15,19 @@
 #include "clap/fluent/option_builder.h"
 #include "clap/fluent/option_value_builder.h"
 
-auto asap::clap::OptionBuilder::Short(std::string short_name)
-    -> OptionBuilder & {
+auto asap::clap::OptionBuilder::Short(std::string short_name) -> Self & {
   ASAP_ASSERT(option_ && "builder used after Build() was called");
   option_->Short(std::move(short_name));
   return *this;
 }
 
-auto asap::clap::OptionBuilder::Long(std::string long_name) -> OptionBuilder & {
+auto asap::clap::OptionBuilder::Long(std::string long_name) -> Self & {
   ASAP_ASSERT(option_ && "builder used after Build() was called");
   option_->Long(std::move(long_name));
   return *this;
 }
 
-auto asap::clap::OptionBuilder::About(std::string about) -> OptionBuilder & {
+auto asap::clap::OptionBuilder::About(std::string about) -> Self & {
   ASAP_ASSERT(option_ && "builder used after Build() was called");
   option_->About(std::move(about));
   return *this;

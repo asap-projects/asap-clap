@@ -6,7 +6,6 @@
 
 #include "./test_helpers.h"
 
-#include <gmock/gmock.h>
 #include <gtest/gtest.h>
 
 namespace asap::clap::parser::detail {

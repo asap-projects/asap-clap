@@ -195,7 +195,7 @@ private:
   }
 
   std::string about_;
-  const std::vector<std::string> path_;
+  std::vector<std::string> path_;
   std::vector<Option::Ptr> options_;
   std::vector<bool> options_in_groups_;
   std::vector<std::pair<Options::Ptr, bool>> groups_;

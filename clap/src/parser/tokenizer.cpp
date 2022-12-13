@@ -38,11 +38,15 @@ auto operator<<(std::ostream &out, const TokenType &token_type)
 
 namespace {
 
-struct InputChar {
+class InputChar {
+public:
   explicit InputChar(char character) : value{character} {
   }
 
-  const char value;
+  [[nodiscard]] auto Value() const -> char { return value; }
+
+private:
+  char value;
 };
 struct InputEnd {};
 
@@ -75,7 +79,7 @@ struct InitialState : public ByDefault<TransitionTo<FinalState>> {
 
   [[maybe_unused]] static auto Handle(const InputChar &event)
       -> OneOf<TransitionTo<ValueState>, TransitionTo<OptionState>> {
-    switch (event.value) {
+    switch (event.Value()) {
     case '-':
       return TransitionTo<OptionState>{};
     default:
@@ -92,9 +96,9 @@ struct ValueState : public On<InputEnd, TransitionTo<FinalState>> {
   }
 
   [[maybe_unused]] auto OnEnter(const InputChar &event) -> Status {
-    //    std::cout << "InputChar(" << event.value << ") -> ValueState" <<
+    //    std::cout << "InputChar(" << event.Value() << ") -> ValueState" <<
     //    std::endl;
-    token_.push_back((event.value));
+    token_.push_back((event.Value()));
     return Continue{};
   }
 
@@ -105,7 +109,7 @@ struct ValueState : public On<InputEnd, TransitionTo<FinalState>> {
   }
 
   [[maybe_unused]] auto Handle(const InputChar &event) -> DoNothing {
-    token_.push_back(event.value);
+    token_.push_back(event.Value());
     return DoNothing{};
   }
 
@@ -121,7 +125,7 @@ struct OptionState {
   }
 
   [[maybe_unused]] static auto OnEnter(const InputChar & /*event*/) -> Status {
-    //    std::cout << "InputChar(" << event.value << ") -> OptionState" <<
+    //    std::cout << "InputChar(" << event.Value() << ") -> OptionState" <<
     //    std::endl;
     return Continue{};
   }
@@ -140,7 +144,7 @@ struct OptionState {
 
   [[maybe_unused]] static auto Handle(const InputChar &event)
       -> OneOf<TransitionTo<DashDashState>, TransitionTo<ShortOptionState>> {
-    switch (event.value) {
+    switch (event.Value()) {
     case '-':
       return TransitionTo<DashDashState>{};
     default:
@@ -160,9 +164,9 @@ struct ShortOptionState : public On<InputEnd, TransitionTo<FinalState>> {
   }
 
   [[maybe_unused]] auto OnEnter(const InputChar &event) -> Status {
-    //    std::cout << "InputChar(" << event.value << ") -> ShortOptionState" <<
+    //    std::cout << "InputChar(" << event.Value() << ") -> ShortOptionState" <<
     //    std::endl;
-    consume_token_(TokenType::ShortOption, std::string{event.value});
+    consume_token_(TokenType::ShortOption, std::string{event.Value()});
     return Continue{};
   }
 
@@ -173,7 +177,7 @@ struct ShortOptionState : public On<InputEnd, TransitionTo<FinalState>> {
   }
 
   [[maybe_unused]] auto Handle(const InputChar &event) -> DoNothing {
-    consume_token_(TokenType::ShortOption, std::string{event.value});
+    consume_token_(TokenType::ShortOption, std::string{event.Value()});
     return DoNothing{};
   }
 
@@ -189,7 +193,7 @@ struct DashDashState : On<InputChar, TransitionTo<LongOptionState>> {
   }
 
   [[maybe_unused]] static auto OnEnter(const InputChar & /*event*/) -> Status {
-    //    std::cout << "InputChar(" << event.value << ") -> DashDashState" <<
+    //    std::cout << "InputChar(" << event.Value() << ") -> DashDashState" <<
     //    std::endl;
     return Continue{};
   }
@@ -218,9 +222,9 @@ struct LongOptionState : public On<InputEnd, TransitionTo<FinalState>> {
   }
 
   [[maybe_unused]] auto OnEnter(const InputChar &event) -> Status {
-    //    std::cout << "InputChar(" << event.value << ") -> LongOptionState" <<
+    //    std::cout << "InputChar(" << event.Value() << ") -> LongOptionState" <<
     //    std::endl;
-    token_.push_back((event.value));
+    token_.push_back((event.Value()));
     return Continue{};
   }
 
@@ -238,7 +242,7 @@ struct LongOptionState : public On<InputEnd, TransitionTo<FinalState>> {
 
   [[maybe_unused]] auto Handle(const InputChar &event)
       -> Maybe<TransitionTo<ValueState>> {
-    switch (event.value) {
+    switch (event.Value()) {
     case '=':
       consume_token_(TokenType::LongOption, token_);
       consume_token_(TokenType::EqualSign, "=");
@@ -248,7 +252,7 @@ struct LongOptionState : public On<InputEnd, TransitionTo<FinalState>> {
       if (after_equal_sign) {
         return TransitionTo<ValueState>{};
       }
-      token_.push_back(event.value);
+      token_.push_back(event.Value());
     }
     return DoNothing{};
   }

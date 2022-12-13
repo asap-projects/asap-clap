@@ -206,7 +206,7 @@ struct Options {
   ASAP_CLAP_API void Print(std::ostream &out, unsigned width = 0) const;
 
 private:
-  const std::string label_;
+  std::string label_;
   OptionsCollectionType options_;
 };
 

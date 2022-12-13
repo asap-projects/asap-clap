@@ -31,11 +31,11 @@ public:
       : option_(new Option(std::move(name))) {
   }
 
-  ASAP_CLAP_API auto Short(std::string short_name) -> OptionBuilder &;
+  ASAP_CLAP_API auto Short(std::string short_name) -> Self &;
 
-  ASAP_CLAP_API auto Long(std::string long_name) -> OptionBuilder &;
+  ASAP_CLAP_API auto Long(std::string long_name) -> Self &;
 
-  ASAP_CLAP_API auto About(std::string about) -> OptionBuilder &;
+  ASAP_CLAP_API auto About(std::string about) -> Self &;
 
   // template <typename T>
   // auto WithValue(typename ValueDescriptor<T>::Builder &option_value_builder)

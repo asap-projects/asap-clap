@@ -6,7 +6,6 @@
 
 #include "clap/cli.h"
 
-#include <algorithm>
 #include <array>
 #include <memory>
 
@@ -80,10 +79,10 @@ constexpr const auto about_head =
     "\n"
     "Mandatory arguments to long options are mandatory for short options too.";
 
-constexpr const auto head_command_detailed_usage =
-    "NUM may have a multiplier suffix: b 512, kB 1000, K 1024, MB  1000*1000, "
-    "M 1024*1024, GB 1000*1000*1000, G 1024*1024*1024, and so on for T, P, E, "
-    "Z, Y. Binary prefixes can be used, too: KiB=K, MiB=M, and so on.";
+//constexpr const auto head_command_detailed_usage =
+//    "NUM may have a multiplier suffix: b 512, kB 1000, K 1024, MB  1000*1000, "
+//    "M 1024*1024, GB 1000*1000*1000, G 1024*1024*1024, and so on for T, P, E, "
+//    "Z, Y. Binary prefixes can be used, too: KiB=K, MiB=M, and so on.";
 
 // TODO(Abdessattar): add support for usage footer
 // constexpr const auto usage_footer =

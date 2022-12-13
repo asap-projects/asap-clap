@@ -6,7 +6,6 @@
 
 #include "clap/detail/args.h"
 
-#include <algorithm>
 #include <array>
 
 #include <gmock/gmock.h>

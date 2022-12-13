@@ -17,7 +17,7 @@
 namespace asap::clap::parser::detail {
 
 template <TokenType type> struct TokenEvent {
-  const std::string token;
+  std::string token;
   TokenType token_type{type};
 
   TokenEvent() = delete;
