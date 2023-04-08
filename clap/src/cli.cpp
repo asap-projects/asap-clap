@@ -51,6 +51,9 @@ auto Cli::Parse(int argc, const char **argv) -> const OptionValuesMap & {
   const CommandLineContext context(ProgramName(), ovm_);
   parser::CmdLineParser parser(context, tokenizer, commands_);
   if (parser.Parse()) {
+    // TODO(Abdessattar): handle the version and help commands
+    // Help takes precedence over version if both are provided.
+
     return ovm_;
   }
   if (HasHelpOption()) {
