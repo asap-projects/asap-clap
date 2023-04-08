@@ -11,10 +11,11 @@
  */
 
 #include "clap/option.h"
+#include "clap/fluent/dsl.h"
 
 #include <utility>
 
-#include "clap/fluent/dsl.h"
+#include <textwrap/textwrap.h>
 
 namespace asap::clap {
 
@@ -25,8 +26,16 @@ auto operator<<(std::ostream &out, const Option &option) -> std::ostream & {
   return out;
 }
 
-void Option::Print(std::ostream &out, unsigned int /*width*/) const {
-  out << short_name_ << " " << long_name_ << "    " << about_ << std::endl;
+void Option::Print(std::ostream &out, unsigned int width) const {
+  out << "   -" << short_name_ << "\n   --" << long_name_ << "\n";
+  wrap::TextWrapper wrap = wrap::TextWrapper::Create()
+                               .Width(width)
+                               .CollapseWhiteSpace()
+                               .TrimLines()
+                               .IndentWith()
+                               .Initially("   ")
+                               .Then("   ");
+  out << wrap.Fill(About()).value();
 }
 
 auto Option::WithName(std::string key) -> OptionBuilder {

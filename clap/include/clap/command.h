@@ -122,6 +122,8 @@ public:
 
   ASAP_CLAP_API void PrintOptionsSummary(std::ostream &out) const;
 
+  ASAP_CLAP_API void PrintOptions(std::ostream &out, unsigned width) const;
+
   [[nodiscard]] auto CommandOptions() const
       -> const std::vector<Option::Ptr> & {
     return options_;

@@ -85,20 +85,19 @@ auto Cli::Parse(int argc, const char **argv) -> CommandLineContext {
                   "more information.",
           program_name_.value()));
 }
+
 auto operator<<(std::ostream &out, const Cli &cli) -> std::ostream & {
   cli.Print(out);
   return out;
 }
-void Cli::Print(std::ostream &out, unsigned int width) const {
-  wrap::TextWrapper wrap =
-      wrap::TextWrapper::Create().Width(width).CollapseWhiteSpace().TrimLines();
-  out << wrap.Fill(about_).value();
-  std::ostringstream ostr;
-  for (const auto &command : commands_) {
-    out << "\n\n";
-    command->PrintOptionsSummary(ostr);
-    std::string indent = fmt::format("{}{} ", ProgramName(),
-        command->IsDefault() ? "" : " " + command->PathAsString());
+
+void Cli::PrintDefaultCommand(std::ostream &out, unsigned int width) const {
+  auto default_command = std::find_if(commands_.begin(), commands_.end(),
+      [](const auto &command) { return command->IsDefault(); });
+  if (default_command != commands_.end()) {
+    std::ostringstream ostr;
+    (*default_command)->PrintOptionsSummary(ostr);
+    std::string indent = fmt::format("usage: {} ", ProgramName());
     std::string indent_next(indent.size(), ' ');
     wrap::TextWrapper command_wrap = wrap::TextWrapper::Create()
                                          .Width(width)
@@ -107,32 +106,66 @@ void Cli::Print(std::ostream &out, unsigned int width) const {
                                          .Initially(indent)
                                          .Then(indent_next);
     out << command_wrap.Fill(ostr.str()).value();
-    if (!command->About().empty()) {
-      out << "\n";
-      indent_next.append("  ");
-      wrap::TextWrapper command_about_wrap = wrap::TextWrapper::Create()
-                                                 .Width(width)
-                                                 .TrimLines()
-                                                 .IndentWith()
-                                                 .Initially("  ")
-                                                 .Then("  ");
-      out << command_about_wrap.Fill(command->About()).value();
-    }
+
+    out << "\n\n";
     ostr.str("");
     ostr.clear();
+    (*default_command)->PrintOptions(out, width);
+  }
+}
+
+void Cli::PrintAbout(std::ostream &out, unsigned int width) const {
+  wrap::TextWrapper wrap =
+      wrap::TextWrapper::Create().Width(width).CollapseWhiteSpace().TrimLines();
+  out << wrap.Fill(about_).value();
+}
+
+void Cli::Print(std::ostream &out, unsigned int width) const {
+  PrintAbout(out, width);
+  out << "\n\n";
+  PrintDefaultCommand(out, width);
+
+  auto first_time = true;
+  for (const auto &command : commands_) {
+    if (!command->IsDefault()) {
+      if (first_time) {
+        out << "\n\n";
+        out << "These are the available commands:";
+        first_time = false;
+      }
+      out << "\n\n";
+      out << "   " << command->PathAsString() << "\n";
+      wrap::TextWrapper wrap = wrap::TextWrapper::Create()
+                                   .Width(width)
+                                   .TrimLines()
+                                   .IndentWith()
+                                   .Initially("     ")
+                                   .Then("     ");
+      out << wrap.Fill(command->About()).value();
+    }
   }
   out << "\n\n";
 }
 
 void Cli::EnableVersionCommand() {
-  CommandBuilder command_builder(Command::VERSION);
-  commands_.push_back(std::move(command_builder));
+  const Command::Ptr command{
+      CommandBuilder(Command::VERSION)
+          .About(fmt::format(
+              "Display version information.", ProgramName(), ProgramName()))};
+  commands_.push_back(command);
   has_version_command_ = true;
 }
 
 void Cli::EnableHelpCommand() {
-  CommandBuilder command_builder(Command::HELP);
-  commands_.push_back(std::move(command_builder));
+  const Command::Ptr command{
+      CommandBuilder(Command::HELP)
+          .About(
+              fmt::format("Display detailed help information. `{} help` lists "
+                          "available sub-commands and a summary of what they "
+                          "do. See `{} help <command>` to get detailed help "
+                          "for a specific sub-command.",
+                  ProgramName(), ProgramName()))};
+  commands_.push_back(command);
   has_help_command_ = true;
 }
 

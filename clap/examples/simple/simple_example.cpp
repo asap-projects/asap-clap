@@ -39,7 +39,7 @@ auto main(int argc, const char **argv) -> int {
         // Define a boolean flag option to configure `quiet` mode for
         // the program
         Option::WithName("quiet")
-            .About("don't print anything to the standard output")
+            .About("Don't print anything to the standard output.")
             .Short("q")
             .Long("quiet")
             .WithValue<bool>()
@@ -54,9 +54,9 @@ auto main(int argc, const char **argv) -> int {
         // Define an option to control a more sophisticated program
         // configuration parameter
         Option::WithName("lines")
-            .About("print the first NUM lines instead of the first 10; with "
+            .About("Print the first NUM lines instead of the first 10; with "
                    "the leading '-', print all but the last  NUM lines of "
-                   "each file")
+                   "each file.")
             .Short("n")
             .Long("lines")
             .WithValue<int>()
@@ -67,7 +67,10 @@ auto main(int argc, const char **argv) -> int {
     cli = CliBuilder()
               .ProgramName("simple-cli")
               .Version("1.0.0")
-              .About("A simple command line example.")
+              .About("This is a simple command line example to demonstrate the "
+                     "commonly used features of `asap-clap`. It uses the "
+                     "standard `version` and `help` commands and only "
+                     "implements a default command with several options.")
               .WithVersionCommand()
               .WithHelpCommand()
               .WithCommand(command_builder);

@@ -107,9 +107,8 @@ protected:
   }
 
 private:
-  // Keep track of when a default command is added so that we can reuse it for
-  // the `version` and `help` options.
-  std::shared_ptr<Command> default_command_;
+  void AddHelpOptionToCommand(Command &command);
+  void AddVersionOptionToCommand(Command &command);
 };
 
 } // namespace asap::clap

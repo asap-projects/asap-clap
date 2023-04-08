@@ -99,7 +99,7 @@ public:
 
   /** Outputs 'desc' to the specified stream, calling 'f' to output each
       option_description element. */
-  ASAP_CLAP_API void Print(std::ostream &out, unsigned width = 120) const;
+  ASAP_CLAP_API void Print(std::ostream &out, unsigned width = 80) const;
 
   // Cli instances are created and configured only via the associated
   // CliBuilder.
@@ -144,6 +144,10 @@ private:
   // version info. When this command is added it should also add a special
   // '--version -v' option with a custom callback that terminates the parsing.
   ASAP_CLAP_API void EnableVersionCommand();
+
+  void PrintDefaultCommand(std::ostream &out, unsigned int width) const;
+  void PrintAbout(std::ostream &out, unsigned int width) const;
+  void PrintCommands(std::ostream &out, unsigned int width) const;
 
   std::string version_;
   std::string about_;

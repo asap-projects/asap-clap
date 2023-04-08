@@ -15,6 +15,7 @@
 #include "clap/fluent/command_builder.h"
 
 #include <common/compilers.h>
+#include <textwrap/textwrap.h>
 
 // Disable compiler and linter warnings originating from 'fmt' and for which we
 // cannot do anything.
@@ -52,10 +53,45 @@ void asap::clap::Command::PrintOptionsSummary(std::ostream &out) const {
         << positional->Key()
         << (positional->value_semantic()->IsRequired() ? "" : "]");
   }
+
+  if (IsDefault()) {
+    out << "<command> [<args>]";
+  } else {
+    if (!positional_args_.empty()) {
+      out << "[<args>]";
+    }
+  }
+}
+
+void asap::clap::Command::PrintOptions(
+    std::ostream &out, unsigned int width) const {
+
+  for (unsigned option_index = 0; option_index < options_.size();
+       ++option_index) {
+    if (options_in_groups_[option_index]) {
+      continue;
+    }
+
+    if (option_index > 0) {
+      out << "\n\n";
+    }
+    options_[option_index]->Print(out, width);
+  }
+
+  for (auto [group, hidden] : groups_) {
+    if (!hidden) {
+      out << "\n\n";
+      group->Print(out, width);
+    }
+  }
 }
 
 void asap::clap::Command::Print(std::ostream &out, unsigned int width) const {
   // TODO(Abdessattar) print the command summary
+
+  wrap::TextWrapper wrap =
+      wrap::TextWrapper::Create().Width(width).CollapseWhiteSpace().TrimLines();
+  out << wrap.Fill(about_).value();
 
   for (unsigned option_index = 0; option_index < options_.size();
        ++option_index) {
