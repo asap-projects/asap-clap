@@ -42,6 +42,16 @@ public:
    */
   static constexpr const char *DEFAULT = "";
 
+  /// Version command name.
+  static constexpr const char *VERSION = "version";
+  static constexpr const char *VERSION_LONG = "--version";
+  static constexpr const char *VERSION_SHORT = "-v";
+
+  /// Help command name.
+  static constexpr const char *HELP = "help";
+  static constexpr const char *HELP_LONG = "--help";
+  static constexpr const char *HELP_SHORT = "-h";
+
   Command(const Command &other) = delete;
   Command(Command &&other) noexcept = delete;
   auto operator=(const Command &other) -> Command & = delete;
@@ -123,6 +133,7 @@ public:
   }
 
   friend class CommandBuilder;
+  friend class CliBuilder; // to upgrade default command with help and version
 
 private:
   /*!
@@ -185,8 +196,13 @@ private:
   }
 
   void WithOption(std::shared_ptr<Option> &&option) {
-    options_.emplace_back(option);
-    options_in_groups_.push_back(false);
+    if (option->Key() == Command::HELP || option->Key() == Command::VERSION) {
+      options_.emplace(options_.begin(), option);
+      options_in_groups_.insert(options_in_groups_.begin(), false);
+    } else {
+      options_.emplace_back(option);
+      options_in_groups_.push_back(false);
+    }
   }
 
   template <typename... Args> void WithPositionalArguments(Args &&...options) {

@@ -20,8 +20,10 @@
 namespace asap::clap {
 
 struct CommandLineContext {
-  explicit CommandLineContext(std::string program_name, OptionValuesMap &ovm)
-      : program_name_{std::move(program_name)}, ovm_{ovm} {
+  explicit CommandLineContext(std::string program_name,
+      Command::Ptr &active_command_ref, OptionValuesMap &ovm_ref)
+      : program_name_{std::move(program_name)},
+        active_command{active_command_ref}, ovm{ovm_ref} {
   }
 
   bool allow_long_option_value_with_no_equal{true};
@@ -39,9 +41,9 @@ struct CommandLineContext {
    * valid command on the command line. All options during subsequent parsing
    * will be relative to this command.
    */
-  Command::Ptr active_command;
+  Command::Ptr &active_command;
 
-  OptionValuesMap &ovm_;
+  OptionValuesMap &ovm;
 };
 
 } // namespace asap::clap

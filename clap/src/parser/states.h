@@ -440,7 +440,7 @@ inline auto TryImplicitValue(const ParserContextPtr &context) -> bool {
   std::any value;
   std::string value_as_text;
   if (semantics->ApplyImplicit(value, value_as_text)) {
-    context->ovm_.StoreValue(
+    context->ovm.StoreValue(
         context->active_option->Key(), {value, value_as_text, false});
     return true;
   }
@@ -451,7 +451,7 @@ inline auto TryImplicitValue(const ParserContextPtr &context) -> bool {
     const ParserContextPtr &context) -> bool {
   const auto semantics = context->active_option->value_semantic();
   const auto occurrences =
-      context->ovm_.OccurrencesOf(context->active_option->Key());
+      context->ovm.OccurrencesOf(context->active_option->Key());
   return (occurrences < 1 || semantics->IsRepeatable());
 }
 
@@ -558,7 +558,7 @@ struct ParseShortOptionState
     // none is available, then fail
     std::any value;
     if (semantics->Parse(value, event.token)) {
-      context_->ovm_.StoreValue(
+      context_->ovm.StoreValue(
           context_->active_option->Key(), {value, event.token, false});
       value_ = event.token;
       return DoNothing{};
@@ -698,7 +698,7 @@ struct ParseLongOptionState : Will<ByDefault<TransitionTo<ParseOptionsState>>> {
     // none is available, then fail
     std::any value;
     if (semantics->Parse(value, event.token)) {
-      context_->ovm_.StoreValue(
+      context_->ovm.StoreValue(
           context_->active_option->Key(), {value, event.token, false});
       value_ = event.token;
       return DoNothing{};
@@ -796,7 +796,7 @@ private:
     // provided on the command line and use the defaults
     for (const auto &option : context_->active_command->CommandOptions()) {
       const auto semantics = option->value_semantic();
-      if (!context_->ovm_.HasOption(option->Key())) {
+      if (!context_->ovm.HasOption(option->Key())) {
         std::any value;
         std::string value_as_text;
         if (!semantics->ApplyDefault(value, value_as_text)) {
@@ -805,7 +805,7 @@ private:
           //  throw MissingRequiredOption(context_->active_command, option);
           // }
         } else {
-          context_->ovm_.StoreValue(
+          context_->ovm.StoreValue(
               option->Key(), {value, value_as_text, false});
         }
       }
@@ -816,7 +816,7 @@ private:
     ASAP_ASSERT(semantics);
     std::any value;
     if (semantics->Parse(value, token)) {
-      context_->ovm_.StoreValue(option->Key(), {value, std::move(token), true});
+      context_->ovm.StoreValue(option->Key(), {value, std::move(token), true});
     }
   }
 

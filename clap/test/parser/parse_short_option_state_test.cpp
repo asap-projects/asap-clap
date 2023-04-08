@@ -91,7 +91,8 @@ protected:
 
     const Tokenizer tokenizer(args);
     const auto commands = BuildCommands(command_paths);
-    const CommandLineContext base_context("test", ovm_);
+    Command::Ptr command;
+    const CommandLineContext base_context("test", command, ovm_);
     const auto context = ParserContext::New(base_context, commands);
     context->active_command = predefined_commands().at("with-options");
     auto token = tokenizer.NextToken();
@@ -190,7 +191,8 @@ TEST_P(ParseShortOptionStateUnrecognizedOptionTest, FailWithAnException) {
   Tokenizer tokenizer(args);
   const auto commands = BuildCommands(command_paths);
   OptionValuesMap ovm;
-  CommandLineContext base_context("test", ovm);
+  Command::Ptr command;
+  const CommandLineContext base_context("test", command, ovm);
   auto context = ParserContext::New(base_context, commands);
   context->active_command = predefined_commands().at("with-options");
   auto token = tokenizer.NextToken();

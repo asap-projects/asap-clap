@@ -148,7 +148,8 @@ TEST_P(ParseOptionsStateTransitionsTest, CheckStateAfterLastToken) {
   Tokenizer tokenizer(args);
   const auto commands = BuildCommands(command_paths);
   OptionValuesMap ovm;
-  CommandLineContext base_context("test", ovm);
+  Command::Ptr command;
+  const CommandLineContext base_context("test", command, ovm);
   auto context = ParserContext::New(base_context, commands);
   context->active_command = predefined_commands().at("with-options");
   auto token = tokenizer.NextToken();
@@ -174,7 +175,8 @@ TEST(ParseOptionsStateContractTests, EnteringWithEndOfInputBreaksContract) {
   const auto state = std::make_unique<ParseOptionsState>();
   const auto event = TokenEvent<TokenType::EndOfInput>("");
   OptionValuesMap ovm;
-  const CommandLineContext base_context("test", ovm);
+  Command::Ptr command;
+  const CommandLineContext base_context("test", command, ovm);
   auto context = ParserContext::New(
       base_context, {StateTest::predefined_commands().at("default")});
   CHECK_VIOLATES_CONTRACT(state->OnEnter(event, context));
@@ -193,7 +195,8 @@ TEST(ParseOptionsStateContractTests,
   const auto state = std::make_unique<ParseOptionsState>();
   const auto event = TokenEvent<TokenType::Value>("xxx");
   OptionValuesMap ovm;
-  const CommandLineContext base_context("test", ovm);
+  Command::Ptr command;
+  const CommandLineContext base_context("test", command, ovm);
   auto context = ParserContext::New(
       base_context, {StateTest::predefined_commands().at("default")});
   CHECK_VIOLATES_CONTRACT(state->OnEnter(event, {}));

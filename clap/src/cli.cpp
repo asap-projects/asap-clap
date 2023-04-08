@@ -33,6 +33,7 @@ ASAP_DIAGNOSTIC_POP
 #include "clap/detail/args.h"
 #include "parser/parser.h"
 #include "parser/tokenizer.h"
+#include <clap/fluent/command_builder.h>
 
 using asap::clap::detail::Arguments;
 
@@ -40,23 +41,41 @@ namespace asap::clap {
 
 CmdLineArgumentsError::~CmdLineArgumentsError() = default;
 
-auto Cli::Parse(int argc, const char **argv) -> const OptionValuesMap & {
+auto Cli::Parse(int argc, const char **argv) -> CommandLineContext {
   const Arguments cla{argc, argv};
 
   if (!program_name_) {
     program_name_ = cla.ProgramName();
   }
 
+  auto &args = cla.Args();
+
+  if (!args.empty()) {
+    std::string &first = args[0];
+    if (has_version_command_ &&
+        (first == Command::VERSION_SHORT || first == Command::VERSION_LONG)) {
+      first.assign(Command::VERSION);
+    } else if (has_help_command_ &&
+               (first == Command::HELP_SHORT || first == Command::HELP_LONG)) {
+      first.assign(Command::HELP);
+    }
+  }
+
   const parser::Tokenizer tokenizer{cla.Args()};
-  const CommandLineContext context(ProgramName(), ovm_);
+  CommandLineContext context(ProgramName(), active_command_, ovm_);
   parser::CmdLineParser parser(context, tokenizer, commands_);
   if (parser.Parse()) {
-    // TODO(Abdessattar): handle the version and help commands
-    // Help takes precedence over version if both are provided.
+    if (context.active_command->PathAsString() == "version") {
+      context.out_ << fmt::format(
+                          "{} version {}\n", program_name_.value(), version_)
+                   << std::endl;
+    } else if (context.active_command->PathAsString() == "help") {
+      Print(context.out_);
+    }
 
-    return ovm_;
+    return context;
   }
-  if (HasHelpOption()) {
+  if (HasHelpCommand()) {
     context.out_ << fmt::format("Try '{} --help' for more information.",
                         program_name_.value())
                  << std::endl;
@@ -104,13 +123,17 @@ void Cli::Print(std::ostream &out, unsigned int width) const {
   }
   out << "\n\n";
 }
-auto Cli::HasHelpOption() const -> bool {
-  for (const auto &command : commands_) {
-    if (command->IsDefault()) {
-      return command->FindLongOption("help").has_value();
-    }
-  }
-  return false;
+
+void Cli::EnableVersionCommand() {
+  CommandBuilder command_builder(Command::VERSION);
+  commands_.push_back(std::move(command_builder));
+  has_version_command_ = true;
+}
+
+void Cli::EnableHelpCommand() {
+  CommandBuilder command_builder(Command::HELP);
+  commands_.push_back(std::move(command_builder));
+  has_help_command_ = true;
 }
 
 } // namespace asap::clap

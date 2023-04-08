@@ -76,7 +76,8 @@ TEST(ParserExample, ComplexCommandLine) {
       //        "--allowed_ids", "one,two", "now"
   }};
   OptionValuesMap ovm;
-  const CommandLineContext context("parser-test", ovm);
+  Command::Ptr command;
+  const CommandLineContext context("parser-test", command, ovm);
   CmdLineParser parser(context, tokenizer, commands);
   const auto success = parser.Parse();
   ASSERT_THAT(success, IsTrue());

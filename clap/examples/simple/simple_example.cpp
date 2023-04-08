@@ -14,6 +14,7 @@
 #include <iostream>
 
 #include "clap/cli.h"
+#include "clap/command_line_context.h"
 #include "clap/fluent/command_builder.h"
 #include "clap/fluent/dsl.h"
 
@@ -67,17 +68,23 @@ auto main(int argc, const char **argv) -> int {
               .ProgramName("simple-cli")
               .Version("1.0.0")
               .About("A simple command line example.")
+              .WithVersionCommand()
+              .WithHelpCommand()
               .WithCommand(command_builder);
 
-    const auto &ovm = cli->Parse(argc, argv);
+    const auto context = cli->Parse(argc, argv);
+    const auto command_path = context.active_command->PathAsString();
+
+    if (command_path == Command::VERSION || command_path == Command::HELP) {
+      return 0;
+    }
+
+    const auto &ovm = context.ovm;
     if (!quiet) {
       std::cout << "-- Simple command line invoked, value of `lines` is: "
                 << ovm.ValuesOf("lines").at(0).GetAs<int>() << std::endl;
     }
   } catch (...) {
-    if (cli) {
-      std::cout << *cli;
-    }
     return -1;
   }
 }

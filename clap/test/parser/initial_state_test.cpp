@@ -27,7 +27,8 @@ protected:
     const Tokenizer tokenizer(args);
     const auto commands = BuildCommands(command_paths);
     OptionValuesMap ovm;
-    const CommandLineContext base_context("test", ovm);
+    Command::Ptr command;
+    const CommandLineContext base_context("test", command, ovm);
     auto context = ParserContext::New(base_context, commands);
     SetupInitialState(context);
     std::get<InitialStateTestData>(state_check).Check(state());

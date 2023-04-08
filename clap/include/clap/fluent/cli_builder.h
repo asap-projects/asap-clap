@@ -54,10 +54,11 @@ public:
   /// Add the given command to the `Cli`.
   ASAP_CLAP_API auto WithCommand(std::shared_ptr<Command> command) -> Self &;
 
+  ASAP_CLAP_API auto WithVersionCommand() -> Self &;
+  ASAP_CLAP_API auto WithHelpCommand() -> Self &;
+
   /// Explicitly get the encapsulated `Cli` instance.
-  auto Build() -> std::unique_ptr<Cli> {
-    return std::move(cli_);
-  }
+  ASAP_CLAP_API auto Build() -> std::unique_ptr<Cli>;
 
   /// Automatic conversion to `Cli` smart pointer rendering the final call to
   /// Build() unnecessary.
@@ -79,6 +80,9 @@ protected:
   // encapsulated object between this builder and its facets.
   explicit CliBuilder(std::unique_ptr<Cli> cli) : cli_{std::move(cli)} {
   }
+
+  // Remember when a default command is added to this cli
+  std::shared_ptr<Command> default_command_;
 };
 
 } // namespace asap::clap

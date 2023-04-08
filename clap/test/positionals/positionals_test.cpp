@@ -12,6 +12,7 @@
 
 #include "clap/cli.h"
 #include "clap/command.h"
+#include "clap/command_line_context.h"
 #include "clap/fluent/command_builder.h"
 #include "clap/fluent/dsl.h"
 #include "clap/option.h"
@@ -63,7 +64,7 @@ TEST(PositionalArgumentsTest, JustRest) {
 
   std::unique_ptr<Cli> cli =
       CliBuilder().ProgramName("positional_args").WithCommand(default_command);
-  const auto &matches = cli->Parse(argc, argv.data());
+  const auto &matches = cli->Parse(argc, argv.data()).ovm;
 
   const auto &v_rest = matches.ValuesOf(Option::key_rest);
   EXPECT_THAT(v_rest.size(), Eq(4));
@@ -86,7 +87,7 @@ TEST(PositionalArgumentsTest, BeforeRest) {
 
   std::unique_ptr<Cli> cli =
       CliBuilder().ProgramName("positional_args").WithCommand(default_command);
-  const auto &matches = cli->Parse(argc, argv.data());
+  const auto &matches = cli->Parse(argc, argv.data()).ovm;
 
   const auto &v_before_1 = matches.ValuesOf("BEFORE_1");
   EXPECT_THAT(v_before_1.size(), Eq(1));
@@ -115,7 +116,7 @@ TEST(PositionalArgumentsTest, AfterRest) {
 
   std::unique_ptr<Cli> cli =
       CliBuilder().ProgramName("positional_args").WithCommand(default_command);
-  const auto &matches = cli->Parse(argc, argv.data());
+  const auto &matches = cli->Parse(argc, argv.data()).ovm;
 
   const auto &v_after_1 = matches.ValuesOf("AFTER_1");
   EXPECT_THAT(v_after_1.size(), Eq(1));
@@ -141,7 +142,7 @@ TEST(PositionalArgumentsTest, BeforeAndAfterRest) {
 
   std::unique_ptr<Cli> cli =
       CliBuilder().ProgramName("positional_args").WithCommand(default_command);
-  const auto &matches = cli->Parse(argc, argv.data());
+  const auto &matches = cli->Parse(argc, argv.data()).ovm;
 
   const auto &v_before_1 = matches.ValuesOf("BEFORE_1");
   EXPECT_THAT(v_before_1.size(), Eq(1));

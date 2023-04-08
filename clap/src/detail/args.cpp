@@ -46,7 +46,6 @@ asap::clap::detail::Arguments::Arguments(int argc, const char **argv)
 auto asap::clap::detail::Arguments::ProgramName() const -> const std::string & {
   return impl_->program_name;
 }
-auto asap::clap::detail::Arguments::Args() const
-    -> const std::vector<std::string> & {
+auto asap::clap::detail::Arguments::Args() const -> std::vector<std::string> & {
   return impl_->args;
 }

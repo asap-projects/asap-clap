@@ -5,6 +5,7 @@
 //===----------------------------------------------------------------------===//
 
 #include "clap/cli.h"
+#include "clap/command_line_context.h"
 
 #include <array>
 #include <memory>
@@ -79,10 +80,10 @@ constexpr const auto about_head =
     "\n"
     "Mandatory arguments to long options are mandatory for short options too.";
 
-//constexpr const auto head_command_detailed_usage =
-//    "NUM may have a multiplier suffix: b 512, kB 1000, K 1024, MB  1000*1000, "
-//    "M 1024*1024, GB 1000*1000*1000, G 1024*1024*1024, and so on for T, P, E, "
-//    "Z, Y. Binary prefixes can be used, too: KiB=K, MiB=M, and so on.";
+// constexpr const auto head_command_detailed_usage =
+//     "NUM may have a multiplier suffix: b 512, kB 1000, K 1024, MB  1000*1000,
+//     " "M 1024*1024, GB 1000*1000*1000, G 1024*1024*1024, and so on for T, P,
+//     E, " "Z, Y. Binary prefixes can be used, too: KiB=K, MiB=M, and so on.";
 
 // TODO(Abdessattar): add support for usage footer
 // constexpr const auto usage_footer =
@@ -267,7 +268,7 @@ TEST(CommandLineTest, Test) {
 
     UtilsCli cli;
     cli.CommandLine().Print(std::cout, 80);
-    const auto &matches = cli.CommandLine().Parse(argc, argv.data());
+    const auto &matches = cli.CommandLine().Parse(argc, argv.data()).ovm;
 
     const auto &v_lines = matches.ValuesOf(("lines"));
     EXPECT_THAT(v_lines.size(), Eq(1));
@@ -296,7 +297,7 @@ TEST(CommandLineTest, Test) {
 
     UtilsCli cli;
     cli.CommandLine().Print(std::cout, 80);
-    const auto &matches = cli.CommandLine().Parse(argc, argv.data());
+    const auto &matches = cli.CommandLine().Parse(argc, argv.data()).ovm;
 
     const auto &v_lines = matches.ValuesOf(("lines"));
     EXPECT_THAT(v_lines.size(), Eq(1));
@@ -316,7 +317,7 @@ TEST(CommandLineTest, Test) {
         {"/usr/bin/test-program.exe", "--version"}};
 
     HeadCli cli;
-    const auto &matches = cli.CommandLine().Parse(argc, argv.data());
+    const auto &matches = cli.CommandLine().Parse(argc, argv.data()).ovm;
     const auto &values = matches.ValuesOf(("version"));
     EXPECT_THAT(values.size(), Eq(1));
     EXPECT_THAT(values.at(0).GetAs<bool>(), IsTrue());
@@ -327,7 +328,7 @@ TEST(CommandLineTest, Test) {
         {"/usr/bin/test-program.exe", "--version"}};
 
     UtilsCli cli;
-    const auto &matches = cli.CommandLine().Parse(argc, argv.data());
+    const auto &matches = cli.CommandLine().Parse(argc, argv.data()).ovm;
     const auto &values = matches.ValuesOf(("version"));
     EXPECT_THAT(values.size(), Eq(1));
     EXPECT_THAT(values.at(0).GetAs<bool>(), IsTrue());
@@ -339,7 +340,7 @@ TEST(CommandLineTest, Test) {
             "--color=bLue", "--color=1", "--color=3"}};
 
     UtilsCli cli;
-    const auto &matches = cli.CommandLine().Parse(argc, argv.data());
+    const auto &matches = cli.CommandLine().Parse(argc, argv.data()).ovm;
     const auto &values = matches.ValuesOf(("color"));
     EXPECT_THAT(values.size(), Eq(5));
     EXPECT_THAT(

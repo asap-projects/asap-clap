@@ -27,6 +27,8 @@
 /// Namespace for command line parsing related APIs.
 namespace asap::clap {
 
+struct CommandLineContext;
+
 /*!
  * \brief An exception thrown when a command line arguments parsing error
  * occurs.
@@ -79,8 +81,15 @@ public:
     return program_name_.value_or("");
   }
 
-  ASAP_CLAP_API auto Parse(int argc, const char **argv)
-      -> const OptionValuesMap &;
+  [[nodiscard]] auto HasVersionCommand() const -> bool {
+    return has_version_command_;
+  }
+
+  [[nodiscard]] auto HasHelpCommand() const -> bool {
+    return has_help_command_;
+  }
+
+  ASAP_CLAP_API auto Parse(int argc, const char **argv) -> CommandLineContext;
 
   /** Produces a human readable output of 'desc', listing options,
       their descriptions and allowed parameters. Other options_description
@@ -112,10 +121,12 @@ private:
   }
 
   void WithCommand(std::shared_ptr<Command> command) {
-    commands_.push_back(std::move(command));
+    if (command->IsDefault()) {
+      commands_.insert(commands_.begin(), std::move(command));
+    } else {
+      commands_.push_back(std::move(command));
+    }
   }
-
-  [[nodiscard]] auto HasHelpOption() const -> bool;
 
   // TODO(Abdessattar): add support for cli general options
   // These general options are added directly to the Cli and not to the default
@@ -126,19 +137,23 @@ private:
   // Help should be a special command that gets added to print the Cli
   // documentation. When this command is added it should also add a special
   // '--help -h' option with a custom callback that terminates the parsing.
-  // --help should take precedence over --version
+  ASAP_CLAP_API void EnableHelpCommand();
 
   // TODO(Abdessattar): add support for cli version command
   // Version should be a special command that gets added to print the Cli
   // version info. When this command is added it should also add a special
   // '--version -v' option with a custom callback that terminates the parsing.
-  // --help should take precedence over --version
+  ASAP_CLAP_API void EnableVersionCommand();
 
   std::string version_;
   std::string about_;
   std::optional<std::string> program_name_{};
   std::vector<std::shared_ptr<Command>> commands_;
+  Command::Ptr active_command_;
   OptionValuesMap ovm_;
+
+  bool has_version_command_ = false;
+  bool has_help_command_ = false;
 };
 
 } // namespace asap::clap

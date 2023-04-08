@@ -45,7 +45,8 @@ protected:
     const Tokenizer tokenizer(args);
     const auto commands = BuildCommands(command_paths);
     OptionValuesMap ovm;
-    const CommandLineContext base_context("test", ovm);
+    Command::Ptr command;
+    const CommandLineContext base_context("test", command, ovm);
     const auto context = ParserContext::New(base_context, commands);
     EnterState(tokenizer.NextToken(), context);
     while (true) {

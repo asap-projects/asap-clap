@@ -336,11 +336,11 @@ inline void asap::clap::parser::detail::ParseShortOptionStateTestData::Check(
   EXPECT_THAT(option_name, ::testing::Eq(active_option));
   EXPECT_THAT(
       state->context_->active_option_flag, ::testing::Eq(active_option_flag));
-  EXPECT_THAT(state->context_->ovm_.OccurrencesOf(option_name),
+  EXPECT_THAT(state->context_->ovm.OccurrencesOf(option_name),
       ::testing::Eq(values_size));
   if (value.has_value() && values_size > 0) {
     const auto &last_value =
-        state->context_->ovm_.ValuesOf(option_name).back().OriginalToken();
+        state->context_->ovm.ValuesOf(option_name).back().OriginalToken();
     EXPECT_THAT(last_value, ::testing::Eq(value));
   }
 }

@@ -58,8 +58,7 @@ public:
    *
    * \see ProgramName
    */
-  [[nodiscard]] ASAP_CLAP_API auto Args() const
-      -> const std::vector<std::string> &;
+  [[nodiscard]] ASAP_CLAP_API auto Args() const -> std::vector<std::string> &;
 
 private:
   class ArgumentsImpl;

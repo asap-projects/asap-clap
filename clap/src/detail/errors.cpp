@@ -91,7 +91,7 @@ auto asap::clap::parser::detail::UnrecognizedOption(
 auto asap::clap::parser::detail::IllegalMultipleOccurrence(
     const ParserContextPtr &context, const char *message) -> std::string {
   ASAP_EXPECT(context->active_option);
-  ASAP_EXPECT(context->ovm_.OccurrencesOf(context->active_option->Key()) > 0);
+  ASAP_EXPECT(context->ovm.OccurrencesOf(context->active_option->Key()) > 0);
 
   const auto &option_name = context->active_option->Key();
   auto description =
@@ -100,7 +100,7 @@ auto asap::clap::parser::detail::IllegalMultipleOccurrence(
                   "appeared before with value '{}'",
           CommandDiagnostic(context->active_command), option_name,
           context->active_option_flag,
-          context->ovm_.ValuesOf(option_name).front().OriginalToken());
+          context->ovm.ValuesOf(option_name).front().OriginalToken());
   AppendOptionalMessage(description, message);
   return description;
 }
