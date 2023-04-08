@@ -117,6 +117,23 @@ private:
 
   [[nodiscard]] auto HasHelpOption() const -> bool;
 
+  // TODO(Abdessattar): add support for cli general options
+  // These general options are added directly to the Cli and not to the default
+  // command. They are automatically added in a group to all commands in the CLI
+  // including the default command.
+
+  // TODO(Abdessattar): add support for cli help command
+  // Help should be a special command that gets added to print the Cli
+  // documentation. When this command is added it should also add a special
+  // '--help -h' option with a custom callback that terminates the parsing.
+  // --help should take precedence over --version
+
+  // TODO(Abdessattar): add support for cli version commnad
+  // Version should be a special command that gets added to print the Cli
+  // version info. When this command is added it should also add a special
+  // '--version -v' option with a custom callback that terminates the parsing.
+  // --help should take precedence over --version
+
   std::string version_;
   std::string about_;
   std::optional<std::string> program_name_{};
