@@ -81,7 +81,9 @@ protected:
   explicit CliBuilder(std::unique_ptr<Cli> cli) : cli_{std::move(cli)} {
   }
 
-  // Remember when a default command is added to this cli
+private:
+  // Keep track of when a default command is added so that we can reuse it for
+  // the `version` and `help` options.
   std::shared_ptr<Command> default_command_;
 };
 
