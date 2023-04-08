@@ -14,6 +14,7 @@
 
 #include <iostream>
 
+#include "clap/command.h"
 #include "clap/option_values_map.h"
 
 namespace asap::clap {
@@ -30,6 +31,15 @@ struct CommandLineContext {
   std::ostream &err_{std::cerr};
 
   std::string program_name_;
+
+  /*!
+   * \brief Tracks the `asap::clap::Command` objects for the active command.
+   *
+   * This field is populated with valid value as soon as the parser identifies a
+   * valid command on the command line. All options during subsequent parsing
+   * will be relative to this command.
+   */
+  Command::Ptr active_command;
 
   OptionValuesMap &ovm_;
 };

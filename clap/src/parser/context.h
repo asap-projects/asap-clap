@@ -78,14 +78,6 @@ struct ParserContext : CommandLineContext {
    */
   const CommandsList &commands;
   /*!
-   * \brief Tracks the `asap::clap::Command` objects for the active command.
-   *
-   * This field is populated with valid value as soon as the parser identifies a
-   * valid command on the command line. All options during subsequent parsing
-   * will be relative to this command.
-   */
-  CommandPtr active_command;
-  /*!
    * \brief Tracks the `asap::clap::Option` object for the command line option
    * currently being parsed.
    *
