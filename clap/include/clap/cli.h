@@ -128,7 +128,7 @@ private:
   // '--help -h' option with a custom callback that terminates the parsing.
   // --help should take precedence over --version
 
-  // TODO(Abdessattar): add support for cli version commnad
+  // TODO(Abdessattar): add support for cli version command
   // Version should be a special command that gets added to print the Cli
   // version info. When this command is added it should also add a special
   // '--version -v' option with a custom callback that terminates the parsing.
