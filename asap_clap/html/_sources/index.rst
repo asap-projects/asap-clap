@@ -6,9 +6,9 @@
      ^ for sub-subsections
      " for paragraphs
 
-##########################
-ASAP logging documentation
-##########################
+#############################
+Command Line Arguments Parser
+#############################
 
 .. |date| date::
 
@@ -22,8 +22,8 @@ Last Updated on |date|
    License <license>
    Version <version>
 
-Welcome! This is the documentation for the *clap* module, part of the *asap* project. This is a
-Command Line Arguments Parser.
+Welcome! This is the documentation for the *clap* module, part of the *asap*
+project. This is a Command Line Arguments Parser.
 
 Parts of the documentation
 ==========================
