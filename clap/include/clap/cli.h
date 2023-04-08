@@ -90,7 +90,7 @@ public:
 
   /** Outputs 'desc' to the specified stream, calling 'f' to output each
       option_description element. */
-  ASAP_CLAP_API void Print(std::ostream &out, unsigned width = 0) const;
+  ASAP_CLAP_API void Print(std::ostream &out, unsigned width = 120) const;
 
   // Cli instances are created and configured only via the associated
   // CliBuilder.
