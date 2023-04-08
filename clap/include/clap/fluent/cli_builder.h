@@ -54,7 +54,32 @@ public:
   /// Add the given command to the `Cli`.
   ASAP_CLAP_API auto WithCommand(std::shared_ptr<Command> command) -> Self &;
 
+  /**
+   * \brief Enable the default handling for the version option/command.
+   *
+   * With this, version information can be displayed using one of the following
+   *
+   * methods:
+   *   - `program version`
+   *   - `program --version`
+   *   - `program -v`
+   */
   ASAP_CLAP_API auto WithVersionCommand() -> Self &;
+
+  /**
+   * Enable the default handling for the help option/command.
+   *
+   * With this, version general CLI help can be displayed using one of the
+   * following methods:
+   *  - `program help`
+   *  - `program --help`
+   *  - `program -h`
+   *
+   * Help for a specific command can be displayed using:
+   *  - `program help command`
+   *  - `program command --help`
+   *  - `program command -h`
+   */
   ASAP_CLAP_API auto WithHelpCommand() -> Self &;
 
   /// Explicitly get the encapsulated `Cli` instance.
