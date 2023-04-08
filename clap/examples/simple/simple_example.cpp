@@ -24,6 +24,7 @@ using asap::clap::CommandBuilder;
 using asap::clap::Option;
 
 auto main(int argc, const char **argv) -> int {
+  std::unique_ptr<Cli> cli;
   try {
     bool quiet{false};
 
@@ -62,12 +63,11 @@ auto main(int argc, const char **argv) -> int {
             .Build());
     //! [ComplexOption example]
 
-    const std::unique_ptr<Cli> cli =
-        CliBuilder()
-            .ProgramName("simple-cli")
-            .Version("1.0.0")
-            .About("A simple command line example.")
-            .WithCommand(command_builder);
+    cli = CliBuilder()
+              .ProgramName("simple-cli")
+              .Version("1.0.0")
+              .About("A simple command line example.")
+              .WithCommand(command_builder);
 
     const auto &ovm = cli->Parse(argc, argv);
     if (!quiet) {
@@ -75,6 +75,9 @@ auto main(int argc, const char **argv) -> int {
                 << ovm.ValuesOf("lines").at(0).GetAs<int>() << std::endl;
     }
   } catch (...) {
+    if (cli) {
+      std::cout << *cli;
+    }
     return -1;
   }
 }
