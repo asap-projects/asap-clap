@@ -92,19 +92,19 @@ auto operator<<(std::ostream &out, const Cli &cli) -> std::ostream & {
 }
 
 void Cli::PrintDefaultCommand(std::ostream &out, unsigned int width) const {
-  auto default_command = std::find_if(commands_.begin(), commands_.end(),
+  const auto default_command = std::find_if(commands_.begin(), commands_.end(),
       [](const auto &command) { return command->IsDefault(); });
   if (default_command != commands_.end()) {
     std::ostringstream ostr;
     (*default_command)->PrintOptionsSummary(ostr);
-    std::string indent = fmt::format("usage: {} ", ProgramName());
-    std::string indent_next(indent.size(), ' ');
-    wrap::TextWrapper command_wrap = wrap::TextWrapper::Create()
-                                         .Width(width)
-                                         .TrimLines()
-                                         .IndentWith()
-                                         .Initially(indent)
-                                         .Then(indent_next);
+    const std::string indent = fmt::format("usage: {} ", ProgramName());
+    const std::string indent_next(indent.size(), ' ');
+    const wrap::TextWrapper command_wrap = wrap::TextWrapper::Create()
+                                               .Width(width)
+                                               .TrimLines()
+                                               .IndentWith()
+                                               .Initially(indent)
+                                               .Then(indent_next);
     out << command_wrap.Fill(ostr.str()).value();
 
     out << "\n\n";
@@ -115,16 +115,12 @@ void Cli::PrintDefaultCommand(std::ostream &out, unsigned int width) const {
 }
 
 void Cli::PrintAbout(std::ostream &out, unsigned int width) const {
-  wrap::TextWrapper wrap =
+  const wrap::TextWrapper wrap =
       wrap::TextWrapper::Create().Width(width).CollapseWhiteSpace().TrimLines();
   out << wrap.Fill(about_).value();
 }
 
-void Cli::Print(std::ostream &out, unsigned int width) const {
-  PrintAbout(out, width);
-  out << "\n\n";
-  PrintDefaultCommand(out, width);
-
+void Cli::PrintCommands(std::ostream &out, unsigned int width) const {
   auto first_time = true;
   for (const auto &command : commands_) {
     if (!command->IsDefault()) {
@@ -144,6 +140,13 @@ void Cli::Print(std::ostream &out, unsigned int width) const {
       out << wrap.Fill(command->About()).value();
     }
   }
+}
+
+void Cli::Print(std::ostream &out, unsigned int width) const {
+  PrintAbout(out, width);
+  out << "\n\n";
+  PrintDefaultCommand(out, width);
+  PrintCommands(out, width);
   out << "\n\n";
 }
 
