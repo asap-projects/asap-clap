@@ -49,9 +49,9 @@ using PositionalOptionBuilder = Positional<OptionBuilder>;
  *   value of true when present on the command line and false when not.
  *
  * - With user-provided values, which constitute the bulk of command line
- *   options in usual programs. Such options can specify additional
- *   constraints on the value semantics, such as whether the value is optional
- *   or required, can be repeated multiple times or not, etc.
+ *   options in usual programs. Such options can specify additional constraints
+ *   on the value semantics, such as whether the value is optional or required,
+ *   can be repeated multiple times or not, etc.
  *
  * - Positional options. These are options present on the command line without a
  *   leading '-' character and usually correspond to input arguments to the
