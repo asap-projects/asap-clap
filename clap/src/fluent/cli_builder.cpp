@@ -131,11 +131,11 @@ auto asap::clap::CliBuilder::Build() -> std::unique_ptr<Cli> {
       }
       WithCommand(command);
     }
+  }
 
-    // Update all CLI commands to have a weak reference to the parent CLI
-    for (auto &command : cli_->commands_) {
-      command->parent_cli_ = cli_.get();
-    }
+  // Update all CLI commands to have a weak reference to the parent CLI
+  for (auto &command : cli_->commands_) {
+    command->parent_cli_ = cli_.get();
   }
 
   return std::move(cli_);
