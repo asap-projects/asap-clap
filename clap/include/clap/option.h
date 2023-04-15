@@ -130,7 +130,7 @@ public:
       option_description element. */
   ASAP_CLAP_API void Print(std::ostream &out, unsigned width = 0) const;
 
-  static ASAP_CLAP_API auto WithName(std::string key) -> OptionBuilder;
+  static ASAP_CLAP_API auto WithKey(std::string key) -> OptionBuilder;
 
   static ASAP_CLAP_API auto Positional(std::string key)
       -> PositionalOptionBuilder;

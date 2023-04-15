@@ -47,13 +47,13 @@ public:
   [[nodiscard]] auto CommonOptions() const -> const std::shared_ptr<Options> & {
     if (!common_options_) {
       common_options_ = std::make_shared<Options>("Common options");
-      common_options_->Add(Option::WithName("help")
+      common_options_->Add(Option::WithKey("help")
                                .Long("help")
                                .About("show this message, then exit")
                                .WithValue<bool>()
                                .Build());
       common_options_->Add(
-          Option::WithName("version")
+          Option::WithKey("version")
               .About(
                   fmt::format("show {} version info, then exit", ProgramName()))
               .Long("version")
@@ -119,7 +119,7 @@ public:
           CommandBuilder(std::move(name))
               .About("output the first part of files")
               .WithOption(
-                  Option::WithName("bytes")
+                  Option::WithKey("bytes")
                       .About("print the first NUM bytes of each file; with the "
                              "leading '-', print all but the last NUM bytes of "
                              "each file")
@@ -127,7 +127,7 @@ public:
                       .Long("bytes")
                       .WithValue<int>()
                       .Build())
-              .WithOption(Option::WithName("lines")
+              .WithOption(Option::WithKey("lines")
                               .About("print the first NUM lines instead of the "
                                      "first 10; with "
                                      "the leading '-', print all but the last  "
@@ -138,7 +138,7 @@ public:
                               .WithValue<int>()
                               .DefaultValue(default_num_lines)
                               .Build())
-              .WithOption(Option::WithName("quiet")
+              .WithOption(Option::WithKey("quiet")
                               .About("never print headers giving file names")
                               .Short("q")
                               .Long("quiet")
@@ -146,13 +146,13 @@ public:
                               // aliases .Long("silent")
                               .WithValue<bool>()
                               .Build())
-              .WithOption(Option::WithName("verbose")
+              .WithOption(Option::WithKey("verbose")
                               .About("always print headers giving file names")
                               .Short("v")
                               .Long("verbose")
                               .WithValue<bool>()
                               .Build())
-              .WithOption(Option::WithName("zero-terminated")
+              .WithOption(Option::WithKey("zero-terminated")
                               .About("line delimiter is NULL, not newline")
                               .Short("z")
                               .Long("zero-terminated")
@@ -200,7 +200,7 @@ public:
     if (!command_) {
       command_ = CommandBuilder(std::move(name))
                      .About("paint something")
-                     .WithOption(Option::WithName("color")
+                     .WithOption(Option::WithKey("color")
                                      .About("select a color from possible "
                                             "values `Red`(1), `Green`(2) "
                                             "or `Blue`(3)")

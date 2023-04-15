@@ -25,8 +25,7 @@ template <typename Builder,
     std::enable_if_t<std::is_same_v<Builder, OptionBuilder>, std::nullptr_t>>
 class Positional : Builder {
 public:
-  explicit Positional(std::string name)
-      : Builder(std::forward<std::string>(name)) {
+  explicit Positional(std::string key) : Builder(std::move(key)) {
   }
 
   auto About(std::string about) -> Positional<Builder> & {

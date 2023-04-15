@@ -38,7 +38,7 @@ auto main(int argc, const char **argv) -> int {
     command_builder.WithOption(
         // Define a boolean flag option to configure `quiet` mode for
         // the program
-        Option::WithName("quiet")
+        Option::WithKey("quiet")
             .About("Don't print anything to the standard output.")
             .Short("q")
             .Long("quiet")
@@ -53,14 +53,15 @@ auto main(int argc, const char **argv) -> int {
     command_builder.WithOption(
         // Define an option to control a more sophisticated program
         // configuration parameter
-        Option::WithName("lines")
-            .About("Print the first NUM lines instead of the first 10; with "
-                   "the leading '-', print all but the last  NUM lines of "
-                   "each file.")
+        Option::WithKey("lines")
+            .About("Print the first <num> lines instead of the first 10 (by "
+                   "default); with the leading '-', print all but the last "
+                   "<num> lines of each file.")
             .Short("n")
             .Long("lines")
             .WithValue<int>()
             .DefaultValue(default_num_lines)
+            .UserFriendlyName("num")
             .Build());
     //! [ComplexOption example]
 
@@ -78,11 +79,13 @@ auto main(int argc, const char **argv) -> int {
     const auto context = cli->Parse(argc, argv);
     const auto command_path = context.active_command->PathAsString();
 
-    if (command_path == Command::VERSION || command_path == Command::HELP) {
+    const auto &ovm = context.ovm;
+
+    if (command_path == Command::VERSION || command_path == Command::HELP ||
+        ovm.HasOption(Command::HELP)) {
       return 0;
     }
 
-    const auto &ovm = context.ovm;
     if (!quiet) {
       std::cout << "-- Simple command line invoked, value of `lines` is: "
                 << ovm.ValuesOf("lines").at(0).GetAs<int>() << std::endl;

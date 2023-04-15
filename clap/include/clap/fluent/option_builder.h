@@ -27,8 +27,8 @@ class OptionBuilder {
   using Self = OptionBuilder;
 
 public:
-  explicit OptionBuilder(std::string name)
-      : option_(new Option(std::move(name))) {
+  explicit OptionBuilder(std::string key)
+      : option_(new Option(std::move(key))) {
   }
 
   ASAP_CLAP_API auto Short(std::string short_name) -> Self &;

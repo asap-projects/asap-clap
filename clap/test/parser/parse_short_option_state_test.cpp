@@ -25,7 +25,7 @@ public:
   [[maybe_unused]] static void SetUpTestSuite() {
     const Command::Ptr my_command{
         CommandBuilder("with-options")
-            .WithOption(Option::WithName("opt_no_val")
+            .WithOption(Option::WithKey("opt_no_val")
                             .About("Option that takes no values")
                             .Short("n")
                             .Long("no-value")
@@ -33,7 +33,7 @@ public:
                             .DefaultValue(false, "false")
                             .ImplicitValue(true, "true")
                             .Build())
-            .WithOption(Option::WithName("first_opt")
+            .WithOption(Option::WithKey("first_opt")
                             .About("The first option")
                             .Short("f")
                             .Long("first-option")
@@ -41,7 +41,7 @@ public:
                             .DefaultValue("1")
                             .ImplicitValue("1")
                             .Build())
-            .WithOption(Option::WithName("second_opt")
+            .WithOption(Option::WithKey("second_opt")
                             .About("The second option")
                             .Short("s")
                             .Long("second-option")

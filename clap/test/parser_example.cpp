@@ -21,7 +21,7 @@ TEST(ParserExample, ComplexCommandLine) {
 
   const auto common_options = std::make_shared<Options>("Common options");
 
-  common_options->Add(Option::WithName("verbose")
+  common_options->Add(Option::WithKey("verbose")
                           .Short("v")
                           .Long("verbose")
                           .WithValue<bool>()
@@ -30,7 +30,7 @@ TEST(ParserExample, ComplexCommandLine) {
   const Command::Ptr default_command{
       CommandBuilder(Command::DEFAULT)
           .WithOptions(common_options)
-          .WithOption(Option::WithName("INPUT")
+          .WithOption(Option::WithKey("INPUT")
                           .About("The input file")
                           .WithValue<std::string>()
                           .Build())
@@ -39,7 +39,7 @@ TEST(ParserExample, ComplexCommandLine) {
   const Command::Ptr just_command{
       CommandBuilder("just", "hello")
           .WithOptions(common_options, /* hidden */ true)
-          .WithOption(Option::WithName("first_opt")
+          .WithOption(Option::WithKey("first_opt")
                           .About("The first option")
                           .Short("f")
                           .Long("first-option")
@@ -47,7 +47,7 @@ TEST(ParserExample, ComplexCommandLine) {
                           .DefaultValue(1)
                           .ImplicitValue(1)
                           .Build())
-          .WithOption(Option::WithName("second_opt")
+          .WithOption(Option::WithKey("second_opt")
                           .About("The second option")
                           .Short("s")
                           .Long("second-option")
@@ -58,7 +58,7 @@ TEST(ParserExample, ComplexCommandLine) {
           .Build()};
 
   const Command::Ptr doit_command{CommandBuilder("just", "do", "it")
-                                      .WithOption(Option::WithName("third_opt")
+                                      .WithOption(Option::WithKey("third_opt")
                                                       .About("The third option")
                                                       .Short("t")
                                                       .Long("third-option")
