@@ -151,12 +151,14 @@ public:
                               .Short("v")
                               .Long("verbose")
                               .WithValue<bool>()
+                              .DefaultValue(false)
                               .Build())
               .WithOption(Option::WithKey("zero-terminated")
                               .About("line delimiter is NULL, not newline")
                               .Short("z")
                               .Long("zero-terminated")
                               .WithValue<bool>()
+                              .DefaultValue(false)
                               .Build())
               .WithPositionalArguments(
                   Option::Rest().WithValue<std::string>().Build())
@@ -239,8 +241,7 @@ public:
                  .ProgramName(ProgramName())
                  .Version("1.1.0")
                  .About("GNU Core Utils - the basic file, shell and text "
-                        "manipulation "
-                        "utilities of the GNU operating system.")
+                        "manipulation utilities of the GNU operating system.")
                  // TODO(Abdessattar) support usage footer
                  //.Footer(usage_footer)
                  .WithCommand(default_command)
