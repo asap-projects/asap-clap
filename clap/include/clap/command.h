@@ -26,6 +26,9 @@
 /// Namespace for command line parsing related APIs.
 namespace asap::clap {
 
+// Forward reference used to declare the weak pointer to the parent CLI.
+class Cli;
+
 /*!
  * \brief A command.
  */
@@ -118,9 +121,9 @@ public:
 
   /** Outputs 'desc' to the specified stream, calling 'f' to output each
       option_description element. */
-  ASAP_CLAP_API void Print(std::ostream &out, unsigned width = 0) const;
+  ASAP_CLAP_API void Print(std::ostream &out, unsigned width = 80) const;
 
-  ASAP_CLAP_API void PrintOptionsSummary(std::ostream &out) const;
+  ASAP_CLAP_API void PrintSynopsis(std::ostream &out) const;
 
   ASAP_CLAP_API void PrintOptions(std::ostream &out, unsigned width) const;
 
@@ -218,6 +221,14 @@ private:
   std::vector<bool> options_in_groups_;
   std::vector<std::pair<Options::Ptr, bool>> groups_;
   std::vector<Option::Ptr> positional_args_;
+
+  // Only updated by the CliBuilder, and only used to refer back to the parent
+  // CLI to get information for better help display. Use the helper methods
+  // instead of directly accessing through the pointer for better
+  // maintainability.
+  Cli *parent_cli_{nullptr};
+
+  [[nodiscard]] auto ProgramName() const -> std::string;
 };
 
 inline auto operator<<(std::ostream &out, const Command &command)

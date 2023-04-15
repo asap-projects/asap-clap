@@ -108,8 +108,24 @@ public:
     about_ = std::move(about);
   }
 
+  [[nodiscard]] auto UserFriendlyName() const -> const std::string & {
+    return (!user_friendly_name_.empty()) ? user_friendly_name_ : key_;
+  }
+
+  void UserFriendlyName(std::string name) {
+    user_friendly_name_ = std::move(name);
+  }
+
   [[nodiscard]] auto Key() const -> const std::string & {
     return key_;
+  }
+
+  auto Required() -> void {
+    required_ = true;
+  }
+
+  [[nodiscard]] auto IsRequired() const -> bool {
+    return required_;
   }
 
   [[nodiscard]] auto IsPositional() const -> bool {
@@ -152,6 +168,9 @@ private:
   std::string short_name_;
   std::string long_name_;
   std::string about_;
+  std::string user_friendly_name_;
+  bool required_{false};
+
   // shared_ptr is needed to simplify memory management in
   // copy ctor and destructor.
   std::shared_ptr<const ValueSemantics> value_semantic_;
@@ -163,6 +182,9 @@ private:
   Option(std::string key, std::unique_ptr<ValueSemantics> value_semantic)
       : key_(std::move(key)), value_semantic_(std::move(value_semantic)) {
   }
+
+  auto PrintValueDescription(
+      std::ostream &out, const std::string &separator) const -> void;
 };
 
 struct Options {

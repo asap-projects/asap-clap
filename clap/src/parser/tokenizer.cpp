@@ -43,7 +43,9 @@ public:
   explicit InputChar(char character) : value{character} {
   }
 
-  [[nodiscard]] auto Value() const -> char { return value; }
+  [[nodiscard]] auto Value() const -> char {
+    return value;
+  }
 
 private:
   char value;
@@ -164,8 +166,8 @@ struct ShortOptionState : public On<InputEnd, TransitionTo<FinalState>> {
   }
 
   [[maybe_unused]] auto OnEnter(const InputChar &event) -> Status {
-    //    std::cout << "InputChar(" << event.Value() << ") -> ShortOptionState" <<
-    //    std::endl;
+    //    std::cout << "InputChar(" << event.Value() << ") -> ShortOptionState"
+    //    << std::endl;
     consume_token_(TokenType::ShortOption, std::string{event.Value()});
     return Continue{};
   }
@@ -222,8 +224,8 @@ struct LongOptionState : public On<InputEnd, TransitionTo<FinalState>> {
   }
 
   [[maybe_unused]] auto OnEnter(const InputChar &event) -> Status {
-    //    std::cout << "InputChar(" << event.Value() << ") -> LongOptionState" <<
-    //    std::endl;
+    //    std::cout << "InputChar(" << event.Value() << ") -> LongOptionState"
+    //    << std::endl;
     token_.push_back((event.Value()));
     return Continue{};
   }

@@ -33,10 +33,21 @@ auto asap::clap::OptionBuilder::About(std::string about) -> Self & {
   return *this;
 }
 
+auto asap::clap::OptionBuilder::Required() -> Self & {
+  ASAP_ASSERT(option_ && "builder used after Build() was called");
+  option_->Required();
+  return *this;
+}
+
+auto asap::clap::OptionBuilder::UserFriendlyName(std::string name) -> Self & {
+  ASAP_ASSERT(option_ && "builder used after Build() was called");
+  option_->UserFriendlyName(std::move(name));
+  return *this;
+}
+
 template <>
 auto asap::clap::OptionBuilder::WithValue<bool>() -> OptionValueBuilder<bool> {
   OptionValueBuilder<bool> value_builder(std::move(option_));
-  value_builder.DefaultValue(false, "false");
   value_builder.ImplicitValue(true, "true");
   return value_builder;
 }

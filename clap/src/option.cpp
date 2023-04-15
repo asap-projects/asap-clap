@@ -26,19 +26,57 @@ auto operator<<(std::ostream &out, const Option &option) -> std::ostream & {
   return out;
 }
 
+auto Option::PrintValueDescription(
+    std::ostream &out, const std::string &separator) const -> void {
+  if (value_semantic_ && !value_semantic_->IsFlag()) {
+    out << separator;
+    if (!value_semantic_->IsRequired()) {
+      out << "[";
+    }
+    out << "<" << value_semantic_->UserFriendlyName() << ">";
+    if (value_semantic_->IsRepeatable()) {
+      out << "...";
+    }
+    if (!value_semantic_->IsRequired()) {
+      out << "[";
+    }
+  }
+  out << "\n";
+}
+
 void Option::Print(std::ostream &out, unsigned int width) const {
-  out << "   -" << short_name_ << "\n   --" << long_name_ << "\n";
-  wrap::TextWrapper wrap = wrap::TextWrapper::Create()
-                               .Width(width)
-                               .CollapseWhiteSpace()
-                               .TrimLines()
-                               .IndentWith()
-                               .Initially("   ")
-                               .Then("   ");
+  if (IsPositional()) {
+    out << "   ";
+    if (!IsRequired()) {
+      out << "[";
+    }
+    out << "<" << UserFriendlyName() << ">";
+    if (!IsRequired()) {
+      out << "]";
+    }
+    out << "\n";
+  } else {
+    if (!short_name_.empty()) {
+      out << "   -" << short_name_;
+      PrintValueDescription(out, " ");
+    }
+    if (!long_name_.empty()) {
+      out << "   --" << long_name_;
+      PrintValueDescription(out, "=");
+    }
+  }
+
+  const wrap::TextWrapper wrap = wrap::TextWrapper::Create()
+                                     .Width(width)
+                                     .CollapseWhiteSpace()
+                                     .TrimLines()
+                                     .IndentWith()
+                                     .Initially("   ")
+                                     .Then("   ");
   out << wrap.Fill(About()).value();
 }
 
-auto Option::WithName(std::string key) -> OptionBuilder {
+auto Option::WithKey(std::string key) -> OptionBuilder {
   return OptionBuilder(std::move(key));
 }
 

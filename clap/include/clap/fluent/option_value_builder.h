@@ -37,6 +37,12 @@ public:
     return *this;
   }
 
+  auto UserFriendlyName(std::string name) -> Self & {
+    ASAP_ASSERT(value_descriptor_ && "builder used after Build() was called");
+    value_descriptor_->UserFriendlyName(name);
+    return *this;
+  }
+
   auto DefaultValue(const T &value) -> OptionValueBuilder & {
     ASAP_ASSERT(value_descriptor_ && "builder used after Build() was called");
     value_descriptor_->DefaultValue(value);

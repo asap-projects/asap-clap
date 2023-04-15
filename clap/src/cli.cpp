@@ -11,10 +11,16 @@
  */
 
 #include "clap/cli.h"
+#include "clap/detail/args.h"
+#include "clap/fluent/command_builder.h"
+#include "clap/fluent/positional_option_builder.h"
+#include "parser/parser.h"
+#include "parser/tokenizer.h"
 
 #include <sstream>
 
 #include <common/compilers.h>
+#include <contract/contract.h>
 #include <textwrap/textwrap.h>
 
 // Disable compiler and linter warnings originating from 'fmt' and for which we
@@ -28,12 +34,8 @@ ASAP_DIAGNOSTIC_PUSH
 #pragma GCC diagnostic ignored "-Wswitch-default"
 #endif
 #include <fmt/core.h>
+#include <fmt/ranges.h>
 ASAP_DIAGNOSTIC_POP
-
-#include "clap/detail/args.h"
-#include "parser/parser.h"
-#include "parser/tokenizer.h"
-#include <clap/fluent/command_builder.h>
 
 using asap::clap::detail::Arguments;
 
@@ -50,6 +52,8 @@ auto Cli::Parse(int argc, const char **argv) -> CommandLineContext {
 
   auto &args = cla.Args();
 
+  // Simplify processing by transforming the shor or long option forms of
+  // `version` and `help` into the corresponding unified command name.
   if (!args.empty()) {
     std::string &first = args[0];
     if (has_version_command_ &&
@@ -65,12 +69,12 @@ auto Cli::Parse(int argc, const char **argv) -> CommandLineContext {
   CommandLineContext context(ProgramName(), active_command_, ovm_);
   parser::CmdLineParser parser(context, tokenizer, commands_);
   if (parser.Parse()) {
-    if (context.active_command->PathAsString() == "version") {
-      context.out_ << fmt::format(
-                          "{} version {}\n", program_name_.value(), version_)
-                   << std::endl;
-    } else if (context.active_command->PathAsString() == "help") {
-      Print(context.out_);
+    // Check if we need to handle a `version` or `help` command
+    if (context.active_command->PathAsString() == "help" ||
+        context.ovm.HasOption("help")) {
+      HandleHelpCommand(context);
+    } else if (context.active_command->PathAsString() == "version") {
+      HandleVersionCommand(context);
     }
 
     return context;
@@ -95,41 +99,14 @@ void Cli::PrintDefaultCommand(std::ostream &out, unsigned int width) const {
   const auto default_command = std::find_if(commands_.begin(), commands_.end(),
       [](const auto &command) { return command->IsDefault(); });
   if (default_command != commands_.end()) {
-    std::ostringstream ostr;
-    (*default_command)->PrintOptionsSummary(ostr);
-    const std::string indent = fmt::format("usage: {} ", ProgramName());
-    const std::string indent_next(indent.size(), ' ');
-    const wrap::TextWrapper command_wrap = wrap::TextWrapper::Create()
-                                               .Width(width)
-                                               .TrimLines()
-                                               .IndentWith()
-                                               .Initially(indent)
-                                               .Then(indent_next);
-    out << command_wrap.Fill(ostr.str()).value();
-
-    out << "\n\n";
-    ostr.str("");
-    ostr.clear();
-    (*default_command)->PrintOptions(out, width);
+    (*default_command)->Print(out, width);
   }
 }
 
-void Cli::PrintAbout(std::ostream &out, unsigned int width) const {
-  const wrap::TextWrapper wrap =
-      wrap::TextWrapper::Create().Width(width).CollapseWhiteSpace().TrimLines();
-  out << wrap.Fill(about_).value();
-}
-
 void Cli::PrintCommands(std::ostream &out, unsigned int width) const {
-  auto first_time = true;
+  out << "SUB-COMMANDS\n\n";
   for (const auto &command : commands_) {
     if (!command->IsDefault()) {
-      if (first_time) {
-        out << "\n\n";
-        out << "These are the available commands:";
-        first_time = false;
-      }
-      out << "\n\n";
       out << "   " << command->PathAsString() << "\n";
       wrap::TextWrapper wrap = wrap::TextWrapper::Create()
                                    .Width(width)
@@ -138,16 +115,14 @@ void Cli::PrintCommands(std::ostream &out, unsigned int width) const {
                                    .Initially("     ")
                                    .Then("     ");
       out << wrap.Fill(command->About()).value();
+      out << "\n\n";
     }
   }
 }
 
 void Cli::Print(std::ostream &out, unsigned int width) const {
-  PrintAbout(out, width);
-  out << "\n\n";
   PrintDefaultCommand(out, width);
   PrintCommands(out, width);
-  out << "\n\n";
 }
 
 void Cli::EnableVersionCommand() {
@@ -159,6 +134,12 @@ void Cli::EnableVersionCommand() {
   has_version_command_ = true;
 }
 
+void Cli::HandleVersionCommand(const CommandLineContext &context) const {
+  context.out_ << fmt::format(
+                      "{} version {}\n", program_name_.value(), version_)
+               << std::endl;
+}
+
 void Cli::EnableHelpCommand() {
   const Command::Ptr command{
       CommandBuilder(Command::HELP)
@@ -167,9 +148,49 @@ void Cli::EnableHelpCommand() {
                           "available sub-commands and a summary of what they "
                           "do. See `{} help <command>` to get detailed help "
                           "for a specific sub-command.",
-                  ProgramName(), ProgramName()))};
+                  ProgramName(), ProgramName()))
+          .WithPositionalArguments(
+              Option::Rest()
+                  .UserFriendlyName("SEGMENTS")
+                  .About("The path segments (in the correct order) of the "
+                         "sub-command for which help information should be "
+                         "displayed.")
+                  .WithValue<std::string>()
+                  .Build())};
   commands_.push_back(command);
   has_help_command_ = true;
 }
+void Cli::HandleHelpCommand(const CommandLineContext &context) const {
+  if (context.ovm.HasOption("help")) {
+    context.active_command->Print(context.out_, 80);
+  } else if (context.active_command->PathAsString() == "help") {
+    if (context.ovm.HasOption(Option::key_rest)) {
+      const auto &values = context.ovm.ValuesOf(Option::key_rest);
+      ASAP_ASSERT(!values.empty());
+      std::vector<std::string> command_path;
+      command_path.reserve(values.size());
+      for (const auto &value : values) {
+        command_path.push_back(value.GetAs<std::string>());
+      }
 
+      const auto &command = std::find_if(commands_.begin(), commands_.end(),
+          [&command_path](const Command::Ptr &command) {
+            return command->Path() == command_path;
+          });
+      if (command != commands_.end()) {
+        (*command)->Print(context.out_, 80);
+      } else {
+        context.err_ << fmt::format(
+            "The path `{}` does not correspond to a known command.\n",
+            fmt::join(command_path, " "));
+        context.out_ << fmt::format("Try '{} --help' for more information.",
+                            program_name_.value())
+                     << std::endl;
+      }
+    } else {
+      PrintDefaultCommand(context.out_, 80);
+      PrintCommands(context.out_, 80);
+    }
+  }
+}
 } // namespace asap::clap

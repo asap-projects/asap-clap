@@ -33,6 +33,16 @@ public:
     return *this;
   }
 
+  auto UserFriendlyName(std::string name) -> Positional<Builder> & {
+    Builder::UserFriendlyName(std::move(name));
+    return *this;
+  }
+
+  auto Required() -> Positional<Builder> & {
+    Builder::Required();
+    return *this;
+  }
+
   template <typename T>
   auto WithValue(typename ValueDescriptor<T>::Builder &option_value_builder)
       -> Positional<Builder> & {

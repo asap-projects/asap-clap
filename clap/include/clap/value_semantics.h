@@ -65,6 +65,11 @@ public:
 
   virtual ~ValueSemantics() noexcept;
 
+  [[nodiscard]] virtual auto UserFriendlyName() const
+      -> const std::string & = 0;
+
+  [[nodiscard]] virtual auto IsFlag() const -> bool = 0;
+
   /**
    * \brief Indicates if this option can occur multiple times on the command
    * line, allowing for it to take multiple values.
@@ -84,6 +89,8 @@ public:
    */
   [[nodiscard]] virtual auto IsRequired() const -> bool = 0;
   // TODO(Abdessattar) Ensure there are test cases for required values
+
+  [[nodiscard]] virtual auto HasDefaultValue() const -> bool = 0;
 
   /**
    * \brief Assign the default value to 'value_store'.

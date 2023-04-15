@@ -59,9 +59,20 @@ public:
 
   ~ValueDescriptor() override = default;
 
+  [[nodiscard]] auto UserFriendlyName() const -> const std::string & override {
+    return user_friendly_name_;
+  }
+
+  void UserFriendlyName(std::string name) {
+    user_friendly_name_ = std::move(name);
+  }
+
+  [[nodiscard]] auto IsFlag() const -> bool override {
+    return std::is_same<T, bool>();
+  }
+
   /**
-   * \brief Use the provided address to store the value when it's
-   * known.
+   * \brief Use the provided address to store the value when it's known.
    *
    * This is one of the multiple ways to collect parsed values.
    *
@@ -173,6 +184,10 @@ public:
     return !implicit_value_.has_value();
   }
 
+  [[nodiscard]] auto HasDefaultValue() const -> bool override {
+    return default_value_.has_value();
+  }
+
   // TODO(Abdessattar) document currently available value type parsers
   auto Parse(std::any &value_store, const std::string &token) const
       -> bool override {
@@ -245,6 +260,8 @@ public:
 
 private:
   explicit ValueDescriptor() = default;
+
+  std::string user_friendly_name_{"value"};
 
   T *store_to_ = nullptr;
 

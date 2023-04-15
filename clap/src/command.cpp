@@ -11,8 +11,9 @@
  */
 
 #include "clap/command.h"
+#include "clap/cli.h"
 
-#include "clap/fluent/command_builder.h"
+#include <sstream>
 
 #include <common/compilers.h>
 #include <textwrap/textwrap.h>
@@ -34,7 +35,12 @@ ASAP_DIAGNOSTIC_PUSH
 #include <fmt/format.h>
 ASAP_DIAGNOSTIC_POP
 
-void asap::clap::Command::PrintOptionsSummary(std::ostream &out) const {
+auto asap::clap::Command::ProgramName() const -> std::string {
+  return parent_cli_ ? parent_cli_->ProgramName() : "<program>";
+}
+
+void asap::clap::Command::PrintSynopsis(std::ostream &out) const {
+  out << ProgramName() << " " << PathAsString() << " ";
   for (const auto &option : options_) {
     out << (option->value_semantic()->IsRequired() ? "" : "[");
     if (!option->Short().empty()) {
@@ -48,17 +54,20 @@ void asap::clap::Command::PrintOptionsSummary(std::ostream &out) const {
     }
     out << (option->value_semantic()->IsRequired() ? " " : "] ");
   }
-  for (const auto &positional : positional_args_) {
-    out << " " << (positional->value_semantic()->IsRequired() ? "" : "[")
-        << positional->Key()
-        << (positional->value_semantic()->IsRequired() ? "" : "]");
-  }
 
-  if (IsDefault()) {
-    out << "<command> [<args>]";
-  } else {
-    if (!positional_args_.empty()) {
-      out << "[<args>]";
+  for (const auto &option : positional_args_) {
+    if (option->IsPositionalRest()) {
+      if (!option->IsRequired()) {
+        out << "[";
+      }
+      out << "<" << option->UserFriendlyName() << ">";
+      if (!option->IsRequired()) {
+        out << "]";
+      }
+    } else {
+      out << " " << (option->value_semantic()->IsRequired() ? "" : "[")
+          << option->Key()
+          << (option->value_semantic()->IsRequired() ? "" : "]");
     }
   }
 }
@@ -71,45 +80,50 @@ void asap::clap::Command::PrintOptions(
     if (options_in_groups_[option_index]) {
       continue;
     }
-
-    if (option_index > 0) {
-      out << "\n\n";
-    }
     options_[option_index]->Print(out, width);
+    out << "\n\n";
   }
 
   for (auto [group, hidden] : groups_) {
     if (!hidden) {
-      out << "\n\n";
       group->Print(out, width);
+      out << "\n\n";
     }
+  }
+
+  for (const auto &positional : positional_args_) {
+    positional->Print(out, width);
+    out << "\n\n";
   }
 }
 
 void asap::clap::Command::Print(std::ostream &out, unsigned int width) const {
-  // TODO(Abdessattar) print the command summary
+  wrap::TextWrapper wrap = wrap::TextWrapper::Create()
+                               .Width(width)
+                               .CollapseWhiteSpace()
+                               .TrimLines()
+                               .IndentWith()
+                               .Initially("   ")
+                               .Then("   ");
+  std::ostringstream ostr;
 
-  wrap::TextWrapper wrap =
-      wrap::TextWrapper::Create().Width(width).CollapseWhiteSpace().TrimLines();
-  out << wrap.Fill(about_).value();
+  out << "SYNOPSIS\n";
+  PrintSynopsis(ostr);
+  out << wrap.Fill(ostr.str()).value();
+  ostr.str("");
+  ostr.clear();
+  out << "\n\n";
 
-  for (unsigned option_index = 0; option_index < options_.size();
-       ++option_index) {
-    if (options_in_groups_[option_index]) {
-      continue;
-    }
-
-    options_[option_index]->Print(out, width);
-
-    out << "\n";
+  out << "DESCRIPTION\n";
+  if (PathAsString() == Command::DEFAULT) {
+    out << wrap.Fill(parent_cli_->About()).value();
+  } else {
+    out << wrap.Fill(about_).value();
   }
+  out << "\n\n";
 
-  for (auto [group, hidden] : groups_) {
-    if (!hidden) {
-      out << "\n";
-      group->Print(out, width);
-    }
-  }
+  out << "OPTIONS\n";
+  PrintOptions(out, width);
 }
 
 auto asap::clap::Command::PathAsString() const -> std::string {

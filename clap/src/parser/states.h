@@ -783,7 +783,12 @@ struct FinalState : Will<ByDefault<DoNothing>> {
     }
 
     // Validate options
-    CheckRequiredOptions();
+    try {
+      CheckRequiredOptions(context_->active_command->CommandOptions());
+      CheckRequiredOptions(context_->active_command->PositionalArguments());
+    } catch (std::exception &error) {
+      return TerminateWithError{error.what()};
+    }
 
     // FIXME(Abdessattar) implement notifiers and store_to
 
@@ -791,19 +796,19 @@ struct FinalState : Will<ByDefault<DoNothing>> {
   }
 
 private:
-  void CheckRequiredOptions() {
+  void CheckRequiredOptions(const std::vector<Option::Ptr> &options) {
     // Check if we have any required options with default values that were not
     // provided on the command line and use the defaults
-    for (const auto &option : context_->active_command->CommandOptions()) {
+    for (const auto &option : options) {
       const auto semantics = option->value_semantic();
       if (!context_->ovm.HasOption(option->Key())) {
         std::any value;
         std::string value_as_text;
         if (!semantics->ApplyDefault(value, value_as_text)) {
-          // FIXME(Abdessattar) throw only if option is required
-          // if (option.IsRequired()) {
-          //  throw MissingRequiredOption(context_->active_command, option);
-          // }
+          if (option->IsRequired()) {
+            throw std::logic_error(
+                MissingRequiredOption(context_->active_command, option));
+          }
         } else {
           context_->ovm.StoreValue(
               option->Key(), {value, value_as_text, false});

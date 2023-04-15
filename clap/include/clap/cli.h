@@ -100,6 +100,7 @@ public:
   /** Outputs 'desc' to the specified stream, calling 'f' to output each
       option_description element. */
   ASAP_CLAP_API void Print(std::ostream &out, unsigned width = 80) const;
+  // TODO(Abdessattar): make the width a config parameter of the CLI
 
   // Cli instances are created and configured only via the associated
   // CliBuilder.
@@ -138,16 +139,19 @@ private:
   // documentation. When this command is added it should also add a special
   // '--help -h' option with a custom callback that terminates the parsing.
   ASAP_CLAP_API void EnableHelpCommand();
+  ASAP_CLAP_API void HandleHelpCommand(const CommandLineContext &context) const;
 
   // TODO(Abdessattar): add support for cli version command
   // Version should be a special command that gets added to print the Cli
   // version info. When this command is added it should also add a special
   // '--version -v' option with a custom callback that terminates the parsing.
   ASAP_CLAP_API void EnableVersionCommand();
+  ASAP_CLAP_API void HandleVersionCommand(
+      const CommandLineContext &context) const;
 
-  void PrintDefaultCommand(std::ostream &out, unsigned int width) const;
-  void PrintAbout(std::ostream &out, unsigned int width) const;
-  void PrintCommands(std::ostream &out, unsigned int width) const;
+  ASAP_CLAP_API void PrintDefaultCommand(
+      std::ostream &out, unsigned int width) const;
+  ASAP_CLAP_API void PrintCommands(std::ostream &out, unsigned int width) const;
 
   std::string version_;
   std::string about_;

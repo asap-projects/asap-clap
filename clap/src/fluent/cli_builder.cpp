@@ -73,7 +73,7 @@ auto asap::clap::CliBuilder::WithHelpCommand() -> Self & {
 
 void asap::clap::CliBuilder::AddHelpOptionToCommand(Command &command) {
   command.WithOption(
-      Option::WithName("help")
+      Option::WithKey("help")
           .About(
               fmt::format("Display detailed help information.\nNote "
                           "that `{} --help` is identical to `{} help` because "
@@ -88,7 +88,7 @@ void asap::clap::CliBuilder::AddHelpOptionToCommand(Command &command) {
 
 void asap::clap::CliBuilder::AddVersionOptionToCommand(Command &command) {
   command.WithOption(
-      Option::WithName("version")
+      Option::WithKey("version")
           .About(
               fmt::format("Display version information.\nNote that `{} "
                           "--version` is identical to `{} version` because "
@@ -108,7 +108,7 @@ auto asap::clap::CliBuilder::Build() -> std::unique_ptr<Cli> {
     auto has_default_command = false;
 
     for (auto &command : cli_->commands_) {
-      if (cli_->HasHelpCommand() && command->PathAsString() != Command::HELP) {
+      if (cli_->HasHelpCommand()) {
         AddHelpOptionToCommand(*command);
       }
       if (command->IsDefault()) {
@@ -121,7 +121,8 @@ auto asap::clap::CliBuilder::Build() -> std::unique_ptr<Cli> {
 
     // If the CLI if did not have a default command, create one and set it up.
     if (!has_default_command) {
-      std::shared_ptr<Command> command = CommandBuilder(Command::DEFAULT);
+      const std::shared_ptr<Command> command =
+          CommandBuilder(cli_->ProgramName(), Command::DEFAULT);
       if (cli_->HasHelpCommand()) {
         AddHelpOptionToCommand(*command);
       }
@@ -129,6 +130,11 @@ auto asap::clap::CliBuilder::Build() -> std::unique_ptr<Cli> {
         AddVersionOptionToCommand(*command);
       }
       WithCommand(command);
+    }
+
+    // Update all CLI commands to have a weak reference to the parent CLI
+    for (auto &command : cli_->commands_) {
+      command->parent_cli_ = cli_.get();
     }
   }
 

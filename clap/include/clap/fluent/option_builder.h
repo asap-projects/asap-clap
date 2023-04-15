@@ -36,6 +36,9 @@ public:
   ASAP_CLAP_API auto Long(std::string long_name) -> Self &;
 
   ASAP_CLAP_API auto About(std::string about) -> Self &;
+  ASAP_CLAP_API auto Required() -> Self &;
+
+  ASAP_CLAP_API auto UserFriendlyName(std::string name) -> Self &;
 
   // template <typename T>
   // auto WithValue(typename ValueDescriptor<T>::Builder &option_value_builder)
