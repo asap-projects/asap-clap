@@ -19,8 +19,6 @@ Last Updated on |date|
    :hidden:
 
    API <api>
-   License <license>
-   Version <version>
 
 Welcome! This is the documentation for the *clap* module, part of the *asap*
 project. This is a Command Line Arguments Parser.
